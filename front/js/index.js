@@ -140,6 +140,7 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
+    console.log(board_visibility)
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             if (tour%2==0) {
@@ -308,8 +309,58 @@ function updateFogOfWarReverse(player) {
     }
 }
 
+function updateFogOfWarWall(wall_coord) {
+    let x = wall_coord[0];
+    let y = wall_coord[1];
+    if (tour%2==0) {
+        board_visibility[y][x]+=2;
+        board_visibility[y+1][x+1]+=2;
+        board_visibility[y+1][x]+=2;
+        board_visibility[y][x+1]+=2;
+        if (y>0) {
+            board_visibility[y-1][x]+=1;
+            board_visibility[y-1][x+1]+=1;
+        }
+        if (y<7) {
+            board_visibility[y+2][x]+=1;
+            board_visibility[y+2][x+1]+=1;
+        }
+        if (x>0) {
+            board_visibility[y][x-1]+=1;
+            board_visibility[y+1][x-1]+=1;
+        }
+        if (x<7) {
+            board_visibility[y][x+1]+=1;
+            board_visibility[y+2][x+2]+=1;
+        }
+    }
+    else {
+        board_visibility[y][x]-=2;
+        board_visibility[y+1][x+1]-=2;
+        board_visibility[y+1][x]-=2;
+        board_visibility[y][x+1]-=2;
+        if (y>0) {
+            board_visibility[y-1][x]-=1;
+            board_visibility[y-1][x+1]-=1;
+        }
+        if (y<7) {
+            board_visibility[y+1][x]-=1;
+            board_visibility[y+2][x+2]-=1;
+        }
+        if (x>0) {
+            board_visibility[y][x-1]-=1;
+            board_visibility[y+1][x-1]-=1;
+        }
+        if (x<7) {
+            board_visibility[y][x+1]-=1;
+            board_visibility[y+2][x+2]-=1;
+        }
+    }
+}
+
 function confirmWall() {
     if (temp_wall.length > 0) {
+        updateFogOfWarWall(temp_wall)
         placeWall(temp_wall, current_direction)
         if (tour%2==0) p1_walls--
         else p2_walls--
