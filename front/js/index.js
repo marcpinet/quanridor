@@ -43,7 +43,7 @@ let p2_goals = [[0,8], [1,8], [2,8], [3,8], [4,8], [5,8], [6,8], [7,8], [8,8]]
 function isLegal(current_coord, new_coord) {
     let x = new_coord[0]
     let y = new_coord[1]
-    if (x == current_coord[0] && y == current_coord[1] || x == current_coord[0] && y == current_coord[1]) return false
+    if (x == p1_coord[0] && y == p1_coord[1] || x == p2_coord[0] && y == p2_coord[1]) return false
     if (Math.abs(x-current_coord[0]) > 1 || Math.abs(y-current_coord[1]) > 1) return false
     if (Math.abs(x-current_coord[0]) == 1 && Math.abs(y-current_coord[1]) == 1) return false
     for (let wall of v_walls) {
@@ -62,11 +62,17 @@ function isWallLegal(player, coord) {
     if ((player==1 && p1_walls==0) || (player==2 && p2_walls==0)) return false
     if (coord[0]>7 || coord[0]<0 || coord[1]>7 || coord[1]<0) return false
     if (current_direction=='v') {
+        for (let wall of v_walls) {
+            if (wall[0]==coord[0] && Math.abs(wall[1]-coord[1]) <= 1) return false
+        }
         v_walls.push(coord)
         isPossible = !!(aStarPathfinding(p1_coord, p1_goals) && aStarPathfinding(p2_coord, p2_goals));
         v_walls.pop()
     }
     else {
+        for (let wall of h_walls) {
+            if (wall[1]==coord[1] && Math.abs(wall[0]-coord[0]) <= 1) return false
+        }
         h_walls.push(coord)
         isPossible = !!(aStarPathfinding(p1_coord, p1_goals) && aStarPathfinding(p2_coord, p2_goals));
         h_walls.pop()
@@ -89,13 +95,7 @@ function getPlayerNeighbour(coord) {
 }
 
 function checkWin(player) {
-    if (player == 1 && p1_coord[1]==0) {
-        return true
-    }
-    else if (player == 2 && p2_coord[1]==8) {
-        return true
-    }
-    return false
+    return !!(player == 1 && p1_coord[1]==0 || player == 2 && p2_coord[1] == 8);
 }
 
 function placeWall(coord, direction) {
@@ -234,9 +234,10 @@ function getMouseCoordOnCanvas(event) {
             drawTempWall(wall_coord, current_direction)
         }
         else {
-            console.log(temp_wall)
             current_direction = (current_direction=='v')?'h':'v'
             clearTempWall(current_direction)
+            drawWalls()
+            current_direction = (current_direction=='v')?'h':'v'
         }
     }
 }
