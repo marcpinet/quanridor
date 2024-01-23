@@ -43,6 +43,7 @@ let p2_goals = [[0,8], [1,8], [2,8], [3,8], [4,8], [5,8], [6,8], [7,8], [8,8]]
 function isLegal(current_coord, new_coord) {
     let x = new_coord[0]
     let y = new_coord[1]
+    if (x<0 || x>8 || y<0 || y>8) return false
     if (x == p1_coord[0] && y == p1_coord[1] || x == p2_coord[0] && y == p2_coord[1]) return false
     if (Math.abs(x-current_coord[0]) > 1 || Math.abs(y-current_coord[1]) > 1) return false
     if (Math.abs(x-current_coord[0]) == 1 && Math.abs(y-current_coord[1]) == 1) return false
@@ -330,8 +331,8 @@ function updateFogOfWarWall(wall_coord) {
             board_visibility[y+1][x-1]+=1;
         }
         if (x<7) {
-            board_visibility[y][x+1]+=1;
-            board_visibility[y+2][x+2]+=1;
+            board_visibility[y][x+2]+=1;
+            board_visibility[y+1][x+2]+=1;
         }
     }
     else {
@@ -344,16 +345,16 @@ function updateFogOfWarWall(wall_coord) {
             board_visibility[y-1][x+1]-=1;
         }
         if (y<7) {
-            board_visibility[y+1][x]-=1;
-            board_visibility[y+2][x+2]-=1;
+            board_visibility[y+2][x]-=1;
+            board_visibility[y+2][x+1]-=1;
         }
         if (x>0) {
             board_visibility[y][x-1]-=1;
             board_visibility[y+1][x-1]-=1;
         }
         if (x<7) {
-            board_visibility[y][x+1]-=1;
-            board_visibility[y+2][x+2]-=1;
+            board_visibility[y][x+2]-=1;
+            board_visibility[y+1][x+2]-=1;
         }
     }
 }
