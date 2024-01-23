@@ -236,7 +236,7 @@ function getMouseCoordOnCanvas(event) {
         else {
             console.log(temp_wall)
             current_direction = (current_direction=='v')?'h':'v'
-            clearTempWall()
+            clearTempWall(current_direction)
         }
     }
 }
