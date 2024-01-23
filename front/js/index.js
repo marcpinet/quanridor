@@ -37,42 +37,41 @@ let board_visibility = [[-1, -1, -1, -2, -2, -2, -1, -1, -1],
                         [1, 1, 1, 1, 2, 1, 1, 1, 1],
                         [1, 1, 1, 2, 2, 2, 1, 1, 1]]
 
-function isLegal(player, new_coord) {
+let p1_goals = [[0,0], [1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0]]
+let p2_goals = [[0,8], [1,8], [2,8], [3,8], [4,8], [5,8], [6,8], [7,8], [8,8]]
+
+function isLegal(current_coord, new_coord) {
     let x = new_coord[0]
     let y = new_coord[1]
-    if (player == 1) {
-        if (x == p2_coord[0] && y == p2_coord[1] || x == p1_coord[0] && y == p1_coord[1]) return false
-        if (Math.abs(x-p1_coord[0]) > 1 || Math.abs(y-p1_coord[1]) > 1) return false
-        if (Math.abs(x-p1_coord[0]) == 1 && Math.abs(y-p1_coord[1]) == 1) return false
-        for (let wall of v_walls) {
-            if (wall[0]==p1_coord[0] && (wall[1]==p1_coord[1] || wall[1]==p1_coord[1]-1) && x-p1_coord[0]==1) return false
-            if (wall[0]==p1_coord[0]-1 && (wall[1]==p1_coord[1] || wall[1]==p1_coord[1]-1) && p1_coord[0]-x==1) return false
-        }
-        for (let wall of h_walls) {
-            if (wall[1]==p1_coord[1] && (wall[0]==p1_coord[0] || wall[0]==p1_coord[0]-1) && y-p1_coord[1]==1) return false
-            if (wall[1]==p1_coord[1]-1 && (wall[0]==p1_coord[0] || wall[0]==p1_coord[0]-1) && p1_coord[1]-y==1) return false
-        }
+    if (x == current_coord[0] && y == current_coord[1] || x == current_coord[0] && y == current_coord[1]) return false
+    if (Math.abs(x-current_coord[0]) > 1 || Math.abs(y-current_coord[1]) > 1) return false
+    if (Math.abs(x-current_coord[0]) == 1 && Math.abs(y-current_coord[1]) == 1) return false
+    for (let wall of v_walls) {
+        if (wall[0]==current_coord[0] && (wall[1]==current_coord[1] || wall[1]==current_coord[1]-1) && x-current_coord[0]==1) return false
+        if (wall[0]==current_coord[0]-1 && (wall[1]==current_coord[1] || wall[1]==current_coord[1]-1) && current_coord[0]-x==1) return false
     }
-    else {
-        if (x == p1_coord[0] && y == p1_coord[1] || x == p2_coord[0] && y == p2_coord[1]) return false
-        if (Math.abs(x-p2_coord[0]) > 1 || Math.abs(y-p2_coord[1]) > 1) return false
-        if (Math.abs(x-p2_coord[0]) == 1 && Math.abs(y-p2_coord[1]) == 1) return false
-        for (let wall of v_walls) {
-            if (wall[0]==p2_coord[0] && (wall[1]==p2_coord[1] || wall[1]==p2_coord[1]-1) && x-p2_coord[0]==1) return false
-            if (wall[0]==p2_coord[0]-1 && (wall[1]==p2_coord[1] || wall[1]==p2_coord[1]-1) && p2_coord[0]-x==1) return false
-        }
-        for (let wall of h_walls) {
-            if (wall[1]==p2_coord[1] && (wall[0]==p2_coord[0] || wall[0]==p2_coord[0]-1) && y-p2_coord[1]==1) return false
-            if (wall[1]==p2_coord[1]-1 && (wall[0]==p2_coord[0] || wall[0]==p2_coord[0]-1) && p2_coord[1]-y==1) return false
-        }
+    for (let wall of h_walls) {
+        if (wall[1]==current_coord[1] && (wall[0]==current_coord[0] || wall[0]==current_coord[0]-1) && y-current_coord[1]==1) return false
+        if (wall[1]==current_coord[1]-1 && (wall[0]==current_coord[0] || wall[0]==current_coord[0]-1) && current_coord[1]-y==1) return false
     }
     return true
 }
 
 function isWallLegal(player, coord) {
+    let isPossible;
     if ((player==1 && p1_walls==0) || (player==2 && p2_walls==0)) return false
     if (coord[0]>7 || coord[0]<0 || coord[1]>7 || coord[1]<0) return false
-    return true
+    if (current_direction=='v') {
+        v_walls.push(coord)
+        isPossible = !!(aStarPathfinding(p1_coord, p1_goals) && aStarPathfinding(p2_coord, p2_goals));
+        v_walls.pop()
+    }
+    else {
+        h_walls.push(coord)
+        isPossible = !!(aStarPathfinding(p1_coord, p1_goals) && aStarPathfinding(p2_coord, p2_goals));
+        h_walls.pop()
+    }
+    return isPossible
 }
 
 function getPlayerNeighbour(coord) {
@@ -115,12 +114,11 @@ function drawWalls() {
 }
 
 function clearTempWall(direction) {
+    context.fillStyle = '#161A3D'
     if (direction=='h') {
-        context.fillStyle = '#161A3D'
         context.fillRect(10+temp_wall[0]*77, 77*(temp_wall[1]+1), 2*67+10, 10)
     }
     if (direction=='v')  {
-        context.fillStyle = '#161A3D'
         context.fillRect(77*(temp_wall[0]+1), 10+temp_wall[1]*77, 10, 2*67+10)
     }
     temp_wall = []
@@ -215,12 +213,12 @@ function getMouseCoordOnCanvas(event) {
     let x = event.clientX - canvas.getBoundingClientRect().left
     let y = event.clientY - canvas.getBoundingClientRect().top
     let new_coord = getCaseFromCoord(x,y)
-    if (select1 && isLegal(1, new_coord)) {
+    if (select1 && isLegal(p1_coord, new_coord)) {
         updateFogOfWarReverse(1)
         movePlayer(1, new_coord)
         updateFogOfWar(1)
     }
-    else if (select2 && isLegal(2, new_coord)) {
+    else if (select2 && isLegal(p2_coord, new_coord)) {
         updateFogOfWarReverse(2)
         movePlayer(2, new_coord)
         updateFogOfWar(2)
@@ -229,11 +227,16 @@ function getMouseCoordOnCanvas(event) {
         select1 = false
         select2 = false
         drawBoard()
-        let new_coord = getWallFromCoord(x,y)
+        let wall_coord = getWallFromCoord(x,y)
         current_direction = (current_direction=='v')?'h':'v'
         let player = (tour%2==0)?1:2
-        if (isWallLegal(player, new_coord)) {
-            drawTempWall(new_coord, current_direction)
+        if (isWallLegal(player, wall_coord)) {
+            drawTempWall(wall_coord, current_direction)
+        }
+        else {
+            console.log(temp_wall)
+            current_direction = (current_direction=='v')?'h':'v'
+            clearTempWall()
         }
     }
 }
@@ -244,7 +247,7 @@ function displayPossibleMoves(player) {
         drawWalls()
         select1 = true
         for (let coord of getPlayerNeighbour(p1_coord)) {
-            if (isLegal(player, coord)) {
+            if (isLegal(p1_coord, coord)) {
                 context.fillStyle = '#F1A7FF'
                 context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
             }
@@ -255,7 +258,7 @@ function displayPossibleMoves(player) {
         clearTempWall(current_direction)
         drawWalls()
         for (let coord of getPlayerNeighbour(p2_coord)) {
-            if (isLegal(player, coord)) {
+            if (isLegal(p2_coord, coord)) {
                 context.fillStyle = '#F1A7FF'
                 context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
             }
@@ -314,69 +317,37 @@ function confirmWall() {
     }
 }
 
-function aStarPathfinding(start, goal) {
+function isInclude(array, coord) {
+    for (let subArray of array) {
+        if (coord[0]==subArray[0] && coord[1]==subArray[1]) return true
+    }
+    return false
+}
+
+function aStarPathfinding(start, goals) {
     let openSet = [];
     let closedSet = [];
-    let path = [];
     let current;
     openSet.push(start);
 
     while (openSet.length > 0) {
-        let lowestIndex = 0;
-        for (let i = 0; i < openSet.length; i++) {
-            if (openSet[i].f < openSet[lowestIndex].f) {
-                lowestIndex = i;
-            }
-        }
+        current = openSet.pop();
 
-        current = openSet[lowestIndex];
-
-        if (current === goal) {
-            let temp = current;
-            path.push(temp);
-            while (temp.previous) {
-                path.push(temp.previous);
-                temp = temp.previous;
-            }
-            return path.reverse();
-        }
-
-        openSet = openSet.filter((item) => item !== current);
+        if (isInclude(goals, current)) return true;
         closedSet.push(current);
 
         let neighbors = getPlayerNeighbour(current);
-
+        
         for (let neighbor of neighbors) {
-            if (closedSet.includes(neighbor) || !isLegal(1, neighbor)) continue;
-
-            let tempG = current.g + 1;
-
-            let newPath = false;
-            if (openSet.includes(neighbor)) {
-                if (tempG < neighbor.g) {
-                    neighbor.g = tempG;
-                    newPath = true;
-                }
-            } else {
-                neighbor.g = tempG;
-                newPath = true;
+            if (isInclude(closedSet, neighbor) || !isLegal(current, neighbor)) continue;
+            
+            if (!isInclude(openSet, neighbor)) {
                 openSet.push(neighbor);
-            }
-
-            if (newPath) {
-                neighbor.h = heuristic(neighbor, goal);
-                neighbor.f = neighbor.g + neighbor.h;
-                neighbor.previous = current;
             }
         }
     }
 
-    return [];
-}
-
-function heuristic(a, b) {
-    let d = Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-    return d;
+    return false; 
 }
 
 canvas.addEventListener('click', getMouseCoordOnCanvas);
