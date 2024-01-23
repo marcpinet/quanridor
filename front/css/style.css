@@ -13,15 +13,12 @@ body {
 #player1 {
     display: block;
     background-color: black;
-    top: 642px;
-    left: 334px;
+
 }
 
 #player2 {
     display: block;
     background-color: white;
-    top: 26px;
-    left: 334px;
 }
 
 canvas {
@@ -60,4 +57,9 @@ canvas {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
