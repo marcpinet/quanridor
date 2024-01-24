@@ -81,6 +81,18 @@ function isWallLegal(player, coord) {
     return isPossible
 }
 
+function canJump(player) {
+    if (Math.abs(p1_coord[0]-p2_coord[0])==1 && p1_coord[1]==p2_coord[1]) {
+        if (player==1 && isLegal(p2_coord, [2*p2_coord[0]-p1_coord[0],p2_coord[1]])) return [2*p2_coord[0]-p1_coord[0],p2_coord[1]];
+        else if (isLegal(p1_coord, [2*p1_coord[0]-p2_coord[0],p1_coord[1]])) return [2*p1_coord[0]-p2_coord[0],p1_coord[1]];
+    }
+    else if (p1_coord[0]==p2_coord[0] && Math.abs(p1_coord[1]-p2_coord[1])==1) {
+        if (player==1 && isLegal(p2_coord, [p2_coord[0],2*p2_coord[1]-p1_coord[1]])) return [p2_coord[0],2*p2_coord[1]-p1_coord[1]];
+        else if (isLegal(p1_coord, [p1_coord[0],2*p1_coord[1]-p2_coord[1]])) return [p1_coord[0],2*p1_coord[1]-p2_coord[1]];
+    }
+    return [];
+}
+
 function getPlayerNeighbour(coord) {
     const x = coord[0];
     const y = coord[1];
@@ -141,7 +153,6 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
-    console.log(board_visibility)
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
             if (tour%2==0) {
@@ -212,58 +223,69 @@ function getWallFromCoord(x,y) {
 }
 
 function getMouseCoordOnCanvas(event) {
-    let x = event.clientX - canvas.getBoundingClientRect().left
-    let y = event.clientY - canvas.getBoundingClientRect().top
-    let new_coord = getCaseFromCoord(x,y)
-    if (select1 && isLegal(p1_coord, new_coord)) {
-        updateFogOfWarReverse(1)
-        movePlayer(1, new_coord)
-        updateFogOfWar(1)
+    let x = event.clientX - canvas.getBoundingClientRect().left;
+    let y = event.clientY - canvas.getBoundingClientRect().top;
+    let new_coord = getCaseFromCoord(x,y);
+    let jump_coord = canJump(tour%2+1);
+    if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
+        updateFogOfWarReverse(1);
+        movePlayer(1, new_coord);
+        updateFogOfWar(1);
     }
-    else if (select2 && isLegal(p2_coord, new_coord)) {
-        updateFogOfWarReverse(2)
-        movePlayer(2, new_coord)
-        updateFogOfWar(2)
+    else if (select2 && (isLegal(p2_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
+        updateFogOfWarReverse(2);
+        movePlayer(2, new_coord);
+        updateFogOfWar(2);
     }
     else {
-        select1 = false
-        select2 = false
-        drawBoard()
-        let wall_coord = getWallFromCoord(x,y)
-        current_direction = (current_direction=='v')?'h':'v'
-        let player = (tour%2==0)?1:2
+        select1 = false;
+        select2 = false;
+        drawBoard();
+        let wall_coord = getWallFromCoord(x,y);
+        current_direction = (current_direction=='v')?'h':'v';
+        let player = (tour%2==0)?1:2;
         if (isWallLegal(player, wall_coord)) {
-            drawTempWall(wall_coord, current_direction)
+            drawTempWall(wall_coord, current_direction);
         }
         else {
-            current_direction = (current_direction=='v')?'h':'v'
-            clearTempWall(current_direction)
-            drawWalls()
-            current_direction = (current_direction=='v')?'h':'v'
+            current_direction = (current_direction=='v')?'h':'v';
+            clearTempWall(current_direction);
+            drawWalls();
+            current_direction = (current_direction=='v')?'h':'v';
         }
     }
 }
 
 function displayPossibleMoves(player) {
     if (player == 1 && tour%2==0) {
-        clearTempWall(current_direction)
-        drawWalls()
-        select1 = true
+        clearTempWall(current_direction);
+        drawWalls();
+        select1 = true;
         for (let coord of getPlayerNeighbour(p1_coord)) {
             if (isLegal(p1_coord, coord)) {
-                context.fillStyle = '#F1A7FF'
-                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
+                context.fillStyle = '#F1A7FF';
+                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67);
+            }
+            let jump_coord = canJump(player);
+            if (jump_coord.length>0) {
+                context.fillStyle = '#F1A7FF';
+                context.fillRect((jump_coord[0]+1)*10+jump_coord[0]*67,(jump_coord[1]+1)*10+jump_coord[1]*67,67,67);
             }
         }
     }
     else if (player == 2 && tour%2==1) {
-        select2 = true
-        clearTempWall(current_direction)
-        drawWalls()
+        select2 = true;
+        clearTempWall(current_direction);
+        drawWalls();
         for (let coord of getPlayerNeighbour(p2_coord)) {
             if (isLegal(p2_coord, coord)) {
-                context.fillStyle = '#F1A7FF'
-                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
+                context.fillStyle = '#F1A7FF';
+                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67);
+            }
+            let jump_coord = canJump(player);
+            if (jump_coord.length>0) {
+                context.fillStyle = '#F1A7FF';
+                context.fillRect((jump_coord[0]+1)*10+jump_coord[0]*67,(jump_coord[1]+1)*10+jump_coord[1]*67,67,67);
             }
         }
     }
