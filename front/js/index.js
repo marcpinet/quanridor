@@ -87,15 +87,11 @@ function isWallLegal(player, coord) {
     return isPossible
 }
 
-function canJump(player) {
-    if (Math.abs(p1_coord[0]-p2_coord[0])==1 && p1_coord[1]==p2_coord[1]) {
-        if (player==1 && isLegal(p2_coord, [2*p2_coord[0]-p1_coord[0],p2_coord[1]])) return [2*p2_coord[0]-p1_coord[0],p2_coord[1]];
-        else if (isLegal(p1_coord, [2*p1_coord[0]-p2_coord[0],p1_coord[1]])) return [2*p1_coord[0]-p2_coord[0],p1_coord[1]];
-    }
-    else if (p1_coord[0]==p2_coord[0] && Math.abs(p1_coord[1]-p2_coord[1])==1) {
-        if (player==1 && isLegal(p2_coord, [p2_coord[0],2*p2_coord[1]-p1_coord[1]])) return [p2_coord[0],2*p2_coord[1]-p1_coord[1]];
-        else if (isLegal(p1_coord, [p1_coord[0],2*p1_coord[1]-p2_coord[1]])) return [p1_coord[0],2*p1_coord[1]-p2_coord[1]];
-    }
+function canJump(coord) {
+    if (Math.abs(p1_coord[0]-coord[0])==1 && p1_coord[1]==coord[1] && isLegal(p1_coord, [2*p1_coord[0]-coord[0],coord[1]])) return [2*p1_coord[0]-coord[0],coord[1]];
+    else if (Math.abs(p2_coord[0]-coord[0])==1 && p2_coord[1]==coord[1] && isLegal(p2_coord, [2*p2_coord[0]-coord[0],coord[1]])) return [2*p2_coord[0]-coord[0],coord[1]];
+    else if (p1_coord[0]==coord[0] && Math.abs(p1_coord[1]-coord[1])==1 && isLegal(p1_coord, [coord[0],2*p1_coord[1]-coord[1]])) return [coord[0],2*p1_coord[1]-coord[1]];
+    else if (p2_coord[0]==coord[0] && Math.abs(p2_coord[1]-coord[1])==1 && isLegal(p2_coord, [coord[0],2*p2_coord[1]-coord[1]])) return [coord[0],2*p2_coord[1]-coord[1]];
     return [];
 }
 
@@ -232,7 +228,7 @@ function getMouseCoordOnCanvas(event) {
     let x = event.clientX - canvas.getBoundingClientRect().left;
     let y = event.clientY - canvas.getBoundingClientRect().top;
     let new_coord = getCaseFromCoord(x,y);
-    let jump_coord = canJump(tour%2+1);
+    let jump_coord = canJump((tour%2==0)?p1_coord:p2_coord);
     if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
         updateFogOfWarReverse(1);
         movePlayer(1, new_coord);
@@ -272,7 +268,7 @@ function displayPossibleMoves(player) {
                 context.fillStyle = '#F1A7FF';
                 context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67);
             }
-            let jump_coord = canJump(player);
+            let jump_coord = canJump(p1_coord);
             if (jump_coord.length>0) {
                 context.fillStyle = '#F1A7FF';
                 context.fillRect((jump_coord[0]+1)*10+jump_coord[0]*67,(jump_coord[1]+1)*10+jump_coord[1]*67,67,67);
@@ -288,7 +284,7 @@ function displayPossibleMoves(player) {
                 context.fillStyle = '#F1A7FF';
                 context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67);
             }
-            let jump_coord = canJump(player);
+            let jump_coord = canJump(p2_coord);
             if (jump_coord.length>0) {
                 context.fillStyle = '#F1A7FF';
                 context.fillRect((jump_coord[0]+1)*10+jump_coord[0]*67,(jump_coord[1]+1)*10+jump_coord[1]*67,67,67);
@@ -425,6 +421,10 @@ function aStarPathfinding(start, goals) {
             if (!isInclude(openSet, neighbor)) {
                 openSet.push(neighbor);
             }
+        }
+        let jump_coord = canJump(current);
+        if (jump_coord.length>0 && !isInclude(closedSet, jump_coord) && !isInclude(openSet, jump_coord)) {
+            openSet.push(jump_coord);
         }
     }
 
