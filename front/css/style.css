@@ -1,5 +1,9 @@
+
+
 body {
-    background-color: #111430;
+    background: linear-gradient(rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), url('Background.svg') no-repeat center center fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .player {
@@ -12,7 +16,7 @@ body {
 
 #player1 {
     display: block;
-    background-color: black;
+    background-color: #010525;
     top: 642px;
     left: 334px;
 }

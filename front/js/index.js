@@ -11,8 +11,43 @@ const confirm = document.getElementById("confirm")
 canvas.width = 703
 canvas.height = 703
 
-context.fillStyle = '#161A3D'
-context.fillRect(0,0,703,703)
+function drawRoundedRect(x, y, width, height, radius, color) {
+    context.beginPath();
+
+    context.moveTo(x + radius, y);
+    context.arcTo(x + width, y, x + width, y + height, radius)
+    context.arcTo(x + width, y + height, x, y + height, radius)
+    context.arcTo(x, y + height, x, y, radius)
+    context.arcTo(x, y, x + width, y, radius)
+
+    context.fillStyle = color
+    context.fill()
+    context.closePath()
+}
+
+function drawRoundedRect(x, y, width, height, radius, color) {
+    context.beginPath()
+
+    context.moveTo(x + radius, y)
+    context.arcTo(x + width, y, x + width, y + height, radius)
+    context.arcTo(x + width, y + height, x, y + height, radius)
+    context.arcTo(x, y + height, x, y, radius)
+    context.arcTo(x, y, x + width, y, radius)
+
+    context.fillStyle = color
+    context.fill()
+    context.closePath()
+
+    // Return the rectangle information for clearing
+    return { x: x, y: y, width: width, height: height }
+}
+
+
+function clearRoundedRect(rect) {
+    context.clearRect(rect.x, rect.y, rect.width, rect.height)
+}
+
+
 
 let tour = 0
 let p1_coord = [4,8]
@@ -90,13 +125,7 @@ function getPlayerNeighbour(coord) {
 }
 
 function checkWin(player) {
-    if (player == 1 && p1_coord[1]==0) {
-        return true
-    }
-    else if (player == 2 && p2_coord[1]==8) {
-        return true
-    }
-    return false
+    return (player == 1 && p1_coord[1]==0) || (player == 2 && p2_coord[1]==8)
 }
 
 function placeWall(coord, direction) {
@@ -105,68 +134,55 @@ function placeWall(coord, direction) {
 }
 
 function drawWalls() {
-    context.fillStyle = '#ffffff'
     for (let wall of v_walls) {
-        context.fillRect(77*(wall[0]+1), 10+wall[1]*77, 10, 2*67+10)
+        drawRoundedRect(77*(wall[0]+1), 10+wall[1]*77, 10, 2*67+10, 5, '#FFFFFF')
     }
+
     for (let wall of h_walls) {
-        context.fillRect(10+wall[0]*77, 77*(wall[1]+1), 2*67+10, 10)
+        drawRoundedRect(10+wall[0]*77, 77*(wall[1]+1), 2*67+10, 10, 5, '#FFFFFF')
     }
 }
 
-function clearTempWall(direction) {
-    if (direction=='h') {
-        context.fillStyle = '#161A3D'
-        context.fillRect(10+temp_wall[0]*77, 77*(temp_wall[1]+1), 2*67+10, 10)
-    }
-    if (direction=='v')  {
-        context.fillStyle = '#161A3D'
-        context.fillRect(77*(temp_wall[0]+1), 10+temp_wall[1]*77, 10, 2*67+10)
-    }
+function clearTempWall() {
     temp_wall = []
+    drawBoard()
 }
 
 function drawTempWall(coord, direction) {
-    if (direction=='v') {
-        clearTempWall('h')
-        context.fillStyle = 'rgb(255,255,255,0.3)'
-        context.fillRect(77*(coord[0]+1), 10+coord[1]*77, 10, 2*67+10)
+    let color = '#F1A7FF'
+    clearTempWall()
+    if (direction == 'v') {
+        drawRoundedRect(77*(coord[0]+1),10+coord[1]*77, 10, 2*67+10, 5, color)
     }
-    if (direction=='h')  {
-        clearTempWall('v')
-        context.fillStyle = 'rgb(255,255,255,0.3)'
-        context.fillRect(10+coord[0]*77, 77*(coord[1]+1), 2*67+10, 10)
+    if (direction == 'h')  {
+        drawRoundedRect(10+coord[0]*77,77*(coord[1]+1), 2*67+10, 10, 5, color)
     }
     temp_wall = coord
-    drawWalls()
 }
 
 function drawBoard() {
+    context.clearRect(0, 0, canvas.width, canvas.height)
+    let gradient = context.createLinearGradient(0, 0, 0, canvas.height)
+
+    gradient.addColorStop(0, "rgba(255, 0, 61, 0.5)")
+    gradient.addColorStop(1, "rgba(94, 0, 188, 0.5)")
+    // '#161A3D'
+    drawRoundedRect(0, 0, 703, 703, 20, gradient)
+
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
-            if (tour%2==0) {
+            let color
+            if (tour % 2 == 0) {
                 player1.style.display = 'block'
-                if (board_visibility[j][i]>=0) {
-                    context.fillStyle = '#EE4F3A'
-                }
-                else {
-                    context.fillStyle = '#7A0F00'
-                }
-                if (board_visibility[p2_coord[1]][p2_coord[0]]<0) player2.style.display = 'none'
-                else player2.style.display = 'block'
+                color = board_visibility[j][i]>=0 ? '#EE4F3A' : '#FFFFFF' //'rgba(238, 79, 58, 0.5)'
+                player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
             }
             else {
-                player2.style.display = "block";
-                if (board_visibility[j][i]<=0) {
-                    context.fillStyle = '#EE4F3A'
-                }
-                else {
-                    context.fillStyle = '#7A0F00'
-                }
-                if (board_visibility[p1_coord[1]][p1_coord[0]]>0) player1.style.display = 'none'
-                else player1.style.display = 'block'
+                player2.style.display = "block"
+                color = board_visibility[j][i]<=0 ? '#EE4F3A' : '#FFFFFF'
+                player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
             }
-            context.fillRect((i+1)*10+i*67,(j+1)*10+j*67,67,67)
+            drawRoundedRect((i+1)*10+i*67, (j+1)*10+j*67, 67, 67, 20, color)
         }
     }
     drawWalls()
@@ -233,20 +249,20 @@ function getMouseCoordOnCanvas(event) {
         current_direction = (current_direction=='v')?'h':'v'
         let player = (tour%2==0)?1:2
         if (isWallLegal(player, new_coord)) {
-            drawTempWall(new_coord, current_direction)
+            drawTempWall(new_coord, current_direction, )
         }
     }
 }
 
 function displayPossibleMoves(player) {
+    let color = '#F1A7FF'
     if (player == 1 && tour%2==0) {
         clearTempWall(current_direction)
         drawWalls()
         select1 = true
         for (let coord of getPlayerNeighbour(p1_coord)) {
             if (isLegal(player, coord)) {
-                context.fillStyle = '#F1A7FF'
-                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
+                drawRoundedRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67, 67, 67, 20, color)
             }
         }
     }
@@ -256,8 +272,7 @@ function displayPossibleMoves(player) {
         drawWalls()
         for (let coord of getPlayerNeighbour(p2_coord)) {
             if (isLegal(player, coord)) {
-                context.fillStyle = '#F1A7FF'
-                context.fillRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67,67,67)
+                drawRoundedRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67, 67, 67, 20, color)
             }
         }
     }
