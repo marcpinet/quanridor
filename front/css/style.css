@@ -1,6 +1,27 @@
-
-
 body {
+    background-image: 
+    url('../assets/Background.svg');
+    background-size: cover;
+    color: white;
+}
+
+#title {
+    display: flex;
+    background: 
+    url('../assets/Quanridor_title.svg') center/900px no-repeat;
+    height: 50vh;
+}
+
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 38px;
+    width: 350px;
+    height: 140px;
+}
+
+#game {
     background-image: 
     linear-gradient(to bottom, rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), 
     url('../assets/Background.svg');
