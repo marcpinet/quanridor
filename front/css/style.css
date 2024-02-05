@@ -1,0 +1,68 @@
+
+
+body {
+    background: linear-gradient(rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), url('Background.svg') no-repeat center center fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.player {
+    position: absolute;
+    display:flex;
+    width:52px;
+    height:52px;
+    border-radius: 26px;
+}
+
+#player1 {
+    display: block;
+    background-color: #010525;
+}
+
+#player2 {
+    display: block;
+    background-color: white;
+}
+
+canvas {
+    display: flex;
+}
+
+#ready {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    border-radius: 10px;
+}
+
+#smoke {
+    position: fixed;
+    background-color: black;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
+
+.anticheat {
+    display: none;
+}
+
+#win {
+    position: absolute;
+    display: none;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
