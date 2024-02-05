@@ -1,9 +1,11 @@
 
 
 body {
-    background: linear-gradient(rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), url('Background.svg') no-repeat center center fixed;
+    background-image: 
+    linear-gradient(to bottom, rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), 
+    url('../assets/Background.svg');
     background-size: cover;
-    background-repeat: no-repeat;
+    color: white;
 }
 
 .player {
