@@ -185,6 +185,7 @@ function drawBoard() {
             else {
                 player2.style.display = "block"
                 color = board_visibility[j][i]<=0 ? '#EE4F3A' : '#FFFFFF'
+                
                 player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
             }
             drawRoundedRect((i+1)*10+i*67, (j+1)*10+j*67, 67, 67, 20, color)
