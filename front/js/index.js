@@ -34,7 +34,7 @@ function clearRoundedRect(rect) {
 
 const canvasRect = canvas.getBoundingClientRect()
 const canvasLeft = canvasRect.left - 8
-const canvasTop = canvasRect.top +178
+const canvasTop = canvasRect.top +9
 
 let tour = 0
 let p1_coord = [4,8]
