@@ -17,15 +17,11 @@ body {
 #player1 {
     display: block;
     background-color: #010525;
-    top: 642px;
-    left: 334px;
 }
 
 #player2 {
     display: block;
     background-color: white;
-    top: 26px;
-    left: 334px;
 }
 
 canvas {
@@ -44,10 +40,12 @@ canvas {
 }
 
 #smoke {
-    position: absolute;
+    position: fixed;
     background-color: black;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
 }
 
 .anticheat {
@@ -62,4 +60,9 @@ canvas {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 }
