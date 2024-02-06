@@ -1,7 +1,7 @@
 const canvas = document.querySelector("canvas")
 const context = canvas.getContext('2d')
-const player1 = document.getElementById("player1")
-const player2 = document.getElementById("player2")
+//const player1 = document.getElementById("player1")
+//const player2 = document.getElementById("player2")
 const anticheat = document.getElementsByClassName("anticheat")
 const ready = document.getElementById("ready")
 const win = document.getElementById("win")
@@ -39,11 +39,11 @@ const canvasTop = canvasRect.top +9
 let tour = 0
 let p1_coord = [4,8]
 let p2_coord = [4,0]
-player1.style.top = canvasTop + 26 + p1_coord[1] * 77 + 'px';
-player1.style.left =canvasLeft + 26 + p1_coord[0] * 77 + 'px'
+//player1.style.top = canvasTop + 26 + p1_coord[1] * 77 + 'px';
+//player1.style.left =canvasLeft + 26 + p1_coord[0] * 77 + 'px'
 
-player2.style.top = canvasTop+ 26 + p2_coord[1] * 77 + 'px';
-player2.style.left =canvasLeft + 26 + p2_coord[0] * 77 + 'px'
+//player2.style.top = canvasTop+ 26 + p2_coord[1] * 77 + 'px';
+//player2.style.left =canvasLeft + 26 + p2_coord[0] * 77 + 'px'
 let playing = true
 let select1 = false
 let select2 = false
@@ -179,15 +179,29 @@ function drawBoard() {
         for (let j = 0; j < 9; j++) {
             let color
             if (tour % 2 == 0) {
-                player1.style.display = 'block'
+                //player1.style.display = 'block'
+                drawPlayer(42 +p1_coord[0]*77, 42 + p1_coord[1]*77, '#FFFFFF')
                 color = board_visibility[j][i]>=0 ? '#EE4F3A' : '#FFFFFF' //'rgba(238, 79, 58, 0.5)'
-                player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
+                //player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
+                if(board_visibility[p2_coord[1]][p2_coord[0]]<0){
+                    clearPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77)
+                }
+                else{
+                    drawPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77, '#000000')
+                }
             }
             else {
-                player2.style.display = "block"
+                //player2.style.display = "block"
+                drawPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77, '#000000')
                 color = board_visibility[j][i]<=0 ? '#EE4F3A' : '#FFFFFF'
                 
-                player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
+                //player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
+                if(board_visibility[p1_coord[1]][p1_coord[0]]<0){
+                    clearPlayer(42 + p1_coord[0]*77, 42 + p1_coord[1]*77)
+                }
+                else{
+                    drawPlayer(42 + p1_coord[0]*77, 42 + p1_coord[1]*77, '#FFFFFF')
+                }
             }
             drawRoundedRect((i+1)*10+i*67, (j+1)*10+j*67, 67, 67, 20, color)
         }
@@ -196,6 +210,7 @@ function drawBoard() {
 }
 
 drawBoard()
+
 
 function getCaseFromCoord(x,y) {
     return [Math.floor(x/77), Math.floor(y/77)]
@@ -206,20 +221,24 @@ function movePlayer(player, coord) {
     if (player == 1) {
         legal = true
         p1_coord = coord
-        player1.style.top = canvasTop +26 + coord[1]*77 + 'px'
-        player1.style.left = canvasLeft+ 26 + coord[0]*77 + 'px'
+        drawPlayer(42 + coord[0]*77, 42 + coord[1]*77, '#FFFFFF')
+        //player1.style.top = canvasTop +26 + coord[1]*77 + 'px'
+        //player1.style.left = canvasLeft+ 26 + coord[0]*77 + 'px'
         select1 = false
     }
     else {
         legal = true
         p2_coord = coord
-        player2.style.top = canvasTop + 26 + coord[1]*77 + 'px'
-        player2.style.left = canvasLeft+  26 + coord[0]*77 + 'px'
+        drawPlayer(42 + coord[0]*77, 42 + coord[1]*77, '#000000')
+        //player2.style.top = canvasTop + 26 + coord[1]*77 + 'px'
+        //player2.style.left = canvasLeft+  26 + coord[0]*77 + 'px'
         select2 = false
     }
     if (checkWin(player)) {
-        player1.style.display = 'none'
-        player2.style.display = 'none'
+        clearPlayer(42 + p1_coord[0]*77, 42 + p1_coord[1]*77);
+        clearPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77);
+        //player1.style.display = 'none'
+        //player2.style.display = 'none'
         smoke.style.display = 'block'
         win.style.display = 'block'
         win.textContent = 'player' + player + ' won!'
@@ -239,6 +258,15 @@ function getMouseCoordOnCanvas(event) {
     let y = event.clientY - canvas.getBoundingClientRect().top;
     let new_coord = getCaseFromCoord(x,y);
     let jump_coord = canJump((tour%2==0)?p1_coord:p2_coord);
+    console.log("click : "+ new_coord[0] + ", " + new_coord[1])
+    console.log("p1 : " + p1_coord[0] + ", " + p1_coord[1])
+    console.log(new_coord[0] === p1_coord[0] && new_coord[1] === p1_coord[1])
+    if(new_coord[0] === p1_coord[0] && new_coord[1] === p1_coord[1]){
+        displayPossibleMoves(1)
+    }
+    if(new_coord[0] === p2_coord[0] && new_coord[1] === p2_coord[1]){
+        displayPossibleMoves(2)
+    }
     if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
         updateFogOfWarReverse(1);
         movePlayer(1, new_coord);
@@ -273,7 +301,7 @@ function displayPossibleMoves(player) {
     if (player == 1 && tour%2==0) {
         clearTempWall(current_direction);
         drawWalls();
-        select1 = true;
+        select1 = true; 
         for (let coord of getPlayerNeighbour(p1_coord)) {
             if (isLegal(p1_coord, coord)) {
                 drawRoundedRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67, 67, 67, 20, color)
@@ -437,6 +465,34 @@ function aStarPathfinding(start, goals) {
 
     return false; 
 }
+
+function drawPlayer(x, y, color) {
+    if(color === 'none'){
+        clearPlayer(x,y);
+    }
+    else{
+        context.beginPath();
+        context.arc(x, y, 20, 0, 2 * Math.PI);
+        context.fillStyle = color;
+        context.fill();
+        context.closePath();
+    }
+    
+}
+
+function clearPlayer(x, y) {
+    // Récupérer la couleur environnante aux coordonnées (x, y)
+    const surroundingColor = context.getImageData(x, y, 1, 1).data;
+    const rgbaColor = `rgba(${surroundingColor[0]}, ${surroundingColor[1]}, ${surroundingColor[2]}, ${surroundingColor[3] / 255})`;
+
+    // Remplir le joueur avec la couleur environnante
+    drawPlayer(x, y, rgbaColor);
+}
+
+
+
+
+
 
 canvas.addEventListener('click', getMouseCoordOnCanvas);
 
