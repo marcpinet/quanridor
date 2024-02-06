@@ -17,18 +17,47 @@ body {
     align-self: center;
 }
 
-#title {
+.title {
     display: flex;
     background: 
     url('../assets/Quanridor_title.svg') center/900px no-repeat;
-    height: 30vh;
     width: 100%;
     justify-content: center;
     align-items: center;
+    height: 30vh;
 }
 
-#title:hover {
+.title:hover {
     cursor: pointer;
+}
+
+.bell {
+    display: flex;
+    background: 
+    url('../assets/Bell.svg') center/60px no-repeat;
+    width: 100px;
+    height: 10vh;
+    justify-content: center;
+    align-items: center;
+    filter: drop-shadow(6px 6px 4px #111430);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.bell:hover {
+    cursor: pointer;
+    box-shadow: none;
+    width: 100px;
+    height: 11vh;
+}
+
+.small-title {
+    display: flex;
+    background: 
+    url('../assets/Quanridor_title.svg') center/650px no-repeat;
+    width: 100vh;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
 }
 
 button {
@@ -46,7 +75,7 @@ button {
 }
 
 button.big-button {
-    font-size: 58px;
+    font-size: 52px;
     width: 375px;
     height: 130px;
     transition: width 0.3s ease, height 0.3s ease;
@@ -60,21 +89,41 @@ button.big-button:hover {
 button.medium-button {
     font-size: 48px;
     width: 300px;
-    height: 100px;
+    height: 13vh;
     transition: width 0.3s ease, height 0.3s ease;
 }
 
 button.medium-button:hover {
-    width: 320px; 
-    height: 110px;
+    width: 300px; 
+    height: 15vh;
 }
 
-.button-container {
+button.small-button {
+    font-size: 32px;
+    width: 200px;
+    height: 10vh;
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+button.small-button:hover {
+    width: 200px; 
+    height: 11vh;
+}
+
+.vertical-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     gap: 50px;
+}
+
+.horizontal-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-direction: row;
+    padding: 20px;
 }
 
 button:hover{
@@ -84,7 +133,7 @@ button:hover{
     box-shadow: none;
 }
 
-.input-container {
+.vertical-small-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -188,3 +237,17 @@ canvas {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
 }
+
+.friend-box, .profile-box {
+    background-color: #010525;
+    border-radius: 38px;
+}
+
+.friend-box{
+    width: 40vh; height: 90vh;
+}
+
+.profile-box {
+    width: 40vh; height: 50vh;
+}
+
