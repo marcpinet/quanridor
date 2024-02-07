@@ -179,12 +179,12 @@ function drawBoard() {
             let color
             if (tour % 2 == 0) {
                 player1.style.display = 'block'
-                color = board_visibility[j][i]>=0 ? '#EE4F3A' : '#FFFFFF' //'rgba(238, 79, 58, 0.5)'
+                color = board_visibility[j][i]>=0 ? '#EE4F3A' : 'rgba(238, 79, 58, 0.5)' //'rgba(238, 79, 58, 0.5)'
                 player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
             }
             else {
                 player2.style.display = "block"
-                color = board_visibility[j][i]<=0 ? '#EE4F3A' : '#FFFFFF'
+                color = board_visibility[j][i]<=0 ? '#EE4F3A' : 'rgba(238, 79, 58, 0.5)'
                 
                 player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
             }
