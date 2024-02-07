@@ -19,12 +19,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: quanridor
       MONGO_INITDB_ROOT_PASSWORD: ps8vella
       # You can also specify the default authentication database if needed
-      # MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_DATABASE: quanridor
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-      - ./docker-config:/docker-entrypoint-initdb.d
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - app-network
 
