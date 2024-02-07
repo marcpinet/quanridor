@@ -14,7 +14,7 @@ db.createUser({
 
 db.users.insertOne({ 
     username: "admin",
-    password: "admin",
+    password: "$2b$10$n9CCIS8IkSm7NQgUrfn3f.gNElHGHN3HwVJUKkphnLF1jHo1viVC2",
     admin: true
 });
 
