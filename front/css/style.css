@@ -213,7 +213,9 @@ canvas {
 
 #smoke {
     position: fixed;
-    background-color: black;
+    background: url('../assets/Background.svg');
+    background-size: cover;
+    background-color: #111430;
     width: 100vw;
     height: 100vh;
     top: 0;
