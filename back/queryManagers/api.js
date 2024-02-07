@@ -1,17 +1,15 @@
 const http = require('http');
 const url = require('url');
+const { connectDB, getDB } = require('./db');
+const jwt = require('jsonwebtoken');
 
-// API Path
 const apiPath = '/api';
 
-// Mock database for storing user data
-let users = {};
-
-function manageRequest(request, response) {
+async function manageRequest(request, response) {
+    await connectDB();
     const parsedUrl = url.parse(request.url, true);
     const path = parsedUrl.pathname;
     
-    // Check if it's the signup endpoint
     if (path === `${apiPath}/signup` && request.method === 'POST') {
         handleSignup(request, response);
     } else {
@@ -23,21 +21,31 @@ function manageRequest(request, response) {
 function handleSignup(request, response) {
     let body = '';
     request.on('data', chunk => {
-        body += chunk.toString(); // convert Buffer to string
+        body += chunk.toString();
     });
-    request.on('end', () => {
+    request.on('end', async () => {
         try {
-            const user = JSON.parse(body);
-            // Basic validation
-            if (!user.mail || !user.username || !user.password) {
-                response.statusCode = 400;
-                response.end("Missing fields in user data");
+            const { username, password } = JSON.parse(body);
+            const db = getDB();
+            const users = db.collection('users');
+            
+            // Check if user already exists
+            const existingUser = await users.findOne({ username });
+            if (existingUser) {
+                response.statusCode = 409;
+                response.end("Username already exists");
                 return;
             }
-            // Store user data (replace with database logic in a real app)
-            users[user.username] = user;
+
+            // Create user
+            await users.insertOne({ username, password });
+
+            // Generate JWT
+            const token = jwt.sign({ username }, 'secret', { expiresIn: '72h' });
+            
             response.statusCode = 200;
-            response.end(`User ${user.username} registered successfully`);
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ token }));
         } catch (e) {
             response.statusCode = 400;
             response.end("Invalid JSON");
@@ -45,4 +53,8 @@ function handleSignup(request, response) {
     });
 }
 
-exports.manage = manageRequest;
+const server = http.createServer(manageRequest);
+
+server.listen(4200, () => {
+    console.log('Server listening on port 4200');
+});
