@@ -20,7 +20,7 @@ Both folders contain a README with more details.
 
 1. Run `npm install`
 
-2. Run `docker compose up` to start the backend. This will also start a MongoDB instance.
+2. Run `docker compose build && docker compose up` to start the backend. This will also start a MongoDB instance.
 
 3. Open `index.html` in your browser.  
 

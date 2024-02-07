@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Log in</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito&display=swap">
-    <link rel="stylesheet" href="css/style.css" type ="text/css">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
-    <a href="index.html"><div class="title"></div></a>
+<body>
     <div class="title" onclick="location.href='index.html'"></div>
     <div class="vertical-small-container">
-        <form action="http://localhost:4200/api/login/" method="POST">
+        <form id="loginForm" action="http://localhost:4200/api/login/" method="POST">
             <div class="bold-text">Username</div>
             <input type="text" name="username" required placeholder="Enter username">
             <div class="bold-text">Password</div>
@@ -19,5 +19,7 @@
             <button class="medium-button" type="submit">Log in</button>
         </form>
     </div>
+
+    <script src="js/login.js"></script>
 </body>
 </html>
