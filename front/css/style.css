@@ -127,6 +127,7 @@ button.small-button:hover {
     align-items: flex-start;
     flex-direction: row;
     padding: 20px;
+    gap: 20px;
 }
 
 button:hover{
