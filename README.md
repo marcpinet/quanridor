@@ -11,16 +11,18 @@ Both folders contain a README with more details.
 
 ## Requirements to run the project
 
-* [Node.js](https://nodejs.org/) should be installed.
-* The repo should have been cloned.
+* Node.js
+* Docker
 
 ---
 
 ## First launch
 
-Not much in there, just launch `npm install` to install the dependencies for the server.
+1. Run `npm install`
 
-Note that this command should be run again every time you install / delete a package.
+2. Run `docker compose up` to start the backend. This will also start a MongoDB instance.
+
+3. Open `index.html` in your browser.  
 
 ---
 
