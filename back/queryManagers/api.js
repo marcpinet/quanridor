@@ -2,6 +2,7 @@ const http = require('http');
 const url = require('url');
 const { connectDB, getDB } = require('./db');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const apiPath = '/api';
 
@@ -43,20 +44,21 @@ async function manageRequest(request, response) {
 
 // ------------------------------ SIGN UP ------------------------------
 
-function handleSignup(request, response) {
+async function handleSignup(request, response) {
     addCors(response, ['POST']);
     let body = '';
     request.on('data', chunk => {
         body += chunk.toString();
     });
     request.on('end', async () => {
-        console.log(body);
         try {
-            const { username, password } = JSON.parse(body);
+            let { username, password } = JSON.parse(body);
+            username = username.toLowerCase();
+
             const db = getDB();
             const users = db.collection('users');
             
-            // Check if user already exists
+            // Vérifier si l'utilisateur existe déjà
             const existingUser = await users.findOne({ username });
             if (existingUser) {
                 response.statusCode = 409;
@@ -64,8 +66,11 @@ function handleSignup(request, response) {
                 return;
             }
 
-            // Create user
-            await users.insertOne({ username, password });
+            // Hacher le mot de passe
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            // Créer l'utilisateur avec le mot de passe haché
+            await users.insertOne({ username, password: hashedPassword });
 
             // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
             let secret = await getJwtSecret();
@@ -85,22 +90,21 @@ function handleSignup(request, response) {
 
 // ------------------------------ SIGN IN ------------------------------
 
-function handleLogin(request, response) {
+async function handleLogin(request, response) {
     addCors(response, ['POST']);
     let body = '';
     request.on('data', chunk => {
         body += chunk.toString();
     });
     request.on('end', async () => {
-        console.log(body);
         try {
             let { username, password } = JSON.parse(body);
+            username = username.toLowerCase();
+
             const db = getDB();
             const users = db.collection('users');
-
-            username = username.toLowerCase();
             
-            // Check if user exists
+            // Vérifier si l'utilisateur existe
             const user = await users.findOne({ username });
             if (!user) {
                 response.statusCode = 401;
@@ -108,8 +112,9 @@ function handleLogin(request, response) {
                 return;
             }
 
-            // Check if password is correct
-            if (user.password !== password) {
+            // Vérifier si le mot de passe est correct
+            const match = await bcrypt.compare(password, user.password);
+            if (!match) {
                 response.statusCode = 401;
                 response.end("Invalid password");
                 return;
