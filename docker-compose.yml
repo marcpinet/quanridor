@@ -6,7 +6,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./back:/usr/src/app
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - db
 
