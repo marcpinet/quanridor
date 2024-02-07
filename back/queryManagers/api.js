@@ -6,11 +6,13 @@ const jwt = require('jsonwebtoken');
 const apiPath = '/api';
 
 async function manageRequest(request, response) {
+    console.log(`Request URL: ${request.url}`);
+
     await connectDB();
     const parsedUrl = url.parse(request.url, true);
     const path = parsedUrl.pathname;
-    
-    if (path === `${apiPath}/signup` && request.method === 'POST') {
+    const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    if (normalizedPath === `${apiPath}/signup` && request.method === 'POST') {
         handleSignup(request, response);
     } else {
         response.statusCode = 404;
@@ -24,6 +26,7 @@ function handleSignup(request, response) {
         body += chunk.toString();
     });
     request.on('end', async () => {
+        console.log(body);
         try {
             const { username, password } = JSON.parse(body);
             const db = getDB();

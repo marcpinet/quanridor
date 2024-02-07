@@ -1,8 +1,10 @@
-// db.js
 const { MongoClient } = require('mongodb');
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb://quanridor:ps8vella@db:27017/quanridor';
 const dbName = 'quanridor';
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(url, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+});
 
 let db = null;
 

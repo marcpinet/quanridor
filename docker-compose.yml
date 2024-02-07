@@ -4,19 +4,29 @@ services:
   app:
     build: .
     ports:
-      - "8000:8000"
+      - "4200:4200"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
       - db
+    networks:
+      - app-network
 
   db:
     image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: quanridor
+      MONGO_INITDB_ROOT_PASSWORD: ps8vella
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:

@@ -9,7 +9,7 @@
 <body>
     <div class="title" onclick="location.href='index.html'"></div>
     <div class="vertical-small-container">
-        <form action="http://localhost:4200/api/signup/" method="POST">
+        <form id="signupForm" action="http://localhost:4200/api/signup/" method="POST">
             <div class="bold-text">Username</div>
             <input type="text" name="username" required placeholder="Enter username">
             <div class="bold-text">Password</div>
@@ -18,8 +18,10 @@
             <input type="password" name="confirmPassword" required placeholder="Confirm password">
             <br>
             <br>
-            <button class="medium-button" type="submit">Register</button>
+            <button class="medium-button" type="submit">Sign up</button>
         </form>
     </div>
+    
+    <script src="js/signup.js"></script>
 </body>
 </html>
