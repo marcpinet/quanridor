@@ -8,19 +8,36 @@
 <body id="game">
     <div class="vertical-small-container">
     <div id="container">
-        <div id="player1infos"> 
+        <div id="player1infos">
+            <img style="width: 100%; height: auto;" src="assets\profil_logo-removebg-preview.png">
+            <h2 class="title">Player1</h2> 
+            <h3 class="title">ELO : </h3>
+            <h3 class="title">Time left : 30s</h3>
+            <h3 class="title">Walls : 10</h3>
+            <button style="border-radius: 10px; width: 30%; height: 50px;"> Emote </button>
         </div>
-        <canvas></canvas>
-        <div id="player2infos">    
+        <canvas style="margin: 0px 10px;"></canvas>
+        <div id="player2infos">
+            <img style="width: 100%; height: auto;" src="assets\profil_logo-removebg-preview.png"  >
+            <h2 class="title">Player2</h2> 
+            <h3 class="title">ELO : </h3>
+            <h3 class="title">Time left : 30s</h3>  
+            <h3 class="title">Walls : 10</h3>  
+            <button style="border-radius: 10px; width: 30%; height: 50px; margin-top: 25px;">Emote</button>
         </div>
+
     </div>
     <div class="anticheat"><button id="ready" class="big-button">Ready?</button></div>
     <h1 id="win"></h1>
+    <button id="ready" class="anticheat">Ready ?</button>
     <div id="smoke" class="anticheat"></div>
-    <div id="player1" class="player"></div>
-    <div id="player2" class="player"></div>
-    <button class="small-button" id="confirm">Put wall</button>
-</div>
+
+    <div id="buttons_container">
+        <button class="small-button" id="confirm">Put Wall</button>
+        <button id="leave"> Leave</button>
+    </div>
+    
+    <script src="js/index.js"></script>
     <script src="js/index.js"></script>
 </body>
 </html>
