@@ -180,8 +180,8 @@ function drawBoard() {
             let color
             if (tour % 2 == 0) {
                 //player1.style.display = 'block'
-                drawPlayer(42 +p1_coord[0]*77, 42 + p1_coord[1]*77, 'rgba(238, 79, 58, 0.5)')
-                color = board_visibility[j][i]>=0 ? '#EE4F3A' : 'rgba(238, 79, 58, 0.5)' //'rgba(238, 79, 58, 0.5)'
+                drawPlayer(42 +p1_coord[0]*77, 42 + p1_coord[1]*77, '#FFFFFF')
+                color = board_visibility[j][i]>=0 ? '#EE4F3A' : '#FFFFFF' //'rgba(238, 79, 58, 0.5)'
                 //player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
                 if(board_visibility[p2_coord[1]][p2_coord[0]]<0){
                     clearPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77)
@@ -193,7 +193,7 @@ function drawBoard() {
             else {
                 //player2.style.display = "block"
                 drawPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77, '#000000')
-                color = board_visibility[j][i]<=0 ? '#EE4F3A' : 'rgba(238, 79, 58, 0.5)'
+                color = board_visibility[j][i]<=0 ? '#EE4F3A' : '#FFFFFF'
                 
                 //player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
                 if(board_visibility[p1_coord[1]][p1_coord[0]]<0){
