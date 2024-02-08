@@ -36,6 +36,12 @@ async function manageRequest(request, response) {
     else if (normalizedPath === `${apiPath}/login` && request.method === 'POST') {
         handleLogin(request, response);
     }
+    else if (normalizedPath === `${apiPath}/game` && request.method === 'GET') {
+        handleGameGet(request, response);
+    }
+    else if (normalizedPath === `${apiPath}/game` && request.method === 'POST') {
+        handleGamePost(request, response);
+    }
     else {
         response.statusCode = 404;
         response.end(`Endpoint ${path} not found!`);
@@ -134,6 +140,18 @@ async function handleLogin(request, response) {
             response.end("Invalid JSON");
         }
     });
+}
+
+// ------------------------------ GAME HANDLING ------------------------------
+
+async function handleGameGet(request, response) {
+    addCors(response, ['GET']);
+    // ...
+}
+
+async function handleGamePost(request, response) {
+    addCors(response, ['POST']);
+    // ...
 }
 
 // ------------------------------ RANDOM QUERIES TO MONGO ------------------------------

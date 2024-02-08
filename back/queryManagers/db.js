@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const url = 'mongodb://quanridor:ps8vella@db:27017/quanridor';
+const url = 'mongodb://quanridor:ps8vella@db:27017/quanridor';  // "db" stands for the container name of mongodb defined in docker-compose.yml
 const dbName = 'quanridor';
 const client = new MongoClient(url, { 
     useNewUrlParser: true, 
