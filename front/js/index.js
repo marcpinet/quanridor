@@ -258,16 +258,13 @@ function getMouseCoordOnCanvas(event) {
     let y = event.clientY - canvas.getBoundingClientRect().top;
     let new_coord = getCaseFromCoord(x,y);
     let jump_coord = canJump((tour%2==0)?p1_coord:p2_coord);
-    console.log("click : "+ new_coord[0] + ", " + new_coord[1])
-    console.log("p1 : " + p1_coord[0] + ", " + p1_coord[1])
-    console.log(new_coord[0] === p1_coord[0] && new_coord[1] === p1_coord[1])
-    if(new_coord[0] === p1_coord[0] && new_coord[1] === p1_coord[1]){
+    if(!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]){
         displayPossibleMoves(1)
     }
-    if(new_coord[0] === p2_coord[0] && new_coord[1] === p2_coord[1]){
+    else if(!select1 && new_coord[0] === p2_coord[0] && new_coord[1] === p2_coord[1]){
         displayPossibleMoves(2)
     }
-    if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
+    else if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
         updateFogOfWarReverse(1);
         movePlayer(1, new_coord);
         updateFogOfWar(1);
@@ -276,6 +273,7 @@ function getMouseCoordOnCanvas(event) {
         updateFogOfWarReverse(2);
         movePlayer(2, new_coord);
         updateFogOfWar(2);
+        drawBoard();
     }
     else {
         select1 = false;
@@ -301,7 +299,7 @@ function displayPossibleMoves(player) {
     if (player == 1 && tour%2==0) {
         clearTempWall(current_direction);
         drawWalls();
-        select1 = true; 
+        select1 = true;
         for (let coord of getPlayerNeighbour(p1_coord)) {
             if (isLegal(p1_coord, coord)) {
                 drawRoundedRect((coord[0]+1)*10+coord[0]*67,(coord[1]+1)*10+coord[1]*67, 67, 67, 20, color)
@@ -329,8 +327,8 @@ function displayPossibleMoves(player) {
 }
 
 function getReady() {
-    player1.style.display = 'none'
-    player2.style.display = 'none'
+    //player1.style.display = 'none'
+    //player2.style.display = 'none'
     for (let element of anticheat) {
         element.style.display = 'block'
     }
@@ -496,13 +494,13 @@ function clearPlayer(x, y) {
 
 canvas.addEventListener('click', getMouseCoordOnCanvas);
 
-player1.addEventListener('click', function() {
+/*player1.addEventListener('click', function() {
     displayPossibleMoves(1)
 });
 
 player2.addEventListener('click', function() {
     displayPossibleMoves(2)
-});
+});*/
 
 ready.addEventListener('click', isReady)
 
