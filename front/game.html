@@ -6,37 +6,54 @@
     <link rel="stylesheet" href="css/style.css" type ="text/css">
 </head>
 <body id="game">
-    <h1 style="text-align: center; color: aliceblue; font-size: 50px;">Quanridor</h1>
-    <div id="container">
-        <div id="player1infos">
-            <img style="width: 100%; height: auto;" src="assets\profil_logo-removebg-preview.png">
-            <h2 class="title">Player1</h2> 
-            <h3 class="title">ELO : </h3>
-            <h3 class="title">Time left : 30s</h3>
-            <h3 class="title">Walls : 10</h3>
-            <button style="border-radius: 10px; width: 30%; height: 50px;"> Emote </button>
+    <div class="horizontal-container">
+        <div class="vertical-small-container">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="profile-box">
+                <div class="vertical-small-container">
+                    <br>
+                    <svg id="user"></svg>
+                    <h1 class="text">Player 1</h1>
+                    <div id="separator"></div>
+                    <h1 class="text">ELO : 100</h1>
+                </div>
+            </div>
         </div>
-        <canvas style="margin: 0px 10px;"></canvas>
-        <div id="player2infos">
-            <img style="width: 100%; height: auto;" src="assets\profil_logo-removebg-preview.png"  >
-            <h2 class="title">Player2</h2> 
-            <h3 class="title">ELO : </h3>
-            <h3 class="title">Time left : 30s</h3>  
-            <h3 class="title">Walls : 10</h3>  
-            <button style="border-radius: 10px; width: 30%; height: 50px; margin-top: 25px;">Emote</button>
+        <div class="vertical-small-container">
+            <canvas></canvas>
+            <div class="horizontal-small-container">
+                <button class="small-button" id="confirm">Put Wall</button>
+                <a href="home.html"><button class="small-button" id="leave"> Leave</button></a>
+            </div>
+        </div>
+        <div class="vertical-small-container">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <div class="profile-box">
+                <div class="vertical-small-container">
+                    <br>
+                    <svg id="user"></svg>
+                    <h1 class="text">Player 2</h1>
+                    <div id="separator"></div>
+                    <h1 class="text">ELO : 100</h1>
+                </div>
+            </div>
         </div>
 
     </div>
+    <div class="anticheat"><button id="ready" class="big-button">Ready?</button></div>
     <h1 id="win"></h1>
-    <button id="ready" class="anticheat">Ready ?</button>
-    <div id="smoke" class="anticheat"></div>
 
-    <div id="buttons_container">
-        <button id="confirm">Confirm</button>
-        <button id="leave"> Leave</button>
-    </div>
-    
-    <script src="js/index.js"></script>
+    <div id="smoke" class="anticheat"></div>
     
     <script src="js/index.js"></script>
 </body>
