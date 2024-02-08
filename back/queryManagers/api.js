@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 
 const apiPath = '/api';
 
+const saltRounds = 10;
+
 // ------------------------------ CORE HANDLING ------------------------------
 
 function addCors(response, methods = ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE']) {
