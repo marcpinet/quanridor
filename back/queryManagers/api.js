@@ -32,21 +32,41 @@ async function manageRequest(request, response) {
     const parsedUrl = url.parse(request.url, true);
     const path = parsedUrl.pathname;
     const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
-    if (normalizedPath === `${apiPath}/signup` && request.method === 'POST') {
-        handleSignup(request, response);
-    }
-    else if (normalizedPath === `${apiPath}/login` && request.method === 'POST') {
-        handleLogin(request, response);
-    }
-    else if (normalizedPath === `${apiPath}/game` && request.method === 'GET') {
-        handleGameGet(request, response);
-    }
-    else if (normalizedPath === `${apiPath}/game` && request.method === 'POST') {
-        handleGamePost(request, response);
+
+    const token = getTokenFromHeaders(request);
+
+    if(!token) {
+        if (normalizedPath === `${apiPath}/signup` && request.method === 'POST') {
+            handleSignup(request, response);
+        }
+        else if (normalizedPath === `${apiPath}/login` && request.method === 'POST') {
+            handleLogin(request, response);
+        }
+        else {
+            response.statusCode = 404;
+            response.end(`Endpoint ${path} not found`);
+        }
     }
     else {
-        response.statusCode = 404;
-        response.end(`Endpoint ${path} not found!`);
+
+        const decodedToken = await verifyToken(token);
+        if (!decodedToken) {
+            response.statusCode = 403;
+            response.end("Invalid token (maybe expired?)");
+            return;
+        }
+
+        if (normalizedPath === `${apiPath}/game` && request.method === 'GET') {
+            handleGameGet(request, response, decodedToken);
+        }
+        else if (normalizedPath === `${apiPath}/game` && request.method === 'POST') {
+            handleGamePost(request, response, decodedToken);
+        }
+        else {
+            response.statusCode = 404;
+            response.end(`Endpoint ${path} not found`);
+        }
+
     }
 }
 
@@ -146,14 +166,108 @@ async function handleLogin(request, response) {
 
 // ------------------------------ GAME HANDLING ------------------------------
 
-async function handleGameGet(request, response) {
+async function handleGameGet(request, response, decodedToken) {
     addCors(response, ['GET']);
-    // ...
+    
+    try {
+        const parsedUrl = url.parse(request.url, true); // Parse the URL to get query parameters
+        const multiple = parsedUrl.query.multiple === 'true'; // Check if 'multiple' query parameter is set to 'true'
+
+        const username = decodedToken.username;
+        const db = getDB();
+        const users = db.collection('users');
+        const games = db.collection('games');
+        
+        const user = await users.findOne({ username });
+        if (!user) {
+            response.statusCode = 401;
+            response.end("User not authenticated");
+            return;
+        }
+
+        let queryResult;
+        if (multiple) {
+            // Retrieve every game the user is an author of, sorted by date
+            queryResult = await games.find({ author: user._id }).sort({ created: -1 }).toArray();
+        } else {
+            // Retrieve the latest game the user is an author of
+            queryResult = await games.findOne({ author: user._id }, { sort: { created: -1 } });
+        }
+
+        if (!queryResult || queryResult.length === 0) {
+            response.statusCode = 404;
+            response.end("No games found for user");
+            return;
+        }
+
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify(queryResult));
+    } catch (e) {
+        console.error("Error in handleGameGet:", e);
+        response.statusCode = 400;
+        response.end("Failed to retrieve game state");
+    }
 }
 
-async function handleGamePost(request, response) {
+async function handleGamePost(request, response, decodedToken) {
     addCors(response, ['POST']);
-    // ...
+    
+    let body = '';
+    request.on('data', chunk => {
+        body += chunk.toString();
+    });
+    request.on('end', async () => {
+        try {
+            const gameData = JSON.parse(body);
+            const username = decodedToken.username;
+            const db = getDB();
+            const users = db.collection('users');
+            const games = db.collection('games');
+            
+            const user = await users.findOne({ username });
+            if (!user) {
+                response.statusCode = 401;
+                response.end("User not found");
+                return;
+            }
+            
+            const existingGame = await games.findOne({ author: user._id });
+            
+            if (existingGame) {
+                await games.updateOne({ _id: existingGame._id }, { $set: gameData });
+            } else {
+                gameData.author = user._id;
+                await games.insertOne(gameData);
+            }
+            
+            response.statusCode = 200;
+            response.end(JSON.stringify({ message: "Game saved successfully" }));
+        } catch (e) {
+            response.statusCode = 400;
+            response.end("Failed to save game state");
+        }
+    });
+}
+
+// ------------------------------ SECURITY UTILITIES ------------------------------
+
+function getTokenFromHeaders(request) {
+    const authorization = request.headers.authorization;
+    if (!authorization || !authorization?.startsWith('Bearer ')) {
+        return null;
+    }
+    return authorization.split(' ')[1];
+}
+
+async function verifyToken(token) {
+    try {
+        const decoded = jwt.verify(token, await getJwtSecret());
+        return decoded;
+    } catch (error) {
+        console.error('JWT verification error:', error);
+        return null;
+    }
 }
 
 // ------------------------------ RANDOM QUERIES TO MONGO ------------------------------
