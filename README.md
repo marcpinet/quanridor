@@ -1,32 +1,77 @@
-# PS8
+# Quanridor
 
-The code of this repo is split in 2 folders:
-* api/ manages the server. It contains a server which differentiate REST requests from HTTP file requests, and so
-return either files or REST responses accordingly.
-* front/ contains static files that should be returned by the HTTP server mentioned earlier.
+![quanridor](readme-assets/quanridor-title.png)
 
-Both folders contain a README with more details.
+## 📝 Description
 
----
+Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still *very* limited).
 
-## Requirements to run the project
+This version of the game includes a [fog of war](https://en.wikipedia.org/wiki/Fog_of_war) system, which means that you can only see the tiles that are in your line of sight. This adds a whole new layer of strategy to the game, as you can't see the other player's moves until you're close enough to them.
 
-* Node.js
-* Docker
+The whole solution will be a fully working version of the game where you can play online against your friends or against an AI with multiple levels of difficulty.
 
----
+There's also a chat system, emote system, leaderboard, statistics, and much more.
 
-## First launch
+## 📦 Features (W.I.P)
 
-1. Run `npm install`
+- Minimalistic and clean UI/UX design 🖥️
+- Login / Register system with secure backend *except CORS (for now) which accepts every incoming requests since the frontend is not hosted anywhere* 📝
+- Token authentication system (JWT) 🍪
+- In-progress game listing 📋
+- Play locally with someone else 🎮
+- Play against an AI (currently only one level of difficulty: random) 🤖
+- Possibility to logout if you intend to have multiple accounts and smurf 🤫
 
-2. Run `docker compose build && docker compose up` to start the backend. This will also start a MongoDB instance.
+## ⚙️ Local installation
 
-3. Open `index.html` in your browser.  
+### Requirements
 
----
+- Node.js 18+
+- Docker
 
-## All runs
+### Setup
 
-Run `npm start`. That's it, unless you need other scripts to run before or while the server is launched,
-but then you (probably?) know what you are doing.
+1. **Clone** the repository to your local machine.
+
+    ```bash
+    git clone https://github.com/PolytechNS/ps8-24-quanridor.git
+    ```
+
+2. **Build and run** the backend using Docker.
+
+    ```bash
+    docker compose up --build
+    ```
+
+3. Run the frontend by opening the [index.html](front/index.html) file in your browser.
+
+4. **Play**!
+
+> [!NOTE]  
+> The only libraries required for the backend to work are `mongodb`, `nodemon`, `socket.io`, `jsonwebtoken` and `bcrypt`.
+
+## 💡 How to use
+
+Create an account and play!
+
+There is a mock account already created for you to test the game:
+
+- **Username**: `admin`
+- **Password**: `admin`
+
+... 👀
+
+### Showcase
+
+Coming soon!
+
+## 🐛 Known issues
+
+- Nothing yet!
+
+## ✍️ Authors
+
+- Marc Pinet - *Initial work* - [marcpinet](https://github.com/marcpinet)
+- Arthur Rodriguez - *Initial work* - [rodriguezarthur]([htt](https://github.com/rodriguezarthur)
+- Marcus Aas Jensen - *Initial work* - [marcusaasjensen](https://github.com/marcusaasjensen)
+- Loris Drid - *Initial work* - [lorisdridi](https://github.com/LorisDrid)
