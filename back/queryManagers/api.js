@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
 const { connectDB, getDB } = require('./db');
+const { ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -11,9 +12,9 @@ const saltRounds = 10;
 // ------------------------------ CORE HANDLING ------------------------------
 
 function addCors(response, methods = ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE']) {
-    response.setHeader('Access-Control-Allow-Origin', '*'); // Adjust this as necessary
+    response.setHeader('Access-Control-Allow-Origin', '*'); // TODO: REPLACE WITH FRONTEND URL WHEN DEPLOYED
     response.setHeader('Access-Control-Allow-Methods', methods.join(', '));
-    response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    response.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization');
     response.setHeader('Access-Control-Allow-Credentials', 'true');
 }
 
@@ -31,7 +32,10 @@ async function manageRequest(request, response) {
     await connectDB();
     const parsedUrl = url.parse(request.url, true);
     const path = parsedUrl.pathname;
-    const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    let tmp = path.endsWith('/') ? path.slice(0, -1) : path;
+    const normalizedPath = tmp.split('?')[0];
+
+    console.log(`Normalized path: ${normalizedPath}`);
 
     const token = getTokenFromHeaders(request);
 
@@ -44,7 +48,7 @@ async function manageRequest(request, response) {
         }
         else {
             response.statusCode = 404;
-            response.end(`Endpoint ${path} not found`);
+            response.end(`You need to be authenticated to access this endpoint`);
         }
     }
     else {
@@ -171,7 +175,15 @@ async function handleGameGet(request, response, decodedToken) {
     
     try {
         const parsedUrl = url.parse(request.url, true); // Parse the URL to get query parameters
+
+        const id = parsedUrl.query.id; // Get the 'id' query parameter
         const multiple = parsedUrl.query.multiple === 'true'; // Check if 'multiple' query parameter is set to 'true'
+        const withStatus = parseInt(parsedUrl.query.withStatus);
+        if ((withStatus && isNaN(withStatus)) || (withStatus && withStatus < 0 && withStatus > 2)) {
+            response.statusCode = 400;
+            response.end("Invalid 'withStatus' query parameter");
+            return;
+        }
 
         const username = decodedToken.username;
         const db = getDB();
@@ -186,15 +198,29 @@ async function handleGameGet(request, response, decodedToken) {
         }
 
         let queryResult;
-        if (multiple) {
+        if(id) {
+            // Retrieve the game with the given id and where the user.username is inside the players array
+            queryResult = await games.findOne({ _id: new ObjectId(id), players: user.username });
+            console.log("Game found:", queryResult);
+        }
+        else if (multiple) {
             // Retrieve every game the user is an author of, sorted by date
-            queryResult = await games.find({ author: user._id }).sort({ created: -1 }).toArray();
+            if (withStatus) {
+                queryResult = await games.find({ author: user.username, status: withStatus }).sort({ created: -1 }).toArray();
+            } else {
+                queryResult = await games.find({ author: user.username }).sort({ created: -1 }).toArray();
+            }
         } else {
             // Retrieve the latest game the user is an author of
-            queryResult = await games.findOne({ author: user._id }, { sort: { created: -1 } });
+            if (withStatus) {
+                queryResult = await games.findOne({ author: user.username, status: withStatus }, { sort: { created: -1 } });
+            } else {
+                queryResult = await games.findOne({ author: user.username }, { sort: { created: -1 } });
+            }
         }
 
         if (!queryResult || queryResult.length === 0) {
+            console.log("No games found for user " + username)
             response.statusCode = 404;
             response.end("No games found for user");
             return;
@@ -232,12 +258,12 @@ async function handleGamePost(request, response, decodedToken) {
                 return;
             }
             
-            const existingGame = await games.findOne({ author: user._id });
+            const existingGame = await games.findOne({ author: user.username });
             
             if (existingGame) {
                 await games.updateOne({ _id: existingGame._id }, { $set: gameData });
             } else {
-                gameData.author = user._id;
+                gameData.author = user.username;
                 await games.insertOne(gameData);
             }
             

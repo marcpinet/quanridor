@@ -284,3 +284,64 @@ canvas {
     background-color: #4650A8;
 }
 
+.headerprogress {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+#back-arrow {
+    background:
+    url('../assets/back-arrow.svg') center/60px no-repeat;
+    width: 100px;
+    height: 10vh;
+    cursor: pointer;
+    margin-right: 50px;
+}
+
+.game-list {
+    font-size: 32px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-item {
+    background-color: #010525;
+    border: 6px solid #4650a8;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.game-item:hover {
+    border: 6px solid #f3b9ff;
+    cursor: pointer;
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+.turn-indicator {
+    font-style: italic;
+    font-size: 32px;
+}
+
+.gameinprogress {
+    font-size: 100px;
+    font-weight: bold;
+    margin-right: 50px;
+}
+
+.no-game {
+    font-size: 32px;
+    font-style: italic;
+    font-weight: bold;
+}

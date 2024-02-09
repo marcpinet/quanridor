@@ -54,6 +54,47 @@ let h_walls = []
 let current_direction = 'v'
 let temp_wall = []
 
+// Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
+document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameId = urlParams.get('id');
+
+    if (gameId) {
+        try {
+            const response = await fetch(`http://localhost:4200/api/game?id=${gameId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to load game');
+            }
+
+            const game = await response.json();
+            initializeGame(game);
+
+        } catch (error) {
+            alert('Error loading game:', error);
+            window.location.href = 'home.html';
+        }
+    }
+});
+
+function initializeGame(gameState) {
+    // TODO : when multiplayer is implemented, indice will have to be better handled (see https://i.imgur.com/uZXRibi.png)
+    p1_coord = gameState.playerspositions[0];
+    p2_coord = gameState.playerspositions[1];
+    p1_walls = gameState.p1walls;
+    p2_walls = gameState.p2walls;
+    v_walls = gameState.vwalls;
+    h_walls = gameState.hwalls;
+    tour = gameState.turn;
+    drawBoard();
+}
+
 let board_visibility = [[-1, -1, -1, -2, -2, -2, -1, -1, -1],
                         [-1, -1, -1, -1, -2, -1, -1, -1, -1],
                         [-1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -487,11 +528,6 @@ function clearPlayer(x, y) {
     drawPlayer(x, y, rgbaColor);
 }
 
-
-
-
-
-
 canvas.addEventListener('click', getMouseCoordOnCanvas);
 
 /*player1.addEventListener('click', function() {
@@ -505,3 +541,17 @@ player2.addEventListener('click', function() {
 ready.addEventListener('click', isReady)
 
 confirm.addEventListener('click', confirmWall)
+
+
+// ALLOW POSTING TO BACKEND
+export function getGameState() {
+    return {
+        playerspositions: [p1_coord, p2_coord],
+        status: playing ? 1 : 2,
+        p1walls: p1_walls,
+        p2walls: p2_walls,
+        vwalls: v_walls,
+        hwalls: h_walls,
+        turn: tour,
+    };
+}
