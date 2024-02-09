@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             console.log('Success:', data);
             alert('Login successful!');
-            // Go to Home page (home.html)
             window.location.href = 'home.html';
 
             localStorage.setItem('token', data.token);

@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             console.log('Success:', data);
             alert('Registration successful!');
-            // Go to Home page (home.html)
             window.location.href = 'home.html';
 
             localStorage.setItem('token', data.token);
