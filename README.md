@@ -37,18 +37,25 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
     git clone https://github.com/PolytechNS/ps8-24-quanridor.git
     ```
 
-2. **Build and run** the backend using Docker.
+2. *(Optional)* **Install** the dependencies for development puroposes.
+
+    ```bash
+    npm install
+    ```
+
+3. **Build and run** the backend using Docker.
 
     ```bash
     docker compose up --build
     ```
 
-3. Run the frontend by opening the [index.html](front/index.html) file in your browser.
+4. Run the frontend by opening the [index.html](front/index.html) file in your browser.
 
-4. **Play**!
+5. **Play**!
 
 > [!NOTE]  
 > The only libraries required for the backend to work are `mongodb`, `nodemon`, `socket.io`, `jsonwebtoken` and `bcrypt`.
+> There's also `husky` to enforce the use of `prettier` on every commit (and also for DevOps purposes)
 
 ## 💡 How to use
 

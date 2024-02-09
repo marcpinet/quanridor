@@ -23,6 +23,7 @@
     "socket.io": "^4.7.4"
   },
   "devDependencies": {
+    "husky": "^9.0.10",
     "mongodb": "^6.3.0",
     "nodemon": "^3.0.3"
   }
