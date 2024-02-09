@@ -79,6 +79,6 @@ Coming soon!
 ## ✍️ Authors
 
 - Marc Pinet - *Initial work* - [marcpinet](https://github.com/marcpinet)
-- Arthur Rodriguez - *Initial work* - [rodriguezarthur]([htt](https://github.com/rodriguezarthur)
+- Arthur Rodriguez - *Initial work* - [rodriguezarthur](https://github.com/rodriguezarthur)
 - Marcus Aas Jensen - *Initial work* - [marcusaasjensen](https://github.com/marcusaasjensen)
-- Loris Drid - *Initial work* - [lorisdridi](https://github.com/LorisDrid)
+- Loris Drid - *Initial work* - [lorisdrid](https://github.com/LorisDrid)
