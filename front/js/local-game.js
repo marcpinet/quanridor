@@ -302,7 +302,7 @@ function getMouseCoordOnCanvas(event) {
     if(!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]){
         displayPossibleMoves(1)
     }
-    else if(!select1 && new_coord[0] === p2_coord[0] && new_coord[1] === p2_coord[1]){
+    else if(!select2 && new_coord[0] === p2_coord[0] && new_coord[1] === p2_coord[1]){
         displayPossibleMoves(2)
     }
     else if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
@@ -368,8 +368,6 @@ function displayPossibleMoves(player) {
 }
 
 function getReady() {
-    //player1.style.display = 'none'
-    //player2.style.display = 'none'
     for (let element of anticheat) {
         element.style.display = 'block'
     }
@@ -529,14 +527,6 @@ function clearPlayer(x, y) {
 }
 
 canvas.addEventListener('click', getMouseCoordOnCanvas);
-
-/*player1.addEventListener('click', function() {
-    displayPossibleMoves(1)
-});
-
-player2.addEventListener('click', function() {
-    displayPossibleMoves(2)
-});*/
 
 ready.addEventListener('click', isReady)
 
