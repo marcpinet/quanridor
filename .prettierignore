@@ -1,0 +1,6 @@
+**/.git
+**/nodes_modules
+**/.idea
+**/.vscode
+**/socket.io.js
+.github/*
