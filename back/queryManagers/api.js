@@ -5,6 +5,8 @@ const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+const { initializeGame } = require("./game-initializer");
+
 const apiPath = "/api";
 
 const saltRounds = 10;
@@ -72,6 +74,11 @@ async function manageRequest(request, response) {
       request.method === "POST"
     ) {
       handleGamePost(request, response, decodedToken);
+    } else if (
+      normalizedPath === `${apiPath}/game` &&
+      request.method === "PATCH"
+    ) {
+      handleGamePatch(request, response, decodedToken);
     } else {
       response.statusCode = 404;
       response.end(`Endpoint ${path} not found`);
@@ -91,6 +98,13 @@ async function handleSignup(request, response) {
     try {
       let { username, password } = JSON.parse(body);
       username = username.toLowerCase();
+
+      // If username is the form of "ai" + any number after, return an error
+      if (username.match(/^ai\d+$/)) {
+        response.statusCode = 400;
+        response.end("Username cannot be in the form of 'AI' + number");
+        return;
+      }
 
       const db = getDB();
       const users = db.collection("users");
@@ -208,6 +222,7 @@ async function handleGameGet(request, response, decodedToken) {
     let queryResult;
     if (id) {
       // Retrieve the game with the given id and where the user.username is inside the players array
+      console.log("Retrieving game with id:", id);
       queryResult = await games.findOne({
         _id: new ObjectId(id),
         players: user.username,
@@ -218,12 +233,12 @@ async function handleGameGet(request, response, decodedToken) {
       if (withStatus) {
         queryResult = await games
           .find({ author: user.username, status: withStatus })
-          .sort({ created: -1 })
+          .sort({ date: -1 })
           .toArray();
       } else {
         queryResult = await games
           .find({ author: user.username })
-          .sort({ created: -1 })
+          .sort({ date: -1 })
           .toArray();
       }
     } else {
@@ -231,12 +246,12 @@ async function handleGameGet(request, response, decodedToken) {
       if (withStatus) {
         queryResult = await games.findOne(
           { author: user.username, status: withStatus },
-          { sort: { created: -1 } },
+          { sort: { date: -1 } },
         );
       } else {
         queryResult = await games.findOne(
           { author: user.username },
-          { sort: { created: -1 } },
+          { sort: { date: -1 } },
         );
       }
     }
@@ -265,6 +280,68 @@ async function handleGamePost(request, response, decodedToken) {
   request.on("data", (chunk) => {
     body += chunk.toString();
   });
+
+  request.on("end", async () => {
+    try {
+      const gameData = JSON.parse(body);
+
+      console.log("Initializing game with data:", gameData);
+
+      const username = decodedToken.username;
+      const db = getDB();
+      const users = db.collection("users");
+      const games = db.collection("games");
+
+      const user = await users.findOne({ username });
+      if (!user) {
+        console.log("User not found");
+        response.statusCode = 401;
+        response.end("User not found");
+        return;
+      }
+
+      const game = initializeGame();
+      if (!isNaN(gameData.difficulty)) {
+        console.log("AI game");
+        game.difficulty = gameData.difficulty;
+        game.author = user.username;
+        game.players = [user.username, `AI${gameData.difficulty}`];
+      } else {
+        console.log("Multiplayer game");
+        game.author = user.username;
+        game.players = [user.username, gameData.otherPlayer]; // TODO: Check if the other player exists when multiplayer is implemented
+      }
+
+      // TODO: Handle the case where the player can choose its color when against AI, and if multi then shuffle the colors
+
+      const result = await games.insertOne(game);
+
+      if (!result.insertedId) {
+        console.error("Failed to initialize game");
+        response.statusCode = 400;
+        response.end("Failed to initialize game");
+        return;
+      }
+
+      response.statusCode = 200;
+      console.log("Game initialized:", result.insertedId);
+      response.end(JSON.stringify({ id: result.insertedId }));
+    } catch (e) {
+      console.error("Error initializing game:", e);
+      response.statusCode = 400;
+      response.end("Failed to initialize game");
+    }
+  });
+}
+
+async function handleGamePatch(request, response, decodedToken) {
+  addCors(response, ["PATCH"]);
+
+  let body = "";
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
   request.on("end", async () => {
     try {
       const gameData = JSON.parse(body);
@@ -280,20 +357,22 @@ async function handleGamePost(request, response, decodedToken) {
         return;
       }
 
-      const existingGame = await games.findOne({ author: user.username });
+      // Retrieve the game id from the body using gameData._id
+      let res = await games.updateOne(
+        { _id: gameData._id },
+        { $set: gameData },
+      );
 
-      if (existingGame) {
-        await games.updateOne({ _id: existingGame._id }, { $set: gameData });
-      } else {
-        gameData.author = user.username;
-        await games.insertOne(gameData);
+      if (!res.upsertedId) {
+        response.statusCode = 400;
+        response.end("Failed to update game state");
       }
 
       response.statusCode = 200;
-      response.end(JSON.stringify({ message: "Game saved successfully" }));
+      response.end(JSON.stringify({ message: "Game updated successfully" }));
     } catch (e) {
       response.statusCode = 400;
-      response.end("Failed to save game state");
+      response.end("Failed to update game state");
     }
   });
 }

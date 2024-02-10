@@ -1,6 +1,5 @@
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
-const ready = document.getElementById("ready");
 const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
 const confirm = document.getElementById("confirm");
@@ -651,8 +650,6 @@ function clearPlayer(x, y) {
 }
 
 canvas.addEventListener("click", getMouseCoordOnCanvas);
-
-ready.addEventListener("click", isReady);
 
 confirm.addEventListener("click", confirmWall);
 
