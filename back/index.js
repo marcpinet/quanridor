@@ -3,6 +3,7 @@ const http = require('http')
 // Let's import our logic.
 const fileQuery = require('./queryManagers/front.js')
 const apiQuery = require('./queryManagers/api.js')
+const createSocket = require('./socket.js')
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
 ** will be called whenever a new request arrives to the server.
@@ -30,17 +31,10 @@ const server = http.createServer(function (request, response) {
 // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
 });
 
-const socketIo = require('../front/js/socket.io.js');
-const io = socketIo(server);
+const io = createSocket(server);
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-
-    socket.on('dataSent', (data) => {
-        console.log(data);
-    });
-});
-  
 server.listen(8000, () => {
-    console.log('listening on *:8000');
-  });
+    console.log('Server is running on port 8000');
+})
+
+module.exports = io;

@@ -1,14 +1,7 @@
-const socket = io();
+const socket = io("/api/game");
 
-socket.on('connect', () => {
-  console.log('Connected to Socket.IO server');
-  // Vous pouvez éventuellement envoyer des données une fois connecté
-  socket.emit('dataSent', { message: 'Hello from AI Game!' });
-});
-
-// Gérer les événements ou recevoir des données du serveur Socket.IO
-socket.on('customEvent', (data) => {
-  console.log('Received data from server:', data);
+socket.on("connect", () => {
+  console.log("Connected to server.");
 });
 
 const canvas = document.querySelector("canvas")
@@ -296,6 +289,8 @@ function getMouseCoordOnCanvas(event) {
         movePlayer(1, new_coord);
         updateFogOfWar(1);
         drawBoard();
+        const dataToSend = getGameState();
+        socket.emit("sendGameState", dataToSend);
     }
     else {
         select1 = false;
@@ -418,6 +413,7 @@ function confirmWall() {
         tour++
     }
     drawBoard();
+    socket.emit("sendGameState", getGameState())
 }
 
 function isInclude(array, coord) {
@@ -497,3 +493,13 @@ export function getGameState() {
         turn: tour,
     };
 }
+
+socket.on("aiMove", (newCoord) => {
+  console.log(newCoord)
+  updateFogOfWarReverse(2);
+  p2_coord = newCoord;
+  console.log(p2_coord);
+  updateFogOfWar(2);
+  drawBoard();
+  tour++;
+})
