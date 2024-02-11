@@ -4,8 +4,7 @@ const { connectDB, getDB } = require("./db");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { verifyToken } = require("../utilS/jwt-utils");
-const { initializeGame } = require("./game-initializer");
+const { verifyToken, getJwtSecret } = require("../utils/jwt-utils");
 
 const apiPath = "/api";
 
@@ -295,28 +294,6 @@ function getTokenFromHeaders(request) {
     return null;
   }
   return authorization.split(" ")[1];
-}
-
-// ------------------------------ RANDOM QUERIES TO MONGO ------------------------------
-
-async function getJwtSecret() {
-  try {
-    const db = getDB();
-    const secrets = db.collection("secrets");
-
-    const secretDocument = await secrets.findOne({ name: "jwtSecret" });
-
-    if (secretDocument) {
-      console.log("JWT Secret:", secretDocument.value);
-      return secretDocument.value;
-    } else {
-      console.log("Secret not found");
-      return null;
-    }
-  } catch (e) {
-    console.error("Error fetching JWT secret:", e);
-    return null;
-  }
 }
 
 // ------------------------------ REST OF THE CODE ------------------------------
