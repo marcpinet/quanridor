@@ -4,7 +4,7 @@ const { connectDB, getDB } = require("./db");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
+const { verifyToken } = require("./jwt-utils");
 const { initializeGame } = require("./game-initializer");
 
 const apiPath = "/api";
@@ -287,110 +287,6 @@ async function handleGameGet(request, response, decodedToken) {
   }
 }
 
-async function handleGamePost(request, response, decodedToken) {
-  addCors(response, ["POST"]);
-
-  let body = "";
-  request.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-
-  request.on("end", async () => {
-    try {
-      const gameData = JSON.parse(body);
-
-      console.log("Initializing game with data:", gameData);
-
-      const username = decodedToken.username;
-      const db = getDB();
-      const users = db.collection("users");
-      const games = db.collection("games");
-
-      const user = await users.findOne({ username });
-      if (!user) {
-        console.log("User not found");
-        response.writeHead(401, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "User not found" }));
-        return;
-      }
-
-      const game = initializeGame();
-      if (!isNaN(gameData.difficulty)) {
-        console.log("AI game");
-        game.difficulty = gameData.difficulty;
-        game.author = user.username;
-        game.players = [user.username, `AI${gameData.difficulty}`];
-      } else {
-        console.log("Multiplayer game");
-        game.author = user.username;
-        game.players = [user.username, gameData.otherPlayer]; // TODO: Check if the other player exists when multiplayer is implemented
-      }
-
-      // TODO: Handle the case where the player can choose its color when against AI, and if multi then shuffle the colors
-
-      const result = await games.insertOne(game);
-
-      if (!result.insertedId) {
-        console.error("Failed to initialize game");
-        response.writeHead(400, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "Failed to initialize game" }));
-        return;
-      }
-
-      console.log("Game initialized:", result.insertedId);
-      response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ id: result.insertedId }));
-    } catch (e) {
-      console.error("Error initializing game:", e);
-      response.writeHead(400, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Failed to initialize game" }));
-    }
-  });
-}
-
-async function handleGamePatch(request, response, decodedToken) {
-  addCors(response, ["PATCH"]);
-
-  let body = "";
-  request.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-
-  request.on("end", async () => {
-    try {
-      const gameData = JSON.parse(body);
-      const username = decodedToken.username;
-      const db = getDB();
-      const users = db.collection("users");
-      const games = db.collection("games");
-
-      const user = await users.findOne({ username });
-      if (!user) {
-        response.writeHead(401, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "User not found" }));
-        return;
-      }
-
-      // Retrieve the game id from the body using gameData._id
-      let res = await games.updateOne(
-        { _id: gameData._id },
-        { $set: gameData },
-      );
-
-      if (!res.upsertedId) {
-        response.writeHead(400, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "Failed to update game" }));
-      }
-
-      response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Game updated successfully" }));
-    } catch (e) {
-      response.writeHead(400, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Failed to update game" }));
-    }
-  });
-}
-
 // ------------------------------ SECURITY UTILITIES ------------------------------
 
 function getTokenFromHeaders(request) {
@@ -399,16 +295,6 @@ function getTokenFromHeaders(request) {
     return null;
   }
   return authorization.split(" ")[1];
-}
-
-async function verifyToken(token) {
-  try {
-    const decoded = jwt.verify(token, await getJwtSecret());
-    return decoded;
-  } catch (error) {
-    console.error("JWT verification error:", error);
-    return null;
-  }
 }
 
 // ------------------------------ RANDOM QUERIES TO MONGO ------------------------------
