@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 const AI0 = require("./logic/ai.js");
 const { getDB } = require("./queryManagers/db");
 const { initializeGame } = require("./queryManagers/game-initializer.js");
-const { verifyToken } = require("./jwt-utils");
+const { verifyToken } = require("./utils/jwt-utils");
 
 let p1_goals = [
   [0, 0],

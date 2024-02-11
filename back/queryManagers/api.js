@@ -4,7 +4,7 @@ const { connectDB, getDB } = require("./db");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { verifyToken } = require("./jwt-utils");
+const { verifyToken } = require("../utilS/jwt-utils");
 const { initializeGame } = require("./game-initializer");
 
 const apiPath = "/api";
