@@ -286,12 +286,19 @@ function getMouseCoordOnCanvas(event) {
         displayPossibleMoves(1)
     }
     else if (select1 && (isLegal(p1_coord, new_coord) || jump_coord[0]==new_coord[0] && jump_coord[1]==new_coord[1])) {
-        updateFogOfWarReverse(1);
-        movePlayer(1, new_coord);
-        updateFogOfWar(1);
-        drawBoard();
-        const dataToSend = [getGameState(),gameId];
-        socket.emit("sendGameState", dataToSend);
+        const dataToSend = [getGameState(),new_coord];
+        socket.emit("isMoveLegal", dataToSend);
+        socket.on("legalMove", () => {
+          updateFogOfWarReverse(1);
+          movePlayer(1, new_coord);
+          updateFogOfWar(1);
+          drawBoard();
+          socket.emit("sendGameState", [gameId, getGameState()])
+        })
+        
+        socket.on("illegal", () => {
+          alert("Illegal Move !");
+        })
     }
     else {
         select1 = false;
@@ -406,16 +413,25 @@ function updateFogOfWarWall(wall_coord) {
 }
 
 function confirmWall() {
+  socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()])
+
+  socket.on("legalWall", () => {
     if (temp_wall.length > 0) {
-        updateFogOfWarWall(temp_wall)
-        placeWall(temp_wall, current_direction)
-        if (tour%2==0) p1_walls--
-        else p2_walls--
-        tour++
+      updateFogOfWarWall(temp_wall)
+      placeWall(temp_wall, current_direction)
+      if (tour%2==0) p1_walls--
+      else p2_walls--
+      tour++
     }
     drawBoard();
-    const dataToSend = [getGameState(), gameId];
+    const dataToSend = [gameId, getGameState()];
     socket.emit("sendGameState", dataToSend);
+    })
+    
+    socket.on("illegal", () => {
+      alert("Illegal Move !");
+    })
+    
 }
 
 function isInclude(array, coord) {
