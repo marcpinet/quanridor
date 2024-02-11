@@ -305,6 +305,40 @@ function createSocket(server) {
       socket.emit("gameCreated", game);
     });
 
+    socket.on("gameId", async (data) => {
+      const token = data.token;
+      const gameId = data.gameId;
+      const db = getDB();
+      const games = db.collection("games");
+      const users = db.collection("users");
+
+      // Find the user
+      const decoded = await verifyToken(token);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+
+      const user = await users.findOne({ _id: new ObjectId(decoded.id) });
+      if (!user) {
+        socket.emit("error", "User not found");
+        return;
+      }
+
+      // Get the game from the database
+      const game = await games.findOne({ _id: new ObjectId(gameId) });
+      if (!game) {
+        socket.emit("error", "Game not found");
+        return;
+      }
+
+      // Check if user is part of the game
+      if (game.players.includes(user.username)) {
+        socket.join(game._id.toString());
+        socket.emit("gameJoined", game);
+      }
+    });
+
     socket.on("isMoveLegal", (data) => {
       let gameState = data[0];
       let newPlayerCoord = data[1];
