@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = "home.html";
     }*/
   }
+  else {
+    socket.emit("creatGame", localStorage.getItem("token"));
+  }
 });
 
 function initializeGame(gameState) {
