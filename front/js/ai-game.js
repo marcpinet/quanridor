@@ -53,6 +53,7 @@ let v_walls = [];
 let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
+let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
 document.addEventListener("DOMContentLoaded", async () => {
@@ -61,34 +62,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (gameId) {
     socket.emit("gameId", gameId);
-    
-    /*try {
-      const response = await fetch(
-        `http://localhost:4200/api/game?id=${gameId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to load game");
-      }
-      console.log("caca");
-      const game = await response.json();
-      console.log("caca2");
+    socket.on("retrieveGame", (game) => {
       initializeGame(game);
-      console.log("caca3");
-    } catch (error) {
-      alert("Error loading game:", error);
-      window.location.href = "home.html";
-    }*/
+    })
   }
   else {
-    socket.emit("createGameAi", localStorage.getItem("token"));
+    socket.emit("createGameAI", {difficulty: 0, token: localStorage.getItem("token")});
     socket.on("gameCreated", (game) => {
       initializeGame(game);
     })
@@ -105,6 +84,7 @@ function initializeGame(gameState) {
   h_walls = gameState.hwalls;
   tour = gameState.turn;
   board_visibility = gameState.board_visibility;
+  players = gameState.players;
   drawBoard();
 }
 
@@ -670,6 +650,7 @@ confirm.addEventListener("click", confirmWall);
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
+    players: players,
     playerspositions: [p1_coord, p2_coord],
     status: playing ? 1 : 2,
     p1walls: p1_walls,
