@@ -3,6 +3,7 @@ const { Server } = require("socket.io");
 const AI0 = require("./logic/ai.js");
 const { getDB } = require("./queryManagers/db");
 const { initializeGame } = require("./queryManagers/game-initializer.js");
+const { verifyToken } = require("./jwt-utils");
 
 let p1_goals = [
   [0, 0],
@@ -258,10 +259,43 @@ function createSocket(server) {
   const gameNamespace = io.of("/api/game");
   gameNamespace.on("connection", (socket) => {
     console.log("a user connected");
-    
-    socket.on("gameId", async (gameId) => {
-      
-    })
+
+    socket.on("createGameAI", async (data) => {
+      // Verify the token
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+
+      const db = getDB();
+      const games = db.collection("games");
+      const users = db.collection("users");
+
+      // Find the user
+      const user = await users.findOne({ _id: new ObjectId(decoded.id) });
+      if (!user) {
+        socket.emit("error", "User not found");
+        return;
+      }
+
+      // Create a new game
+      const game = initializeGame(user);
+      if (!game) {
+        socket.emit("error", "Failed to create game");
+        return;
+      }
+
+      // Manually setting some initial values
+      game.difficulty = data.difficulty;
+      game.author = user.username;
+      game.status = 1;
+      game.players = [user.username, `AI${gameData.difficulty}`];
+
+      // Join the game
+      socket.join(game._id.toString());
+      socket.emit("gameCreated", game);
+    });
 
     socket.on("isMoveLegal", (data) => {
       let gameState = data[0];
@@ -288,7 +322,6 @@ function createSocket(server) {
       let newCoord = AI0(gameState);
       gameState.playerspositions[1] = newCoord;
       const db = getDB();
-      //const users = db.collection("users");
       const games = db.collection("games");
 
       // Check if the game is over
