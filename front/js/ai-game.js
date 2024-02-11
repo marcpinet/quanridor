@@ -411,7 +411,7 @@ function movePlayer(player, coord) {
     const gameState = getGameState();
     // set winner of gamestate
     gameState.winner = player;
-    socket.emit("win", { gameId: gameId, gameState: getGameState() });
+    socket.emit("win", { gameId: gameId, gameState: gameState });
   } else {
     tour++;
   }
