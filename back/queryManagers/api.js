@@ -143,7 +143,6 @@ async function handleSignup(request, response) {
       const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
-      response.setHeader("Content-Type", "application/json");
       response.end(JSON.stringify({ token: token }));
     } catch (e) {
       response.writeHead(400, { "Content-Type": "application/json" });
@@ -191,7 +190,6 @@ async function handleLogin(request, response) {
       const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
-      response.setHeader("Content-Type", "application/json");
       response.end(JSON.stringify({ token: token }));
     } catch (e) {
       response.writeHead(400, { "Content-Type": "application/json" });
@@ -281,7 +279,6 @@ async function handleGameGet(request, response, decodedToken) {
     }
 
     response.writeHead(200, { "Content-Type": "application/json" });
-    response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify(queryResult));
   } catch (e) {
     console.error("Error in handleGameGet:", e);
