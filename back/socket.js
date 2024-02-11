@@ -285,6 +285,14 @@ function createSocket(server) {
       const db = getDB();
       //const users = db.collection("users");
       const games = db.collection("games");
+
+      // Check if the game is over
+      const game = await games.findOne({ _id: new ObjectId(gameId) });
+      if (game.status === 2) {
+        socket.emit("gameOver", game);
+        return;
+      }
+
       console.log(games);
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
@@ -324,7 +332,14 @@ function createSocket(server) {
       const gameState = data.gameState;
       const db = getDB();
       const games = db.collection("games");
-      console.log(games);
+
+      // Check if the game is over
+      const game = await games.findOne({ _id: new ObjectId(gameId) });
+      if (game.status === 2) {
+        socket.emit("gameOver", game);
+        return;
+      }
+
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
         { $set: gameState },
