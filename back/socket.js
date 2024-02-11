@@ -288,7 +288,7 @@ function createSocket(server) {
       emptyGame.difficulty = data.difficulty;
       emptyGame.author = user.username;
       emptyGame.status = 1;
-      emptyGame.players = [user.username, `AI${gameData.difficulty}`];
+      emptyGame.players = [user.username, `AI${data.difficulty}`];
 
       // Insert the game into the database
       const result = await games.insertOne(emptyGame);
