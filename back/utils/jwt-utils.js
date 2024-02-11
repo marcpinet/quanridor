@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { getDB } = require("../queryManagers/db");
+const { getDB, connectDB } = require("../queryManagers/db");
 
 async function verifyToken(token) {
   try {
@@ -13,6 +13,13 @@ async function verifyToken(token) {
 
 async function getJwtSecret() {
   try {
+    // if database is not connected, connect to it
+    try {
+      await connectDB();
+    } catch (e) {
+      console.warn("Already connected");
+    }
+
     const db = getDB();
     const secrets = db.collection("secrets");
 
