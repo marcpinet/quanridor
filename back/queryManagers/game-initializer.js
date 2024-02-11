@@ -14,7 +14,7 @@ function initializeGame() {
     vwalls: [],
     hwalls: [],
     turn: 0,
-    date: new Date(new Date()),
+    date: new Date(),
     winner: null,
   };
 }

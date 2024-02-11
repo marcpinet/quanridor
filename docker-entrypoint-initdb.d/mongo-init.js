@@ -44,9 +44,7 @@ db.games.insertOne({
     [4, 0],
   ], // Players positions [[x1, y1], [x2, y2]] where x and y are coordinates
   status: 1, // Status 0 = waiting for players, 1 = in progress, 2 = finished
-  date: new Date(
-    new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris" }),
-  ),
+  date: new Date(), // Creation date
   winner: null,
   difficulty: 0, // Difficulty of the AI (null if it's a game against a player, 0 = easy, 1 = medium, 2 = hard)
 });
