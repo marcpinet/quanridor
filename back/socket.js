@@ -258,8 +258,6 @@ function createSocket(server) {
 
   const gameNamespace = io.of("/api/game");
   gameNamespace.on("connection", (socket) => {
-    console.log("a user connected");
-
     socket.on("createGameAI", async (data) => {
       // Verify the token
       const decoded = await verifyToken(data.token);
@@ -303,6 +301,8 @@ function createSocket(server) {
       // Join the game
       socket.join(game._id.toString());
       socket.emit("gameCreated", game);
+
+      console.log(game);
     });
 
     socket.on("gameId", async (data) => {
@@ -373,13 +373,10 @@ function createSocket(server) {
         return;
       }
 
-      console.log(games);
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
         { $set: gameState },
       );
-
-      console.log(res);
 
       socket.emit("aiMove", newCoord);
     });
@@ -424,8 +421,6 @@ function createSocket(server) {
         { _id: new ObjectId(gameId) },
         { $set: gameState },
       );
-
-      console.log(res);
     });
 
     socket.on("win", async (data) => {
