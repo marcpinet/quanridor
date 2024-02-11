@@ -56,14 +56,21 @@ async function manageRequest(request, response) {
     ) {
       handleLogin(request, response);
     } else {
-      response.statusCode = 404;
-      response.end(`You need to be authenticated to access this endpoint`);
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({
+          message: "You need to be authenticated to access this endpoint",
+        }),
+      );
     }
   } else {
     const decodedToken = await verifyToken(token);
     if (!decodedToken) {
-      response.statusCode = 403;
-      response.end("Invalid token (maybe expired?)");
+      response.writeHead(403, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Invalid token (maybe it has expired?)" }),
+      );
+
       return;
     }
 
@@ -80,8 +87,10 @@ async function manageRequest(request, response) {
     ) {
       handleGamePatch(request, response, decodedToken);
     } else {
-      response.statusCode = 404;
-      response.end(`Endpoint ${path} not found`);
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: `Endpoint ${normalizedPath} not found` }),
+      );
     }
   }
 }
@@ -101,8 +110,12 @@ async function handleSignup(request, response) {
 
       // If username is the form of "ai" + any number after, return an error
       if (username.match(/^ai\d+$/)) {
-        response.statusCode = 400;
-        response.end("Username cannot be in the form of 'AI' + number");
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({
+            message: "Username cannot be in the form of 'AI' + number",
+          }),
+        );
         return;
       }
 
@@ -112,8 +125,8 @@ async function handleSignup(request, response) {
       // Vérifier si l'utilisateur existe déjà
       const existingUser = await users.findOne({ username });
       if (existingUser) {
-        response.statusCode = 409;
-        response.end("Username already exists");
+        response.writeHead(409, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User already exists" }));
         return;
       }
 
@@ -129,12 +142,12 @@ async function handleSignup(request, response) {
       // Generate JWT
       const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
 
-      response.statusCode = 200;
+      response.writeHead(200, { "Content-Type": "application/json" });
       response.setHeader("Content-Type", "application/json");
-      response.end(JSON.stringify({ token }));
+      response.end(JSON.stringify({ token: token }));
     } catch (e) {
-      response.statusCode = 400;
-      response.end("Invalid JSON");
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Invalid JSON" }));
     }
   });
 }
@@ -158,16 +171,16 @@ async function handleLogin(request, response) {
       // Vérifier si l'utilisateur existe
       const user = await users.findOne({ username });
       if (!user) {
-        response.statusCode = 401;
-        response.end("User not found");
+        response.writeHead(401, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not found" }));
         return;
       }
 
       // Vérifier si le mot de passe est correct
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
-        response.statusCode = 401;
-        response.end("Invalid password");
+        response.writeHead(401, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "Invalid password" }));
         return;
       }
 
@@ -177,12 +190,12 @@ async function handleLogin(request, response) {
       // Generate JWT
       const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
 
-      response.statusCode = 200;
+      response.writeHead(200, { "Content-Type": "application/json" });
       response.setHeader("Content-Type", "application/json");
-      response.end(JSON.stringify({ token }));
+      response.end(JSON.stringify({ token: token }));
     } catch (e) {
-      response.statusCode = 400;
-      response.end("Invalid JSON");
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Invalid JSON" }));
     }
   });
 }
@@ -202,8 +215,10 @@ async function handleGameGet(request, response, decodedToken) {
       (withStatus && isNaN(withStatus)) ||
       (withStatus && withStatus < 0 && withStatus > 2)
     ) {
-      response.statusCode = 400;
-      response.end("Invalid 'withStatus' query parameter");
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Invalid 'withStatus' query parameter" }),
+      );
       return;
     }
 
@@ -214,8 +229,8 @@ async function handleGameGet(request, response, decodedToken) {
 
     const user = await users.findOne({ username });
     if (!user) {
-      response.statusCode = 401;
-      response.end("User not authenticated");
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
       return;
     }
 
@@ -258,18 +273,20 @@ async function handleGameGet(request, response, decodedToken) {
 
     if (!queryResult || queryResult.length === 0) {
       console.log("No games found for user " + username);
-      response.statusCode = 404;
-      response.end("No games found for user");
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: `No games found for user ${username}` }),
+      );
       return;
     }
 
-    response.statusCode = 200;
+    response.writeHead(200, { "Content-Type": "application/json" });
     response.setHeader("Content-Type", "application/json");
     response.end(JSON.stringify(queryResult));
   } catch (e) {
     console.error("Error in handleGameGet:", e);
-    response.statusCode = 400;
-    response.end("Failed to retrieve game state");
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Failed to retrieve games" }));
   }
 }
 
@@ -295,8 +312,8 @@ async function handleGamePost(request, response, decodedToken) {
       const user = await users.findOne({ username });
       if (!user) {
         console.log("User not found");
-        response.statusCode = 401;
-        response.end("User not found");
+        response.writeHead(401, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not found" }));
         return;
       }
 
@@ -318,18 +335,18 @@ async function handleGamePost(request, response, decodedToken) {
 
       if (!result.insertedId) {
         console.error("Failed to initialize game");
-        response.statusCode = 400;
-        response.end("Failed to initialize game");
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "Failed to initialize game" }));
         return;
       }
 
-      response.statusCode = 200;
       console.log("Game initialized:", result.insertedId);
+      response.writeHead(200, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ id: result.insertedId }));
     } catch (e) {
       console.error("Error initializing game:", e);
-      response.statusCode = 400;
-      response.end("Failed to initialize game");
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Failed to initialize game" }));
     }
   });
 }
@@ -352,8 +369,8 @@ async function handleGamePatch(request, response, decodedToken) {
 
       const user = await users.findOne({ username });
       if (!user) {
-        response.statusCode = 401;
-        response.end("User not found");
+        response.writeHead(401, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not found" }));
         return;
       }
 
@@ -364,15 +381,15 @@ async function handleGamePatch(request, response, decodedToken) {
       );
 
       if (!res.upsertedId) {
-        response.statusCode = 400;
-        response.end("Failed to update game state");
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "Failed to update game" }));
       }
 
-      response.statusCode = 200;
+      response.writeHead(200, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ message: "Game updated successfully" }));
     } catch (e) {
-      response.statusCode = 400;
-      response.end("Failed to update game state");
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Failed to update game" }));
     }
   });
 }
