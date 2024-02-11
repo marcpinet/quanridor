@@ -60,7 +60,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   gameId = urlParams.get("id");
 
   if (gameId) {
-    try {
+    socket.emit("gameId", gameId);
+    
+    /*try {
       const response = await fetch(
         `http://localhost:4200/api/game?id=${gameId}`,
         {
@@ -83,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch (error) {
       alert("Error loading game:", error);
       window.location.href = "home.html";
-    }
+    }*/
   }
 });
 

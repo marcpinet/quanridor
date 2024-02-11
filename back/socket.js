@@ -2,6 +2,7 @@ const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
 const AI0 = require("./logic/ai.js");
 const { getDB } = require("./queryManagers/db");
+const { initializeGame } = require("./queryManagers/game-initializer.js");
 
 let p1_goals = [
   [0, 0],
@@ -257,6 +258,10 @@ function createSocket(server) {
   const gameNamespace = io.of("/api/game");
   gameNamespace.on("connection", (socket) => {
     console.log("a user connected");
+    
+    socket.on("gameId", async (gameId) => {
+      
+    })
 
     socket.on("isMoveLegal", (data) => {
       let gameState = data[0];
