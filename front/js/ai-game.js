@@ -88,7 +88,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }*/
   }
   else {
-    socket.emit("creatGame", localStorage.getItem("token"));
+    socket.emit("createGameAi", localStorage.getItem("token"));
+    socket.on("gameCreated", (game) => {
+      initializeGame(game);
+    })
   }
 });
 
