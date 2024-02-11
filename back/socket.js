@@ -280,17 +280,25 @@ function createSocket(server) {
       }
 
       // Create a new game
-      const game = initializeGame(user);
-      if (!game) {
+      const emptyGame = initializeGame(user);
+      if (!emptyGame) {
         socket.emit("error", "Failed to create game");
         return;
       }
 
       // Manually setting some initial values
-      game.difficulty = data.difficulty;
-      game.author = user.username;
-      game.status = 1;
-      game.players = [user.username, `AI${gameData.difficulty}`];
+      emptyGame.difficulty = data.difficulty;
+      emptyGame.author = user.username;
+      emptyGame.status = 1;
+      emptyGame.players = [user.username, `AI${gameData.difficulty}`];
+
+      // Insert the game into the database
+      const result = await games.insertOne(emptyGame);
+
+      // Get the game from the database
+      const game = await games.findOne({
+        _id: new ObjectId(result.insertedId),
+      });
 
       // Join the game
       socket.join(game._id.toString());
