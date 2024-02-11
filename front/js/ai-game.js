@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       token: localStorage.getItem("token"),
     });
     socket.on("gameCreated", (game) => {
+      gameId = game.id;
       initializeGame(game);
     });
   }
