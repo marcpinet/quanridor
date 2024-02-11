@@ -271,7 +271,7 @@ function createSocket(server) {
       const users = db.collection("users");
 
       // Find the user
-      const user = await users.findOne({ _id: new ObjectId(decoded.id) });
+      const user = await users.findOne({ username: decoded.username });
       if (!user) {
         socket.emit("error", "User not found");
         return;
@@ -319,7 +319,7 @@ function createSocket(server) {
         return;
       }
 
-      const user = await users.findOne({ _id: new ObjectId(decoded.id) });
+      const user = await users.findOne({ username: decoded.username });
       if (!user) {
         socket.emit("error", "User not found");
         return;
@@ -335,7 +335,7 @@ function createSocket(server) {
       // Check if user is part of the game
       if (game.players.includes(user.username)) {
         socket.join(game._id.toString());
-        socket.emit("gameJoined", game);
+        socket.emit("retrieveGame", game);
       }
     });
 
