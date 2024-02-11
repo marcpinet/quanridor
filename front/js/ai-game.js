@@ -4,6 +4,9 @@ socket.on("connect", () => {
   console.log("Connected to server.");
 });
 
+const urlParams = new URLSearchParams(window.location.search);
+let gameId;
+
 const canvas = document.querySelector("canvas")
 const context = canvas.getContext('2d')
 const win = document.getElementById("win")
@@ -54,7 +57,7 @@ let temp_wall = []
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get('id');
+    gameId = urlParams.get('id');
 
     if (gameId) {
         try {
@@ -69,9 +72,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!response.ok) {
                 throw new Error('Failed to load game');
             }
-
+            console.log("caca")
             const game = await response.json();
+            console.log("caca2")
             initializeGame(game);
+            console.log("caca3")
 
         } catch (error) {
             alert('Error loading game:', error);
@@ -89,6 +94,7 @@ function initializeGame(gameState) {
     v_walls = gameState.vwalls;
     h_walls = gameState.hwalls;
     tour = gameState.turn;
+    board_visibility = gameState.board_visibility;
     drawBoard();
 }
 
@@ -246,26 +252,21 @@ function movePlayer(player, coord) {
         legal = true
         p1_coord = coord
         drawPlayer(42 + coord[0]*77, 42 + coord[1]*77, '#FFFFFF')
-        //player1.style.top = canvasTop +26 + coord[1]*77 + 'px'
-        //player1.style.left = canvasLeft+ 26 + coord[0]*77 + 'px'
         select1 = false
     }
     else {
         legal = true
         p2_coord = coord
         drawPlayer(42 + coord[0]*77, 42 + coord[1]*77, '#000000')
-        //player2.style.top = canvasTop + 26 + coord[1]*77 + 'px'
-        //player2.style.left = canvasLeft+  26 + coord[0]*77 + 'px'
         select2 = false
     }
     if (checkWin(player)) {
         clearPlayer(42 + p1_coord[0]*77, 42 + p1_coord[1]*77);
         clearPlayer(42 + p2_coord[0]*77, 42 + p2_coord[1]*77);
-        //player1.style.display = 'none'
-        //player2.style.display = 'none'
         smoke.style.display = 'block'
         win.style.display = 'block'
         win.textContent = 'player' + player + ' won!'
+        socket.emit("win", [getGameState(), gameId]);
     }
     else {
         tour++
@@ -289,7 +290,7 @@ function getMouseCoordOnCanvas(event) {
         movePlayer(1, new_coord);
         updateFogOfWar(1);
         drawBoard();
-        const dataToSend = getGameState();
+        const dataToSend = [getGameState(),gameId];
         socket.emit("sendGameState", dataToSend);
     }
     else {
@@ -413,7 +414,8 @@ function confirmWall() {
         tour++
     }
     drawBoard();
-    socket.emit("sendGameState", getGameState())
+    const dataToSend = [getGameState(), gameId];
+    socket.emit("sendGameState", dataToSend);
 }
 
 function isInclude(array, coord) {
@@ -491,15 +493,19 @@ export function getGameState() {
         vwalls: v_walls,
         hwalls: h_walls,
         turn: tour,
+        board_visibility: board_visibility,
     };
 }
 
 socket.on("aiMove", (newCoord) => {
   console.log(newCoord)
   updateFogOfWarReverse(2);
-  p2_coord = newCoord;
+  movePlayer(2, newCoord);
   console.log(p2_coord);
   updateFogOfWar(2);
   drawBoard();
-  tour++;
+})
+
+window.addEventListener('beforeunload', function(event) {
+  socket.emit('leave', [getGameState(), gameId]);
 })
