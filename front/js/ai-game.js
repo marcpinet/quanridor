@@ -412,15 +412,17 @@ function movePlayer(player, coord) {
     smoke.style.display = "block";
 
     // Créez une div pour le popup avec la classe "custom-popup"
-    const popup = document.createElement('div');
-    popup.classList.add('custom-popup');
+    const popup = document.createElement("div");
+    popup.classList.add("custom-popup");
+    popup.classList.add("bold-text");
     popup.textContent = gameStateReturned.winner + " won!";
 
     // Ajoutez un bouton "home" au popup
-    const homeButton = document.createElement('button');
-    homeButton.textContent = 'Home';
-    homeButton.addEventListener('click', function() {
-        window.location.href = 'home.html'; // Redirection vers la page d'accueil
+    const homeButton = document.createElement("button");
+    homeButton.textContent = "Home";
+    homeButton.classList.add("big-button");
+    homeButton.addEventListener("click", function () {
+      window.location.href = "home.html"; // Redirection vers la page d'accueil
     });
     popup.appendChild(homeButton);
 
