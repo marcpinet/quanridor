@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.on("gameCreated", (game) => {
       gameId = game._id;
       initializeGame(game);
+      window.location.href = "http://localhost:8000/ai-game.html?id=" + gameId;
     });
   }
 });
@@ -352,8 +353,7 @@ function drawBoard() {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       let color;
-      color = board_visibility[j][i] >= 0 ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
-
+      color = (board_visibility[j][i] >= 0 || i==p1_coord[0] && j==p1_coord[1]) ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
       drawRoundedRect(
         (i + 1) * 10 + i * 67,
         (j + 1) * 10 + j * 67,
@@ -412,6 +412,8 @@ function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
 }
 
+let checking = false;
+
 function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
@@ -429,8 +431,12 @@ function getMouseCoordOnCanvas(event) {
       gameState: getGameState(),
       newCoord: new_coord,
     };
-    socket.emit("isMoveLegal", dataToSend);
+    if (!checking) {
+      socket.emit("isMoveLegal", dataToSend);
+      checking = true;
+    }
     socket.on("legalMove", () => {
+      checking = false;
       updateFogOfWarReverse(1);
       movePlayer(1, new_coord);
       updateFogOfWar(1);
@@ -670,15 +676,16 @@ export function getGameState() {
 }
 
 socket.on("aiMove", (newCoord) => {
-  console.log(newCoord);
   updateFogOfWarReverse(2);
   movePlayer(2, newCoord);
-  console.log(p2_coord);
   updateFogOfWar(2);
   drawBoard();
 });
 
-window.addEventListener("beforeunload", function (event) {
-  console.log(gameId);
+window.addEventListener("onbeforeunload", function (event) {
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
 });
+
+window.addEventListener("unload", function (event) {
+  socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+})
