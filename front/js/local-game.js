@@ -1,7 +1,5 @@
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
-//const player1 = document.getElementById("player1")
-//const player2 = document.getElementById("player2")
 const anticheat = document.getElementsByClassName("anticheat");
 const ready = document.getElementById("ready");
 const win = document.getElementById("win");
@@ -39,11 +37,6 @@ const canvasTop = canvasRect.top + 9;
 let tour = 0;
 let p1_coord = [4, 8];
 let p2_coord = [4, 0];
-//player1.style.top = canvasTop + 26 + p1_coord[1] * 77 + 'px';
-//player1.style.left =canvasLeft + 26 + p1_coord[0] * 77 + 'px'
-
-//player2.style.top = canvasTop+ 26 + p2_coord[1] * 77 + 'px';
-//player2.style.left =canvasLeft + 26 + p2_coord[0] * 77 + 'px'
 let playing = true;
 let select1 = false;
 let select2 = false;
@@ -337,7 +330,6 @@ function drawBoard() {
           drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
         }
       } else {
-        //player2.style.display = "block"
         drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
         color = (board_visibility[j][i] <= 0 || i==p2_coord[0] && j==p2_coord[1]) ? "#EE4F3A" : "#FFFFFF";
 
@@ -372,28 +364,12 @@ function movePlayer(player, coord) {
     legal = true;
     p1_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#FFFFFF");
-    //player1.style.top = canvasTop +26 + coord[1]*77 + 'px'
-    //player1.style.left = canvasLeft+ 26 + coord[0]*77 + 'px'
     select1 = false;
   } else {
     legal = true;
     p2_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
-    //player2.style.top = canvasTop + 26 + coord[1]*77 + 'px'
-    //player2.style.left = canvasLeft+  26 + coord[0]*77 + 'px'
     select2 = false;
-  }
-  if (checkWin(player)) {
-    clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-    //player1.style.display = 'none'
-    //player2.style.display = 'none'
-    smoke.style.display = "block";
-    win.style.display = "block";
-    win.textContent = "player" + player + " won!";
-  } else {
-    tour++;
-    getReady();
   }
 }
 
@@ -401,7 +377,11 @@ function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
 }
 
-function getMouseCoordOnCanvas(event) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
@@ -422,6 +402,19 @@ function getMouseCoordOnCanvas(event) {
     updateFogOfWarReverse(1);
     movePlayer(1, new_coord);
     updateFogOfWar(1);
+    drawBoard();
+    await sleep(2000);
+    if (checkWin(1)) {
+      clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+      clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+      smoke.style.display = "block";
+      win.style.display = "block";
+      win.textContent = "player" + player + " won!";
+    }
+    else {
+      tour++;
+      getReady();
+    }
   } else if (
     select2 &&
     (isLegal(p2_coord, new_coord) ||
@@ -430,6 +423,19 @@ function getMouseCoordOnCanvas(event) {
     updateFogOfWarReverse(2);
     movePlayer(2, new_coord);
     updateFogOfWar(2);
+    drawBoard();
+    await sleep(2000);
+    if (checkWin(1)) {
+      clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+      clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+      smoke.style.display = "block";
+      win.style.display = "block";
+      win.textContent = "player" + player + " won!";
+    }
+    else {
+      tour++;
+      getReady();
+    }
   } else {
     select1 = false;
     select2 = false;
@@ -592,13 +598,15 @@ function updateFogOfWarWall(wall_coord) {
   }
 }
 
-function confirmWall() {
+async function confirmWall() {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     if (tour % 2 == 0) p1_walls--;
     else p2_walls--;
+    drawBoard();
     tour++;
+    await sleep(2000);
     getReady();
   }
 }
