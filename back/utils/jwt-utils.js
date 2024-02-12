@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { getDB, connectDB } = require("../queryManagers/db");
+const { getDB, connectDB } = require("../query-managers/db");
 
 async function verifyToken(token) {
   try {

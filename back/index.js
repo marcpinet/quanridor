@@ -1,8 +1,8 @@
 // The http module contains methods to handle http queries.
 const http = require("http");
 // Let's import our logic.
-const fileQuery = require("./queryManagers/front.js");
-const apiQuery = require("./queryManagers/api.js");
+const fileQuery = require("./query-managers/front.js");
+const apiQuery = require("./query-managers/api.js");
 const createSocket = require("./game/ai/socket.js");
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
