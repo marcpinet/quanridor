@@ -38,4 +38,4 @@ async function getJwtSecret() {
   }
 }
 
-module.exports = { verifyToken };
+module.exports = { verifyToken, getJwtSecret };
