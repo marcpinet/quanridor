@@ -1,22 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Games in Progress</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito&display=swap">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+    />
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+  </head>
+  <body>
     <div class="vertical-container">
-    <div class="headerprogress">
-        <svg id="back-arrow" onclick="window.location.href = 'play-menu.html';"></svg>
+      <div class="headerprogress">
+        <svg
+          id="back-arrow"
+          onclick="window.location.href = 'play-menu.html';"
+        ></svg>
         <h1 class="gameinprogress">Games in progress</h1>
+      </div>
+      <div class="game-list"></div>
     </div>
-    <div class="game-list">
-
-    </div>
-</div>
     <script src="js/auto-redirect-if-not-logged.js"></script>
-    <script src="js/game-retriever-and-sender.js" type="module"></script>  <!-- type=module is required for some reasons lol -->
-</body>
+    <script src="js/game-retriever-and-sender.js" type="module"></script>
+    <!-- type=module is required for some reasons lol -->
+  </body>
 </html>

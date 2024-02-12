@@ -1,61 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Quanridor</title>
-    <link rel="stylesheet" href="css/style.css" type ="text/css">
-</head>
-<body id="game">
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+  </head>
+  <body id="game">
     <div class="horizontal-container">
-        <div class="vertical-small-container">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div class="profile-box">
-                <div class="vertical-small-container">
-                    <br>
-                    <svg id="user"></svg>
-                    <h1 class="text">Player 1</h1>
-                    <div id="separator"></div>
-                    <h1 class="text">ELO : 100</h1>
-                </div>
-            </div>
+      <div class="vertical-small-container">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <div class="profile-box">
+          <div class="vertical-small-container">
+            <br />
+            <svg id="user"></svg>
+            <h1 class="text">Player 1</h1>
+            <div id="separator"></div>
+            <h1 class="text">ELO : 100</h1>
+          </div>
         </div>
-        <div class="vertical-small-container">
-            <canvas></canvas>
-            <div class="horizontal-small-container">
-                <button class="small-button" id="confirm" style="margin-top: 15px;">Put Wall</button>
-                <a href="home.html"><button class="small-button" id="leave" style="margin-top: 15px;"> Leave</button></a>
-            </div>
+      </div>
+      <div class="vertical-small-container">
+        <canvas></canvas>
+        <div class="horizontal-small-container">
+          <button class="small-button" id="confirm">Put Wall</button>
+          <a href="home.html"
+            ><button class="small-button" id="leave">Leave</button></a
+          >
         </div>
-        <div class="vertical-small-container">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div class="profile-box">
-                <div class="vertical-small-container">
-                    <br>
-                    <svg id="user"></svg>
-                    <h1 class="text">Player 2</h1>
-                    <div id="separator"></div>
-                    <h1 class="text">ELO : 100</h1>
-                </div>
-            </div>
+      </div>
+      <div class="vertical-small-container">
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <div class="profile-box">
+          <div class="vertical-small-container">
+            <br />
+            <svg id="user"></svg>
+            <h1 class="text">Player 2</h1>
+            <div id="separator"></div>
+            <h1 class="text">ELO : 100</h1>
+          </div>
         </div>
-
+      </div>
     </div>
-    <div class="anticheat"><button id="ready" class="big-button">Ready?</button></div>
+    <div class="anticheat">
+      <button id="ready" class="big-button">Ready?</button>
+    </div>
     <h1 id="win"></h1>
 
     <div id="smoke" class="anticheat"></div>
-    
+
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/local-game.js" type="module"></script>
-</body>
+  </body>
 </html>
