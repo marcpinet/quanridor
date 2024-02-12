@@ -1,347 +1,357 @@
 body {
-    font-family: 'Nunito', sans-serif;
-    background-image: 
-    url('../assets/Background.svg');
-    background-size: cover;
-    color: white;
+  font-family: "Nunito", sans-serif;
+  background-image: url("../assets/Background.svg");
+  background-size: cover;
+  color: white;
 }
 
 .flex-bottom {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-content: center;
-    align-items: center;
-    flex: 0 1 auto;
-    align-self: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-content: center;
+  align-items: center;
+  flex: 0 1 auto;
+  align-self: center;
 }
 
 .title {
-    display: flex;
-    background: 
-    url('../assets/Quanridor_title.svg') center/900px no-repeat;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    height: 30vh;
+  display: flex;
+  background: url("../assets/Quanridor_title.svg") center/900px no-repeat;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
 }
 
 .title:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 svg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    filter: drop-shadow(6px 6px 4px #111430);
-    transition: width 0.3s ease, height 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(6px 6px 4px #111430);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 #bell {
-    background:
-    url('../assets/Bell.svg') center/60px no-repeat;
-    width: 100px;
-    height: 10vh;
+  background: url("../assets/Bell.svg") center/60px no-repeat;
+  width: 100px;
+  height: 10vh;
 }
 
 #bell:hover {
-    cursor: pointer;
-    filter: none;
-    width: 100px;
-    height: 11vh;
+  cursor: pointer;
+  filter: none;
+  width: 100px;
+  height: 11vh;
 }
 
 #user {
-    background:
-    url('../assets/user-circle.svg') center/200px no-repeat;
-    width: 200px;
-    height: 25vh;
+  background: url("../assets/user-circle.svg") center/200px no-repeat;
+  width: 200px;
+  height: 25vh;
 }
 
 .small-title {
-    display: flex;
-    background: 
-    url('../assets/Quanridor_title.svg') center/650px no-repeat;
-    width: 100vh;
-    justify-content: center;
-    align-items: center;
-    height: 20vh;
+  display: flex;
+  background: url("../assets/Quanridor_title.svg") center/650px no-repeat;
+  width: 100vh;
+  justify-content: center;
+  align-items: center;
+  height: 20vh;
 }
 
 button {
-    box-shadow: 0px 15px 20px #111430;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    color: #111430;
-    font-size: 58px;
-    border-radius: 38px;
-    width: 375px;
-    height: 130px;
-    border: none;
-    transition: background-color 0.3s ease;
-    transition: width 0.3s ease, height 0.3s ease;
+  box-shadow: 0px 15px 20px #111430;
+  font-weight: 700;
+  font-family: "Nunito", sans-serif;
+  color: #111430;
+  font-size: 58px;
+  border-radius: 38px;
+  width: 375px;
+  height: 130px;
+  border: none;
+  transition: background-color 0.3s ease;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 button.big-button {
-    font-size: 52px;
-    width: 375px;
-    height: 130px;
-    transition: width 0.3s ease, height 0.3s ease;
+  font-size: 52px;
+  width: 375px;
+  height: 130px;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 button.big-button:hover {
-    width: 400px; 
-    height: 150px;
+  width: 400px;
+  height: 150px;
 }
 
 button.medium-button {
-    font-size: 48px;
-    width: 300px;
-    height: 13vh;
-    transition: width 0.3s ease, height 0.3s ease;
+  font-size: 48px;
+  width: 300px;
+  height: 13vh;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 button.medium-button:hover {
-    width: 300px; 
-    height: 15vh;
+  width: 300px;
+  height: 15vh;
 }
 
 button.small-button {
-    font-size: 32px;
-    width: 200px;
-    height: 10vh;
-    transition: width 0.3s ease, height 0.3s ease;
+  font-size: 32px;
+  width: 200px;
+  height: 10vh;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 button.small-button:hover {
-    width: 200px; 
-    height: 11vh;
+  width: 200px;
+  height: 11vh;
 }
 
 .vertical-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    gap: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 50px;
 }
 
 .horizontal-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-direction: row;
-    padding: 15px;
-    gap: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: row;
+  padding: 15px;
+  gap: 20px;
 }
 
 .horizontal-small-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-direction: row;
-    gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: row;
+  gap: 10px;
 }
 
-button:hover{
-    cursor: pointer;
-    background-color: #f3b9ff;
-    color: #653442;
-    box-shadow: none;
+button:hover {
+  cursor: pointer;
+  background-color: #f3b9ff;
+  color: #653442;
+  box-shadow: none;
 }
 
 .vertical-small-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .bold-text {
-    text-shadow: 6px 6px 4px #111430;
-    font-size: 48px;
-    font-weight: 700;
+  text-shadow: 6px 6px 4px #111430;
+  font-size: 48px;
+  font-weight: 700;
 }
 
 .text {
-    font-size: 32px;
+  font-size: 32px;
 }
 
 input {
-    box-shadow: 0px 15px 10px #111430;
-    color: white;
-    font-family: 'Nunito', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    border-radius: 15px;
-    width: 350px;
-    height: 40px;
-    border: none;
-    text-align: center;
-    background-color: #4650A8;
-    padding: 5px;
+  box-shadow: 0px 15px 10px #111430;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  border-radius: 15px;
+  width: 350px;
+  height: 40px;
+  border: none;
+  text-align: center;
+  background-color: #4650a8;
+  padding: 5px;
 }
 
 input::placeholder {
-    color: #111430;
+  color: #111430;
 }
 
-input:hover{
-    cursor: pointer;
+input:hover {
+  cursor: pointer;
 }
 
 #game {
-    background-image: 
-    linear-gradient(to bottom, rgba(185, 7, 68, 0.1), rgba(75, 6, 164, 0.1)), 
-    url('../assets/Background.svg');
-    background-size: cover;
-    color: white;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(185, 7, 68, 0.1),
+      rgba(75, 6, 164, 0.1)
+    ),
+    url("../assets/Background.svg");
+  background-size: cover;
+  color: white;
 }
 
 .player {
-    position: absolute;
-    display:flex;
-    width:52px;
-    height:52px;
-    border-radius: 26px;
+  position: absolute;
+  display: flex;
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
 }
 
 #player1 {
-    display: block;
-    background-color: #010525;
+  display: block;
+  background-color: #010525;
 }
 
 #player2 {
-    display: block;
-    background-color: white;
+  display: block;
+  background-color: white;
 }
 
 canvas {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height:100%;
-    width:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
 #ready {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 #smoke {
-    position: fixed;
-    background: url('../assets/Background.svg');
-    background-size: cover;
-    background-color: #111430;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
+  position: fixed;
+  background: url("../assets/Background.svg");
+  background-size: cover;
+  background-color: #111430;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
 }
 
 .anticheat {
-    display: none;
+  display: none;
 }
 
 #win {
-    position: absolute;
-    display: none;
-    color: white;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+  position: absolute;
+  display: none;
+  color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
 #container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
-.friend-box, .profile-box {
-    background-color: #010525;
-    border-radius: 38px;
+.friend-box,
+.profile-box {
+  background-color: #010525;
+  border-radius: 38px;
 }
 
-.friend-box{
-    width: 40vh; height: 90vh;
+.friend-box {
+  width: 40vh;
+  height: 90vh;
 }
 
 .profile-box {
-    width: 40vh; height: 50vh;
+  width: 40vh;
+  height: 50vh;
 }
 
 #separator {
-    height: 1vh;
-    width: 15vh;
-    border-radius: 38px;
-    background-color: #4650A8;
+  height: 1vh;
+  width: 15vh;
+  border-radius: 38px;
+  background-color: #4650a8;
 }
 
 .headerprogress {
-    display: flex;
-    align-items: center;
-    padding: 10px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
 }
 
 #back-arrow {
-    background:
-    url('../assets/back-arrow.svg') center/60px no-repeat;
-    width: 100px;
-    height: 10vh;
-    cursor: pointer;
-    margin-right: 50px;
+  background: url("../assets/back-arrow.svg") center/60px no-repeat;
+  width: 100px;
+  height: 10vh;
+  cursor: pointer;
+  margin-right: 50px;
 }
 
 .game-list {
-    font-size: 32px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  font-size: 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .game-item {
-    background-color: #010525;
-    border: 6px solid #4650a8;
-    padding: 20px;
-    margin-bottom: 30px;
-    border-radius: 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%;
-    max-width: 1200px;
+  background-color: #010525;
+  border: 6px solid #4650a8;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
 }
 
 .game-item:hover {
-    border: 6px solid #f3b9ff;
-    cursor: pointer;
+  border: 6px solid #f3b9ff;
+  cursor: pointer;
 }
 
 .player-name {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .turn-indicator {
-    font-style: italic;
-    font-size: 32px;
+  font-style: italic;
+  font-size: 32px;
 }
 
 .gameinprogress {
-    font-size: 100px;
-    font-weight: bold;
-    margin-right: 50px;
+  font-size: 100px;
+  font-weight: bold;
+  margin-right: 50px;
 }
 
 .no-game {
-    font-size: 32px;
-    font-style: italic;
-    font-weight: bold;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: bold;
 }

@@ -353,7 +353,10 @@ function drawBoard() {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       let color;
-      color = (board_visibility[j][i] >= 0 || i==p1_coord[0] && j==p1_coord[1]) ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
+      color =
+        board_visibility[j][i] >= 0 || (i == p1_coord[0] && j == p1_coord[1])
+          ? "#EE4F3A"
+          : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
       drawRoundedRect(
         (i + 1) * 10 + i * 67,
         (j + 1) * 10 + j * 67,
@@ -692,4 +695,4 @@ window.addEventListener("onbeforeunload", function (event) {
 
 window.addEventListener("unload", function (event) {
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
-})
+});

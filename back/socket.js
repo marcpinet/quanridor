@@ -347,11 +347,12 @@ function createSocket(server) {
       let gameState = data.gameState;
       let newCoord = data.newCoord;
       let jump_coord = canJump(
-        gameState.playerspositions[0], 
-        gameState.playerspositions[0], 
-        gameState.playerspositions[1], 
-        gameState.vwalls, 
-        gameState.hwalls);
+        gameState.playerspositions[0],
+        gameState.playerspositions[0],
+        gameState.playerspositions[1],
+        gameState.vwalls,
+        gameState.hwalls,
+      );
       if (
         isLegal(
           gameState.playerspositions[0],

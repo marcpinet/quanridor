@@ -4,7 +4,7 @@
 
 ## 📝 Description
 
-Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still *very* limited).
+Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still _very_ limited).
 
 This version of the game includes a [fog of war](https://en.wikipedia.org/wiki/Fog_of_war) system, which means that you can only see the tiles that are in your line of sight. This adds a whole new layer of strategy to the game, as you can't see the other player's moves until you're close enough to them.
 
@@ -15,7 +15,7 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 ## 📦 Features (W.I.P)
 
 - Minimalistic and clean UI/UX design 🖥️
-- Login / Register system with secure backend *except CORS (for now) which accepts every incoming requests since the frontend is not hosted anywhere* 📝
+- Login / Register system with secure backend _except CORS (for now) which accepts every incoming requests since the frontend is not hosted anywhere_ 📝
 - Token authentication system (JWT) 🍪
 - In-progress game listing 📋
 - Play locally with someone else 🎮
@@ -34,21 +34,21 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 
 1. **Clone** the repository to your local machine.
 
-    ```bash
-    git clone https://github.com/PolytechNS/ps8-24-quanridor.git
-    ```
+   ```bash
+   git clone https://github.com/PolytechNS/ps8-24-quanridor.git
+   ```
 
-2. *(Optional)* **Install** the dependencies for development puroposes.
+2. _(Optional)_ **Install** the dependencies for development puroposes.
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. **Build and run** the backend using Docker.
 
-    ```bash
-    docker compose up --build
-    ```
+   ```bash
+   docker compose up --build
+   ```
 
 4. Run the frontend by opening the [index.html](front/index.html) file in your browser.
 
@@ -79,7 +79,7 @@ Coming soon!
 
 ## ✍️ Authors
 
-- Marc Pinet - *Initial work* - [marcpinet](https://github.com/marcpinet)
-- Arthur Rodriguez - *Initial work* - [rodriguezarthur](https://github.com/rodriguezarthur)
-- Marcus Aas Jensen - *Initial work* - [marcusaasjensen](https://github.com/marcusaasjensen)
-- Loris Drid - *Initial work* - [lorisdrid](https://github.com/LorisDrid)
+- Marc Pinet - _Initial work_ - [marcpinet](https://github.com/marcpinet)
+- Arthur Rodriguez - _Initial work_ - [rodriguezarthur](https://github.com/rodriguezarthur)
+- Marcus Aas Jensen - _Initial work_ - [marcusaasjensen](https://github.com/marcusaasjensen)
+- Loris Drid - _Initial work_ - [lorisdrid](https://github.com/LorisDrid)

@@ -6,10 +6,10 @@ This part of the project contains the server and the business logic.
 
 ## Server
 
-All requests are managed by `back/index.js`, which checks if the request is for a file 
+All requests are managed by `back/index.js`, which checks if the request is for a file
 (in which case it's treated by `queryManagers/front.js`) or is a REST request (managed by `queryManagers/api.js`).
 
-Since `back/index.js` receives all the requests, it should also manage socket connections 
+Since `back/index.js` receives all the requests, it should also manage socket connections
 (that doesn't mean all the logic should be written in the file, you can add other queryManagers).
 
 The architecture can be modified if you feel like it, but it will be up to you to debug.
