@@ -53,9 +53,10 @@ svg {
 }
 
 #user {
-  background: url("../assets/user-circle.svg") center/200px no-repeat;
-  width: 200px;
-  height: 25vh;
+    background:
+    url('../assets/user-circle.svg') center/50% no-repeat;
+    width: 100%;
+    height: 50%;
 }
 
 .small-title {
@@ -284,7 +285,7 @@ canvas {
 }
 
 .profile-box {
-  width: 40vh;
+  width: 80%;
   height: 50vh;
 }
 
@@ -302,11 +303,19 @@ canvas {
 }
 
 #back-arrow {
-  background: url("../assets/back-arrow.svg") center/60px no-repeat;
+  position: absolute;
+  background: url("../assets/back-arrow.svg") center/100px no-repeat;
   width: 100px;
   height: 10vh;
   cursor: pointer;
-  margin-right: 50px;
+  padding: 50px;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#back-arrow:hover {
+  height: 12vh;
 }
 
 .game-list {
@@ -326,13 +335,19 @@ canvas {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90%;
+  width: 90vh;
   max-width: 1200px;
+  height: 9vh;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 .game-item:hover {
   border: 6px solid #f3b9ff;
   cursor: pointer;
+  height: 10vh;
+  width: 100vh;
 }
 
 .player-name {
@@ -344,14 +359,51 @@ canvas {
   font-size: 32px;
 }
 
-.gameinprogress {
+.text-title {
   font-size: 100px;
   font-weight: bold;
-  margin-right: 50px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
 }
 
 .no-game {
   font-size: 32px;
   font-style: italic;
   font-weight: bold;
+}
+
+.custom-popup {
+    /* Styles pour le popup */
+    background-image: url('../assets/big_brain.png');
+    background-size: cover;
+    border: 10px solid #4650a8;
+    border-radius: 38px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px #010525;
+    width: 50%;
+    max-width: 80%;
+    height: 50%;
+    max-height: 80%;
+    margin: 0 auto;
+    text-align: center;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.5);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: 6px 6px 4px #111430;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.custom-popup button {
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    transform: translate(-50%, -50%);
 }

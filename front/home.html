@@ -1,41 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
     <title>Home</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
-    />
-    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito&display=swap">
+    <link rel="stylesheet" href="css/style.css" type ="text/css">
     <script src="js/logout.js"></script>
-  </head>
-  <body>
+</head>
+<body>
     <div class="horizontal-container">
-      <div class="vertical-container">
-        <div class="friend-box">
-          <div class="vertical-container">
-            <div class="bold-text">Friends</div>
-          </div>
+        <div class="vertical-container">
+            <div class="friend-box">
+                <div class="vertical-container"><div class="bold-text">Friends</div></div>
+            </div>
         </div>
-      </div>
-      <div class="vertical-container">
-        <a href="home.html"><div class="small-title"></div></a>
-        <a href="play-menu.html"><button class="big-button">Play</button></a>
-        <a><button class="big-button">Statistics</button></a>
-        <a><button class="big-button">Achievements</button></a>
-      </div>
-      <div class="vertical-small-container">
-        <div class="horizontal-container">
-          <svg id="bell"></svg>
-          <a href="index.html"
-            ><button class="small-button" onclick="logout()">Log out</button></a
-          >
+        <div class="vertical-container">
+            <a href="home.html"><div class="small-title"></div></a>
+            <a href="play-menu.html"><button class="big-button">Play</button></a>
+            <a><button class="big-button">Statistics</button></a>
+            <a><button class="big-button">Achievements</button></a>
         </div>
-        <div class="profile-box"></div>
-      </div>
+        <div class="vertical-container">
+            <div class="vertical-container">
+                <a href="index.html"><button class="small-button" onclick="logout()">Log out</button></a>
+                <svg id="bell"></svg>
+            </div>
+            <div class="profile-box">
+                <div class="vertical-small-container">
+                    <br>
+                    <svg id="user"></svg>
+                    <h1 class="text">Player 1</h1>
+                    <div id="separator"></div>
+                    <h1 class="text">ELO : 100</h1>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/auto-redirect-if-not-logged.js"></script>
-  </body>
+</body>
 </html>
