@@ -1,35 +1,5 @@
 import { determinePlayerTurn } from "./game-utils.js";
 
-// INITIALIZE NEW GAME AGAINST AI
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("againstAI").addEventListener("click", async () => {
-    console.log("Creating game against AI...");
-    // The game will be initialized server side and sent to the client
-    // The client needs to provide the AI difficulty in the request body (default: 0)
-    // And its token in the request headers
-    try {
-      const response = await fetch("http://localhost:4200/api/game", {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ difficulty: 0 }), // Change according to the user's choice
-      });
-
-      if (!response.ok) {
-        console.error("Failed to create game:", response.status);
-      }
-
-      const newlyCreatedEntry = await response.json();
-      console.log(newlyCreatedEntry);
-      window.location.href = `ai-game.html?id=${newlyCreatedEntry.id}`; // Safe cuz the jwt token is checked on the server side
-    } catch (error) {
-      console.error("Error creating game:", error);
-    }
-  });
-});
-
 // CONTINUE GAME
 document.addEventListener("DOMContentLoaded", function () {
   const gamesListElement = document.querySelector(".game-list");

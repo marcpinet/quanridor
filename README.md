@@ -20,6 +20,7 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 - In-progress game listing 📋
 - Play locally with someone else 🎮
 - Play against an AI (currently only one level of difficulty: random) 🤖
+- Leaving a game? No problem, it's in our database, waiting for you to join back! 📂
 - Possibility to logout if you intend to have multiple accounts and smurf 🤫
 
 ## ⚙️ Local installation

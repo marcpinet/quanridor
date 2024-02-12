@@ -1,3 +1,12 @@
+const socket = io("/api/game");
+
+socket.on("connect", () => {
+  console.log("Connected to server.");
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+let gameId;
+
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 const win = document.getElementById("win");
@@ -20,8 +29,17 @@ function drawRoundedRect(x, y, width, height, radius, color) {
   context.fill();
   context.closePath();
 
+  // Return the rectangle information for clearing
   return { x: x, y: y, width: width, height: height };
 }
+
+function clearRoundedRect(rect) {
+  context.clearRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+const canvasRect = canvas.getBoundingClientRect();
+const canvasLeft = canvasRect.left - 8;
+const canvasTop = canvasRect.top + 9;
 
 let tour = 0;
 let p1_coord = [4, 8];
@@ -35,35 +53,31 @@ let v_walls = [];
 let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
+let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const gameId = urlParams.get("id");
+  gameId = urlParams.get("id");
 
   if (gameId) {
-    try {
-      const response = await fetch(
-        `http://localhost:4200/api/game?id=${gameId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to load game");
-      }
-
-      const game = await response.json();
+    socket.emit("gameId", {
+      gameId: gameId,
+      token: localStorage.getItem("token"),
+    });
+    socket.on("retrieveGame", (game) => {
       initializeGame(game);
-    } catch (error) {
-      alert("Error loading game:", error);
-      window.location.href = "home.html";
-    }
+    });
+  } else {
+    socket.emit("createGameAI", {
+      difficulty: 0,
+      token: localStorage.getItem("token"),
+    });
+    socket.on("gameCreated", (game) => {
+      gameId = game._id;
+      initializeGame(game);
+      window.location.href = "http://localhost:8000/ai-game.html?id=" + gameId;
+    });
   }
 });
 
@@ -76,6 +90,8 @@ function initializeGame(gameState) {
   v_walls = gameState.vwalls;
   h_walls = gameState.hwalls;
   tour = gameState.turn;
+  board_visibility = gameState.board_visibility;
+  players = gameState.players;
   drawBoard();
 }
 
@@ -194,30 +210,56 @@ function isWallLegal(player, coord) {
 }
 
 function canJump(coord) {
+  let temp;
   if (
     Math.abs(p1_coord[0] - coord[0]) == 1 &&
     p1_coord[1] == coord[1] &&
     isLegal(p1_coord, [2 * p1_coord[0] - coord[0], coord[1]])
-  )
-    return [2 * p1_coord[0] - coord[0], coord[1]];
-  else if (
+  ) {
+    temp = p2_coord;
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp)) {
+      p2_coord = temp;
+      return [2 * p1_coord[0] - coord[0], coord[1]];
+    }
+    p2_coord = temp;
+  } else if (
     Math.abs(p2_coord[0] - coord[0]) == 1 &&
     p2_coord[1] == coord[1] &&
     isLegal(p2_coord, [2 * p2_coord[0] - coord[0], coord[1]])
-  )
-    return [2 * p2_coord[0] - coord[0], coord[1]];
-  else if (
+  ) {
+    temp = p2_coord;
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp)) {
+      p2_coord = temp;
+      return [2 * p2_coord[0] - coord[0], coord[1]];
+    }
+    p2_coord = temp;
+  } else if (
     p1_coord[0] == coord[0] &&
     Math.abs(p1_coord[1] - coord[1]) == 1 &&
     isLegal(p1_coord, [coord[0], 2 * p1_coord[1] - coord[1]])
-  )
-    return [coord[0], 2 * p1_coord[1] - coord[1]];
-  else if (
+  ) {
+    temp = p1_coord;
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp)) {
+      p1_coord = temp;
+      return [coord[0], 2 * p1_coord[1] - coord[1]];
+    }
+    p1_coord = temp;
+  } else if (
     p2_coord[0] == coord[0] &&
     Math.abs(p2_coord[1] - coord[1]) == 1 &&
     isLegal(p2_coord, [coord[0], 2 * p2_coord[1] - coord[1]])
-  )
-    return [coord[0], 2 * p2_coord[1] - coord[1]];
+  ) {
+    temp = p1_coord;
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp)) {
+      p1_coord = temp;
+      return [coord[0], 2 * p2_coord[1] - coord[1]];
+    }
+    p1_coord = temp;
+  }
   return [];
 }
 
@@ -311,24 +353,7 @@ function drawBoard() {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       let color;
-      if (tour % 2 == 0) {
-        drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
-        color = board_visibility[j][i] >= 0 ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
-        if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
-          clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-        } else {
-          drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
-        }
-      } else {
-        drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
-        color = board_visibility[j][i] <= 0 ? "#EE4F3A" : "#FFFFFF";
-
-        if (board_visibility[p1_coord[1]][p1_coord[0]] < 0) {
-          clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-        } else {
-          drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
-        }
-      }
+      color = (board_visibility[j][i] >= 0 || i==p1_coord[0] && j==p1_coord[1]) ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
       drawRoundedRect(
         (i + 1) * 10 + i * 67,
         (j + 1) * 10 + j * 67,
@@ -340,6 +365,13 @@ function drawBoard() {
     }
   }
   drawWalls();
+
+  drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
+  if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
+    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+  } else {
+    drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
+  }
 }
 
 drawBoard();
@@ -354,34 +386,44 @@ function movePlayer(player, coord) {
     legal = true;
     p1_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#FFFFFF");
-    //player1.style.top = canvasTop +26 + coord[1]*77 + 'px'
-    //player1.style.left = canvasLeft+ 26 + coord[0]*77 + 'px'
     select1 = false;
   } else {
     legal = true;
     p2_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
-    //player2.style.top = canvasTop + 26 + coord[1]*77 + 'px'
-    //player2.style.left = canvasLeft+  26 + coord[0]*77 + 'px'
     select2 = false;
   }
-  if (checkWin(player)) {
+  socket.emit("win?", {
+    gameId: gameId,
+    gameState: getGameState(),
+    token: localStorage.getItem("token"),
+  });
+  socket.on("win", (gameStateReturned) => {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-    //player1.style.display = 'none'
-    //player2.style.display = 'none'
     smoke.style.display = "block";
     win.style.display = "block";
-    win.textContent = "player" + player + " won!";
-  } else {
-    tour++;
-    getReady();
-  }
+    win.textContent = gameStateReturned.winner + " won!";
+  });
+  tour++;
 }
 
 function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
 }
+
+let checking = false;
+
+socket.on("legalMove", (new_coord) => {
+  checking = false;
+  updateFogOfWarReverse(1);
+  movePlayer(1, new_coord);
+  updateFogOfWar(1);
+  socket.emit("sendGameState", {
+    gameId: gameId,
+    gameState: getGameState(),
+  });
+});
 
 function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
@@ -391,28 +433,19 @@ function getMouseCoordOnCanvas(event) {
   if (!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]) {
     displayPossibleMoves(1);
   } else if (
-    !select2 &&
-    new_coord[0] === p2_coord[0] &&
-    new_coord[1] === p2_coord[1]
-  ) {
-    displayPossibleMoves(2);
-  } else if (
     select1 &&
     (isLegal(p1_coord, new_coord) ||
       (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
   ) {
-    updateFogOfWarReverse(1);
-    movePlayer(1, new_coord);
-    updateFogOfWar(1);
-  } else if (
-    select2 &&
-    (isLegal(p2_coord, new_coord) ||
-      (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
-  ) {
-    updateFogOfWarReverse(2);
-    movePlayer(2, new_coord);
-    updateFogOfWar(2);
-    drawBoard();
+    const dataToSend = {
+      gameId: gameId,
+      gameState: getGameState(),
+      newCoord: new_coord,
+    };
+    if (!checking) {
+      socket.emit("isMoveLegal", dataToSend);
+      checking = true;
+    }
   } else {
     select1 = false;
     select2 = false;
@@ -420,7 +453,7 @@ function getMouseCoordOnCanvas(event) {
     let wall_coord = getWallFromCoord(x, y);
     current_direction = current_direction == "v" ? "h" : "v";
     let player = tour % 2 == 0 ? 1 : 2;
-    if (isWallLegal(player, wall_coord)) {
+    if (isWallLegal(player, wall_coord) && player == 1) {
       drawTempWall(wall_coord, current_direction);
     } else {
       current_direction = current_direction == "v" ? "h" : "v";
@@ -460,47 +493,7 @@ function displayPossibleMoves(player) {
         );
       }
     }
-  } else if (player == 2 && tour % 2 == 1) {
-    select2 = true;
-    clearTempWall(current_direction);
-    drawWalls();
-    for (let coord of getPlayerNeighbour(p2_coord)) {
-      if (isLegal(p2_coord, coord)) {
-        drawRoundedRect(
-          (coord[0] + 1) * 10 + coord[0] * 67,
-          (coord[1] + 1) * 10 + coord[1] * 67,
-          67,
-          67,
-          20,
-          color,
-        );
-      }
-      let jump_coord = canJump(p2_coord);
-      if (jump_coord.length > 0) {
-        drawRoundedRect(
-          (jump_coord[0] + 1) * 10 + jump_coord[0] * 67,
-          (jump_coord[1] + 1) * 10 + jump_coord[1] * 67,
-          67,
-          67,
-          20,
-          color,
-        );
-      }
-    }
   }
-}
-
-function getReady() {
-  for (let element of anticheat) {
-    element.style.display = "block";
-  }
-}
-
-function isReady() {
-  for (let element of anticheat) {
-    element.style.display = "none";
-  }
-  drawBoard();
 }
 
 function updateFogOfWar(player) {
@@ -575,14 +568,26 @@ function updateFogOfWarWall(wall_coord) {
   }
 }
 
-function confirmWall() {
+let wallChecking = false;
+
+socket.on("legalWall", () => {
+  wallChecking = false;
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     if (tour % 2 == 0) p1_walls--;
     else p2_walls--;
     tour++;
-    getReady();
+  }
+  drawBoard();
+  const dataToSend = { gameId: gameId, gameState: getGameState() };
+  socket.emit("sendGameState", dataToSend);
+});
+
+function confirmWall() {
+  if (temp_wall.length > 0 && !wallChecking) {
+    wallChecking = true;
+    socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
   }
 }
 
@@ -656,6 +661,7 @@ confirm.addEventListener("click", confirmWall);
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
+    players: players,
     playerspositions: [p1_coord, p2_coord],
     status: playing ? 1 : 2,
     p1walls: p1_walls,
@@ -663,5 +669,27 @@ export function getGameState() {
     vwalls: v_walls,
     hwalls: h_walls,
     turn: tour,
+    board_visibility: board_visibility,
   };
 }
+
+socket.on("aiMove", (newCoord) => {
+  updateFogOfWarReverse(2);
+  movePlayer(2, newCoord);
+  updateFogOfWar(2);
+  drawBoard();
+});
+
+socket.on("illegal", () => {
+  alert("Illegal Move !");
+  wallChecking = false;
+  checking = false;
+});
+
+window.addEventListener("onbeforeunload", function (event) {
+  socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+});
+
+window.addEventListener("unload", function (event) {
+  socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+})
