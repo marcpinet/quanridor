@@ -46,6 +46,7 @@ let v_walls = [];
 let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
+let sleeping = false;
 
 function initializeGame(gameState) {
   // TODO : when multiplayer is implemented, indice will have to be better handled (see https://i.imgur.com/uZXRibi.png)
@@ -385,6 +386,7 @@ function sleep(ms) {
 }
 
 async function getMouseCoordOnCanvas(event) {
+  if (sleeping) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
@@ -406,7 +408,9 @@ async function getMouseCoordOnCanvas(event) {
     movePlayer(1, new_coord);
     updateFogOfWar(1);
     drawBoard();
+    sleeping = true;
     await sleep(2000);
+    sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
       clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
@@ -426,7 +430,9 @@ async function getMouseCoordOnCanvas(event) {
     movePlayer(2, new_coord);
     updateFogOfWar(2);
     drawBoard();
+    sleeping = true;
     await sleep(2000);
+    sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
       clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
@@ -607,7 +613,9 @@ async function confirmWall() {
     else p2_walls--;
     drawBoard();
     tour++;
+    sleeping = true;
     await sleep(2000);
+    sleeping = false;
     getReady();
   }
 }
