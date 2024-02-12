@@ -414,6 +414,17 @@ function getWallFromCoord(x, y) {
 
 let checking = false;
 
+socket.on("legalMove", (new_coord) => {
+  checking = false;
+  updateFogOfWarReverse(1);
+  movePlayer(1, new_coord);
+  updateFogOfWar(1);
+  socket.emit("sendGameState", {
+    gameId: gameId,
+    gameState: getGameState(),
+  });
+});
+
 function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
@@ -435,21 +446,6 @@ function getMouseCoordOnCanvas(event) {
       socket.emit("isMoveLegal", dataToSend);
       checking = true;
     }
-    socket.on("legalMove", () => {
-      checking = false;
-      updateFogOfWarReverse(1);
-      movePlayer(1, new_coord);
-      updateFogOfWar(1);
-      drawBoard();
-      socket.emit("sendGameState", {
-        gameId: gameId,
-        gameState: getGameState(),
-      });
-    });
-
-    socket.on("illegal", () => {
-      alert("Illegal Move !");
-    });
   } else {
     select1 = false;
     select2 = false;
@@ -572,25 +568,27 @@ function updateFogOfWarWall(wall_coord) {
   }
 }
 
+let wallChecking = false;
+
+socket.on("legalWall", () => {
+  wallChecking = false;
+  if (temp_wall.length > 0) {
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    if (tour % 2 == 0) p1_walls--;
+    else p2_walls--;
+    tour++;
+  }
+  drawBoard();
+  const dataToSend = { gameId: gameId, gameState: getGameState() };
+  socket.emit("sendGameState", dataToSend);
+});
+
 function confirmWall() {
-  socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
-
-  socket.on("legalWall", () => {
-    if (temp_wall.length > 0) {
-      updateFogOfWarWall(temp_wall);
-      placeWall(temp_wall, current_direction);
-      if (tour % 2 == 0) p1_walls--;
-      else p2_walls--;
-      tour++;
-    }
-    drawBoard();
-    const dataToSend = { gameId: gameId, gameState: getGameState() };
-    socket.emit("sendGameState", dataToSend);
-  });
-
-  socket.on("illegal", () => {
-    alert("Illegal Move !");
-  });
+  if (temp_wall.length > 0 && !wallChecking) {
+    wallChecking = true;
+    socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
+  }
 }
 
 function isInclude(array, coord) {
@@ -680,6 +678,12 @@ socket.on("aiMove", (newCoord) => {
   movePlayer(2, newCoord);
   updateFogOfWar(2);
   drawBoard();
+});
+
+socket.on("illegal", () => {
+  alert("Illegal Move !");
+  wallChecking = false;
+  checking = false;
 });
 
 window.addEventListener("onbeforeunload", function (event) {

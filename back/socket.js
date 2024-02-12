@@ -358,7 +358,7 @@ function createSocket(server) {
       ) {
         socket.emit("illegal");
       } else {
-        socket.emit("legalMove");
+        socket.emit("legalMove", newCoord);
       }
     });
 
