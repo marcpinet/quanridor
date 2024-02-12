@@ -76,15 +76,10 @@ async function manageRequest(request, response) {
     if (normalizedPath === `${apiPath}/game` && request.method === "GET") {
       handleGameGet(request, response, decodedToken);
     } else if (
-      normalizedPath === `${apiPath}/game` &&
-      request.method === "POST"
+      normalizedPath === `${apiPath}/users` &&
+      request.method === "GET"
     ) {
-      handleGamePost(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/game` &&
-      request.method === "PATCH"
-    ) {
-      handleGamePatch(request, response, decodedToken);
+      handleUsersGet(request, response, decodedToken);
     } else {
       response.writeHead(404, { "Content-Type": "application/json" });
       response.end(
@@ -195,6 +190,34 @@ async function handleLogin(request, response) {
       response.end(JSON.stringify({ message: "Invalid JSON" }));
     }
   });
+}
+
+// ------------------------------ USERS HANDLING ------------------------------
+
+async function handleUsersGet(request, response, decodedToken) {
+  addCors(response, ["GET"]);
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+
+    const username = decodedToken.username;
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    // Return every information about the user except the password
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ username: user.username })); // For now, we have nothing more...
+  } catch (e) {
+    console.error("Error in handleUsersGet:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Failed to retrieve user" }));
+  }
 }
 
 // ------------------------------ GAME HANDLING ------------------------------

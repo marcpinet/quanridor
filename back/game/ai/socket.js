@@ -1,9 +1,9 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
-const AI0 = require("./logic/ai.js");
-const { getDB } = require("./queryManagers/db");
-const { initializeGame } = require("./queryManagers/game-initializer.js");
-const { verifyToken } = require("./utils/jwt-utils");
+const AI0 = require("./ai.js");
+const { getDB } = require("../../queryManagers/db.js");
+const { initializeGame } = require("../game-initializer.js");
+const { verifyToken } = require("../../utils/jwt-utils.js");
 
 let p1_goals = [
   [0, 0],
