@@ -402,8 +402,27 @@ function movePlayer(player, coord) {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
     smoke.style.display = "block";
-    win.style.display = "block";
-    win.textContent = gameStateReturned.winner + " won!";
+    //win.style.display = "block";
+    //win.textContent = gameStateReturned.winner + " won!";
+    clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+    smoke.style.display = "block";
+
+    // Créez une div pour le popup avec la classe "custom-popup"
+    const popup = document.createElement('div');
+    popup.classList.add('custom-popup');
+    popup.textContent = gameStateReturned.winner + " won!";
+
+    // Ajoutez un bouton "home" au popup
+    const homeButton = document.createElement('button');
+    homeButton.textContent = 'Home';
+    homeButton.addEventListener('click', function() {
+        window.location.href = 'home.html'; // Redirection vers la page d'accueil
+    });
+    popup.appendChild(homeButton);
+
+    // Ajoutez la div du popup au body de la page
+    document.body.appendChild(popup);
   });
   tour++;
 }
