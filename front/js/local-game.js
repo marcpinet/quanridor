@@ -316,6 +316,7 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
+  console.log(board_visibility);
   context.clearRect(0, 0, canvas.width, canvas.height);
   let gradient = context.createLinearGradient(0, 0, 0, canvas.height);
 
@@ -328,10 +329,8 @@ function drawBoard() {
     for (let j = 0; j < 9; j++) {
       let color;
       if (tour % 2 == 0) {
-        //player1.style.display = 'block'
         drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
-        color = board_visibility[j][i] >= 0 ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
-        //player2.style.display = board_visibility[p2_coord[1]][p2_coord[0]]<0 ? 'none' : 'block'
+        color = (board_visibility[j][i] >= 0 || i==p1_coord[0] && j==p1_coord[1]) ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
         if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
           clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
         } else {
@@ -340,10 +339,9 @@ function drawBoard() {
       } else {
         //player2.style.display = "block"
         drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
-        color = board_visibility[j][i] <= 0 ? "#EE4F3A" : "#FFFFFF";
+        color = (board_visibility[j][i] <= 0 || i==p2_coord[0] && j==p2_coord[1]) ? "#EE4F3A" : "#FFFFFF";
 
-        //player1.style.display = board_visibility[p1_coord[1]][p1_coord[0]]>0 ? 'none' : 'block'
-        if (board_visibility[p1_coord[1]][p1_coord[0]] < 0) {
+        if (board_visibility[p1_coord[1]][p1_coord[0]] > 0) {
           clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
         } else {
           drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
@@ -432,7 +430,6 @@ function getMouseCoordOnCanvas(event) {
     updateFogOfWarReverse(2);
     movePlayer(2, new_coord);
     updateFogOfWar(2);
-    drawBoard();
   } else {
     select1 = false;
     select2 = false;
