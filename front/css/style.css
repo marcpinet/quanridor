@@ -55,9 +55,9 @@ svg {
 
 #user {
     background:
-    url('../assets/user-circle.svg') center/200px no-repeat;
-    width: 200px;
-    height: 25vh;
+    url('../assets/user-circle.svg') center/50% no-repeat;
+    width: 100%;
+    height: 50%;
 }
 
 .small-title {
@@ -274,7 +274,7 @@ canvas {
 }
 
 .profile-box {
-    width: 40vh; height: 50vh;
+    width: 80%; height: max-content;
 }
 
 #separator {
