@@ -302,11 +302,19 @@ canvas {
 }
 
 #back-arrow {
-  background: url("../assets/back-arrow.svg") center/60px no-repeat;
+  position: absolute;
+  background: url("../assets/back-arrow.svg") center/100px no-repeat;
   width: 100px;
   height: 10vh;
   cursor: pointer;
-  margin-right: 50px;
+  padding: 50px;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#back-arrow:hover {
+  height: 12vh;
 }
 
 .game-list {
@@ -326,13 +334,19 @@ canvas {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90%;
+  width: 90vh;
   max-width: 1200px;
+  height: 9vh;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 .game-item:hover {
   border: 6px solid #f3b9ff;
   cursor: pointer;
+  height: 10vh;
+  width: 100vh;
 }
 
 .player-name {
@@ -344,10 +358,14 @@ canvas {
   font-size: 32px;
 }
 
-.gameinprogress {
+.text-title {
   font-size: 100px;
   font-weight: bold;
-  margin-right: 50px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
 }
 
 .no-game {
