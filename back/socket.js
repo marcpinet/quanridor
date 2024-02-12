@@ -253,6 +253,10 @@ function isWallLegal(
   return isPossible;
 }
 
+function checkWin(player, { p1_coord, p2_coord }) {
+  return (player == 1 && p1_coord[1] == 0) || (player == 2 && p2_coord[1] == 8);
+}
+
 function createSocket(server) {
   const io = new Server(server);
 
@@ -339,13 +343,13 @@ function createSocket(server) {
       }
     });
 
-    socket.on("isMoveLegal", (data) => {
-      let gameState = data[0];
-      let newPlayerCoord = data[1];
+    socket.on("isMoveLegal", async (data) => {
+      let gameState = data.gameState;
+      let newCoord = data.newCoord;
       if (
         !isLegal(
           gameState.playerspositions[0],
-          newPlayerCoord,
+          newCoord,
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
@@ -355,6 +359,59 @@ function createSocket(server) {
         socket.emit("illegal");
       } else {
         socket.emit("legalMove");
+      }
+    });
+
+    socket.on("win?", async (data) => {
+      const gameId = data.gameId;
+      const players = data.players;
+      const gameState = data.gameState;
+      // Check if someone won
+      if (
+        checkWin(1, {
+          p1_coord: gameState.playerspositions[0],
+          p2_coord: gameState.playerspositions[1],
+        }) ||
+        checkWin(2, {
+          p1_coord: gameState.playerspositions[0],
+          p2_coord: gameState.playerspositions[1],
+        })
+      ) {
+        const db = getDB();
+        const games = db.collection("games");
+        const users = db.collection("users");
+        const token = data.token;
+
+        // Check if user is part of the game
+        const decoded = await verifyToken(token);
+        if (!decoded) {
+          socket.emit("error", "Invalid token");
+          return;
+        }
+
+        const user = await users.findOne({ username: decoded.username });
+        if (!user) {
+          socket.emit("error", "User not found");
+          return;
+        }
+
+        let res = await games.updateOne(
+          { _id: new ObjectId(gameId) },
+          {
+            $set: {
+              status: 2,
+              winner: checkWin(1, {
+                p1_coord: gameState.playerspositions[0],
+                p2_coord: gameState.playerspositions[1],
+              })
+                ? gameState.players[0]
+                : gameState.players[1],
+            },
+          },
+        );
+
+        const game = await games.findOne({ _id: new ObjectId(gameId) });
+        socket.emit("win", game);
       }
     });
 
@@ -420,22 +477,6 @@ function createSocket(server) {
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
         { $set: gameState },
-      );
-    });
-
-    socket.on("win", async (data) => {
-      const db = getDB();
-      const games = db.collection("games");
-      const gameId = data.gameId;
-      const gameState = data.gameState;
-      let res = await games.updateOne(
-        { _id: new ObjectId(gameId) },
-        {
-          $set: {
-            status: 2,
-            winner: gameState.winner,
-          },
-        },
       );
     });
   });

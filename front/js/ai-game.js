@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       token: localStorage.getItem("token"),
     });
     socket.on("gameCreated", (game) => {
-      gameId = game.id;
+      gameId = game._id;
       initializeGame(game);
     });
   }
@@ -393,19 +393,19 @@ function movePlayer(player, coord) {
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
     select2 = false;
   }
-  if (checkWin(player)) {
+  socket.emit("win?", {
+    gameId: gameId,
+    gameState: getGameState(),
+    token: localStorage.getItem("token"),
+  });
+  socket.on("win", (gameStateReturned) => {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
     smoke.style.display = "block";
     win.style.display = "block";
-    win.textContent = "player" + player + " won!";
-    const gameState = getGameState();
-    // set winner of gamestate
-    gameState.winner = player;
-    socket.emit("win", { gameId: gameId, gameState: gameState });
-  } else {
-    tour++;
-  }
+    win.textContent = gameStateReturned.winner + " won!";
+  });
+  tour++;
 }
 
 function getWallFromCoord(x, y) {
@@ -424,7 +424,11 @@ function getMouseCoordOnCanvas(event) {
     (isLegal(p1_coord, new_coord) ||
       (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
   ) {
-    const dataToSend = [getGameState(), new_coord];
+    const dataToSend = {
+      gameId: gameId,
+      gameState: getGameState(),
+      newCoord: new_coord,
+    };
     socket.emit("isMoveLegal", dataToSend);
     socket.on("legalMove", () => {
       updateFogOfWarReverse(1);
@@ -675,5 +679,6 @@ socket.on("aiMove", (newCoord) => {
 });
 
 window.addEventListener("beforeunload", function (event) {
+  console.log(gameId);
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
 });
