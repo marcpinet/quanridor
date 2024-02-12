@@ -346,19 +346,26 @@ function createSocket(server) {
     socket.on("isMoveLegal", async (data) => {
       let gameState = data.gameState;
       let newCoord = data.newCoord;
+      let jump_coord = canJump(
+        gameState.playerspositions[0], 
+        gameState.playerspositions[0], 
+        gameState.playerspositions[1], 
+        gameState.vwalls, 
+        gameState.hwalls);
       if (
-        !isLegal(
+        isLegal(
           gameState.playerspositions[0],
           newCoord,
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
           gameState.playerspositions[1],
-        )
+        ) ||
+        (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
       ) {
-        socket.emit("illegal");
-      } else {
         socket.emit("legalMove", newCoord);
+      } else {
+        socket.emit("illegal");
       }
     });
 
