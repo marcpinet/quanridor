@@ -70,7 +70,7 @@ function computeMove(gameState) {
     gameState.vwalls,
     gameState.hwalls,
   );
-  if (jump_coord[0] != -1) possibleMoves.push(jump_coord);
+  if (jump_coord.length > 0) possibleMoves.push(jump_coord);
 
   // Check if placing a vertical wall is possible.
   for (let i = 0; i < 8; i++) {

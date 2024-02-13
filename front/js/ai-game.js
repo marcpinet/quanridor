@@ -714,7 +714,6 @@ export function getGameState() {
 
 socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
-  console.log(newCoord[2]);
   if (newCoord[2] !== undefined) {
     placeWall(newCoord, newCoord[2]);
     updateFogOfWarWall(newCoord);
@@ -724,7 +723,6 @@ socket.on("aiMove", (newCoord) => {
   tour++;
   updateFogOfWar(2);
   drawBoard();
-  console.log(tour);
 });
 
 socket.on("illegal", () => {
