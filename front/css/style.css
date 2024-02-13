@@ -410,3 +410,19 @@ canvas {
   top: 70%;
   transform: translate(-50%, -50%);
 }
+
+.wall-bar-container {
+  width: 80%;
+  height: 20%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.wall-bar {
+  height: 50%;
+  background: #ffffff;
+  border-radius: 5px;
+  position: relative;
+}
+

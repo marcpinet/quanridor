@@ -609,8 +609,14 @@ async function confirmWall() {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) p1_walls--;
-    else p2_walls--;
+    if (tour % 2 == 0){
+      p1_walls--;
+      updateWallBar(p1_walls, 10, tour)
+    } 
+    else{
+      p2_walls--;
+      updateWallBar(p2_walls, 10, tour)
+    }
     drawBoard();
     tour++;
     sleeping = true;
@@ -702,4 +708,18 @@ export function getGameState() {
     hwalls: h_walls,
     turn: tour,
   };
+}
+
+function updateWallBar(value, maxValue, t) {
+  var progressBar;
+  if(t % 2 == 0){
+    progressBar = document.getElementById("wall-bar-1");
+  }
+  else{
+    progressBar = document.getElementById("wall-bar-2");
+  }
+  var percentage = (value / maxValue) * 100;
+  console.log("bar width : " + progressBar.style.width);
+  progressBar.style.width = percentage + "%";
+  console.log("new bar width : " + progressBar.style.width);
 }
