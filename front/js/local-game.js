@@ -433,7 +433,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(1);
     drawBoard();
     sleeping = true;
-    await sleep(200);
+    await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
@@ -455,7 +455,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(2);
     drawBoard();
     sleeping = true;
-    await sleep(200);
+    await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
@@ -638,7 +638,7 @@ async function confirmWall() {
     drawBoard();
     tour++;
     sleeping = true;
-    await sleep(2000);
+    await sleep(1000);
     sleeping = false;
     getReady();
   }
