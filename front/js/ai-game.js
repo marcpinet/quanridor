@@ -404,14 +404,11 @@ function getCaseFromCoord(x, y) {
 }
 
 function movePlayer(player, coord) {
-  let legal = false;
   if (player == 1) {
-    legal = true;
     p1_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#FFFFFF");
     select1 = false;
   } else {
-    legal = true;
     p2_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
     select2 = false;
@@ -447,7 +444,6 @@ function movePlayer(player, coord) {
     // Ajoutez la div du popup au body de la page
     document.body.appendChild(popup);
   });
-  tour++;
 }
 
 function getWallFromCoord(x, y) {
@@ -465,6 +461,7 @@ socket.on("legalMove", (new_coord) => {
     gameId: gameId,
     gameState: getGameState(),
   });
+  tour++;
 });
 
 function getMouseCoordOnCanvas(event) {
@@ -717,9 +714,17 @@ export function getGameState() {
 
 socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
-  movePlayer(2, newCoord);
+  console.log(newCoord[2]);
+  if (newCoord[2] !== undefined) {
+    placeWall(newCoord, newCoord[2]);
+    updateFogOfWarWall(newCoord);
+  } else {
+    movePlayer(2, newCoord);
+  }
+  tour++;
   updateFogOfWar(2);
   drawBoard();
+  console.log(tour);
 });
 
 socket.on("illegal", () => {
