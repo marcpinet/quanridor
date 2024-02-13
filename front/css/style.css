@@ -420,9 +420,20 @@ canvas {
 }
 
 .wall-bar {
-  height: 50%;
-  background: #ffffff;
-  border-radius: 5px;
-  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.square {
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border: 2px #000000;
+  margin: 5px 1px;
+  transition: opacity 1s; /* Transition de l'opacité prenant 1 seconde */
+  opacity: 1;
+}
+
+.transparent {
+  opacity: 0; /* Classe pour rendre le carré transparent */
 }
 

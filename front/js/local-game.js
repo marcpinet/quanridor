@@ -610,12 +610,14 @@ async function confirmWall() {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     if (tour % 2 == 0){
+      updateWallBar(p1_walls, tour)
       p1_walls--;
-      updateWallBar(p1_walls, 10, tour)
+      
     } 
     else{
+      updateWallBar(p2_walls, tour)
       p2_walls--;
-      updateWallBar(p2_walls, 10, tour)
+      
     }
     drawBoard();
     tour++;
@@ -710,16 +712,13 @@ export function getGameState() {
   };
 }
 
-function updateWallBar(value, maxValue, t) {
-  var progressBar;
-  if(t % 2 == 0){
-    progressBar = document.getElementById("wall-bar-1");
-  }
-  else{
-    progressBar = document.getElementById("wall-bar-2");
-  }
-  var percentage = (value / maxValue) * 100;
-  console.log("bar width : " + progressBar.style.width);
-  progressBar.style.width = percentage + "%";
-  console.log("new bar width : " + progressBar.style.width);
+function updateWallBar(value, t) {
+  var wallId = "p" + ((t % 2) + 1) + "-wall" + value;
+  makeSquareTransparent(wallId)
+  
+}
+
+function makeSquareTransparent(squareId) {
+  var square = document.getElementById(squareId);
+  square.classList.add("transparent");
 }
