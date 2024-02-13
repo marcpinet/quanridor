@@ -174,6 +174,12 @@ button:hover {
   font-weight: 700;
 }
 
+.big-text {
+  text-shadow: 6px 6px 4px #111430;
+  font-size: 58px;
+  font-weight: 700;
+}
+
 .text {
   font-size: 32px;
 }
@@ -321,6 +327,49 @@ canvas {
   height: 12vh;
 }
 
+#home {
+  position: absolute;
+  bottom: -100px;
+  right: -100px;
+  justify-content: flex-end;
+  background: url("../assets/home.svg") center/150px no-repeat;
+  width: 200px;
+  height: 10vh;
+  cursor: pointer;
+  filter: none;
+  padding: 50px;
+  rotate: 5deg;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+    
+}
+
+#home:hover {
+  height: 12vh;
+}
+
+#replay {
+  position: absolute;
+  bottom: -100px;
+  right: 300px;
+  justify-content: flex-end;
+  background: url("../assets/replay.svg") center/150px no-repeat;
+  width: 200px;
+  height: 10vh;
+  cursor: pointer;
+  filter: none;
+  padding: 50px;
+  rotate: 5deg;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#replay:hover {
+  height: 12vh;
+}
+
 .game-list {
   font-size: 32px;
   width: 100%;
@@ -378,35 +427,49 @@ canvas {
   font-weight: bold;
 }
 
-.custom-popup {
-  /* Styles pour le popup */
-  background-image: url("../assets/big_brain.png");
+#result-popup {
+  z-index: 3;
   background-size: cover;
-  border: 10px solid #4650a8;
+  background-color: rgba(1,5,37,0.85);
+  border: 15px solid rgba(126, 58, 238, 1);
   border-radius: 38px;
   padding: 20px;
-  box-shadow: 0px 0px 10px #010525;
-  width: 50%;
-  max-width: 80%;
-  height: 50%;
-  max-height: 80%;
+  width: 500px;
+  height: 500px;
   margin: 0 auto;
   text-align: center;
   text-transform: uppercase;
   color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.5);
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  rotate: -5deg;
+  transform: translate(-50%, -60%);
   text-shadow: 6px 6px 4px #111430;
   font-size: 48px;
   font-weight: 700;
 }
 
-.custom-popup button {
-  position: absolute;
-  left: 50%;
-  top: 70%;
-  transform: translate(-50%, -50%);
+#elo-score-win {
+  color: #3AADEE;
+  filter: none;
+  text-shadow: none;
+  rotate: 5deg;
+}
+
+#elo-score-lose {
+  color: #EE4F3A;
+  filter: none;
+  text-shadow: none;
+  rotate: 5deg;
+}
+
+#win-text{
+  text-shadow: none;
+  rotate: 5deg;
+}
+
+#elo-scores {
+  text-shadow: none;
+  rotate: 5deg;
 }

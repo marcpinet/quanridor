@@ -16,6 +16,8 @@ const confirm = document.getElementById("confirm");
 canvas.width = 703;
 canvas.height = 703;
 
+const winPopup = document.getElementById("result-popup");
+
 function drawRoundedRect(x, y, width, height, radius, color) {
   context.beginPath();
 
@@ -57,6 +59,7 @@ let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
 document.addEventListener("DOMContentLoaded", async () => {
+  winPopup.style.display = "none";
   const urlParams = new URLSearchParams(window.location.search);
   gameId = urlParams.get("id");
 
@@ -397,7 +400,7 @@ function drawBoard() {
     (Math.abs(p1_coord[0] - p2_coord[0]) == 1 && p1_coord[1] == p2_coord[1]) ||
     (Math.abs(p1_coord[1] - p2_coord[1]) == 1 && p1_coord[0] == p2_coord[0])
   ) {
-    color = "#EE4F3A";
+    let color = "#EE4F3A";
     drawRoundedRect(
       (p1_coord[0] + 1) * 10 + p1_coord[0] * 67,
       (p1_coord[1] + 1) * 10 + p1_coord[1] * 67,
@@ -445,27 +448,18 @@ function movePlayer(player, coord) {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
     smoke.style.display = "block";
-    clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-    smoke.style.display = "block";
+    winPopup.style.display = "block";
 
-    // Créez une div pour le popup avec la classe "custom-popup"
-    const popup = document.createElement("div");
-    popup.classList.add("custom-popup");
-    popup.classList.add("bold-text");
-    popup.textContent = gameStateReturned.winner + " won!";
+    const winText = document.getElementById("win-text");
+    winText.textContent = gameStateReturned.winner + " WON!";
 
-    // Ajoutez un bouton "home" au popup
-    const homeButton = document.createElement("button");
-    homeButton.textContent = "Home";
-    homeButton.classList.add("big-button");
-    homeButton.addEventListener("click", function () {
-      window.location.href = "home.html"; // Redirection vers la page d'accueil
-    });
-    popup.appendChild(homeButton);
+    const eloWin = document.getElementById("elo-score-win");
+    eloWin.textContent = gameStateReturned.winner + ": +144";
 
-    // Ajoutez la div du popup au body de la page
-    document.body.appendChild(popup);
+    const eloLost = document.getElementById("elo-score-lose");
+    let loser =
+      gameStateReturned.winner == players[0] ? players[1] : players[0];
+    eloLost.textContent = loser + ": -144";
   });
 }
 
