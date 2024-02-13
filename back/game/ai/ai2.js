@@ -1,22 +1,4 @@
-let gameState = {
-  opponentWalls: [],
-  ownWalls: [],
-  board: board,
-};
-
-let board = [
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 0, 0, 0, 0],
-];
-
-let p1_goals = [
+const p1_goals = [
   [0, 0],
   [1, 0],
   [2, 0],
@@ -27,7 +9,7 @@ let p1_goals = [
   [7, 0],
   [8, 0],
 ];
-let p2_goals = [
+const p2_goals = [
   [0, 8],
   [1, 8],
   [2, 8],
@@ -39,108 +21,62 @@ let p2_goals = [
   [8, 8],
 ];
 
-function retrieveOwnPosition(board) {
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
-      if (board[i][j] == 1) return [j, i];
-    }
+let ourGameState = {
+  opponentWalls: [],
+  ownWalls: [],
+  board: board,
+};
+
+let board = [];
+let ownPosition = "";
+let opponentPosition = "";
+let player;
+
+function initBoard(player) {
+  if (player == 1) {
+    board = [
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    ];
+  } else {
+    board = [
+      [0, 0, 0, 0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    ];
   }
 }
 
 function retrieveOpponentPosition(board) {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
-      if (board[i][j] == 2) return [j, i];
-    }
-  }
-}
-
-function isInclude(array, coord) {
-  for (let subArray of array) {
-    if (coord[0] == subArray[0] && coord[1] == subArray[1]) return true;
-  }
-  return false;
-}
-
-function aStarPathfinding(start, goals) {
-  let openSet = [];
-  let closedSet = [];
-  let cameFrom = {};
-  let gScore = {};
-  let fScore = {};
-
-  openSet.push(start);
-  gScore[start] = 0;
-  fScore[start] = heuristic(start, goals); // Heuristic function to estimate distance to goal
-
-  while (openSet.length > 0) {
-    let current = getLowestFScoreNode(openSet, fScore);
-
-    if (isInclude(goals, current)) {
-      return reconstructPath(cameFrom, current);
-    }
-
-    openSet = openSet.filter((node) => node !== current);
-    closedSet.push(current);
-
-    let neighbors = getPlayerNeighbour(current);
-
-    for (let neighbor of neighbors) {
-      if (isInclude(closedSet, neighbor) || !isLegal(current, neighbor))
-        continue;
-
-      let tentative_gScore = gScore[current] + 1; // Assuming all edges have a weight of 1
-
-      if (!openSet.includes(neighbor) || tentative_gScore < gScore[neighbor]) {
-        cameFrom[neighbor] = current;
-        gScore[neighbor] = tentative_gScore;
-        fScore[neighbor] = gScore[neighbor] + heuristic(neighbor, goals);
-        if (!openSet.includes(neighbor)) {
-          openSet.push(neighbor);
-        }
+      if (board[i][j] == 2) {
+        return [j, i];
       }
     }
   }
-
-  return false; // No path found
-}
-
-function getLowestFScoreNode(openSet, fScore) {
-  let lowestNode = openSet[0];
-  for (let node of openSet) {
-    if (fScore[node] < fScore[lowestNode]) {
-      lowestNode = node;
-    }
-  }
-  return lowestNode;
-}
-
-function reconstructPath(cameFrom, current) {
-  let totalPath = [current];
-  while (cameFrom[current]) {
-    current = cameFrom[current];
-    totalPath.unshift(current);
-  }
-  return totalPath;
-}
-
-function heuristic(current, goals) {
-  let minDistance = Infinity;
-  for (let goal of goals) {
-    let dx = Math.abs(current[0] - goal[0]);
-    let dy = Math.abs(current[1] - goal[1]);
-    let distance = dx + dy;
-    if (distance < minDistance) {
-      minDistance = distance;
-    }
-  }
-  return minDistance;
+  return [];
 }
 
 exports.setup = function (AIplay) {
   return new Promise((resolve, reject) => {
-    const position = AIplay == 1 ? "48" : "40";
-    resolve(position);
+    player = AIplay;
+    ownPosition = AIplay == 1 ? "48" : "40";
+    initBoard(AIplay);
+    resolve(ownPosition);
   });
 };
 
@@ -160,12 +96,40 @@ const move = {
 };
 */
 
+function shortestPath(start, goals, walls) {
+  //return shortest path from start to one of goals
+}
+
 exports.nextMove = function (gameState) {
   return new Promise((resolve, reject) => {
-    const move = {
-      action: "move",
-      value: "41",
-    };
+    let move;
+    let ownPath = shortestPath(
+      [ownPos[0], ownPos[1]],
+      player == 1 ? p1_goals : p2_goals,
+      [gameState.opponentWalls + gameState.ownWalls],
+    );
+    let opponentPath;
+
+    let tempPosition = retrieveOpponentPosition(gameState.board);
+    if (tempPosition == []) opponentPosition = "";
+    else opponentPosition = tempPosition[0] + "" + tempPosition[1];
+
+    if (opponentPosition != "") {
+      opponentPath = shortestPath(
+        [opponentPosition[0], opponentPosition[1]],
+        player == 1
+          ? p2_goals
+          : p1_goals[gameState.opponentWalls + gameState.ownWalls],
+      );
+    }
+    if (ownPath.length >= opponentPath.length) {
+      coordToMoveTo = ownPath[1];
+      move = {
+        action: "move",
+        value: coordToMoveTo[0] + "" + coordToMoveTo[1],
+      };
+    } else if (ownPath.length) {
+    }
     resolve(move);
   });
 };
@@ -178,6 +142,7 @@ exports.correction = function (rightMove) {
 
 exports.updateBoard = function (gameState) {
   return new Promise((resolve, reject) => {
+    ourGameState = gameState;
     resolve(true);
   });
 };
