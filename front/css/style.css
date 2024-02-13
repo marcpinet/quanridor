@@ -332,16 +332,42 @@ canvas {
   bottom: -100px;
   right: -100px;
   justify-content: flex-end;
-  background: url("../assets/home.svg") center/100px no-repeat;
+  background: url("../assets/home.svg") center/150px no-repeat;
   width: 200px;
   height: 10vh;
   cursor: pointer;
   filter: none;
   padding: 50px;
+  rotate: 5deg;
   transition:
     width 0.3s ease,
     height 0.3s ease;
     
+}
+
+#home:hover {
+  height: 12vh;
+}
+
+#replay {
+  position: absolute;
+  bottom: -100px;
+  right: 300px;
+  justify-content: flex-end;
+  background: url("../assets/replay.svg") center/150px no-repeat;
+  width: 200px;
+  height: 10vh;
+  cursor: pointer;
+  filter: none;
+  padding: 50px;
+  rotate: 5deg;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#replay:hover {
+  height: 12vh;
 }
 
 .game-list {
