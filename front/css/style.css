@@ -133,6 +133,10 @@ button.small-button:hover {
   gap: 50px;
 }
 
+.margin-top {
+  margin-top: 20px;
+}
+
 .horizontal-container {
   display: flex;
   justify-content: space-between;
