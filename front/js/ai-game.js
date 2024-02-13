@@ -400,7 +400,7 @@ function drawBoard() {
     (Math.abs(p1_coord[0] - p2_coord[0]) == 1 && p1_coord[1] == p2_coord[1]) ||
     (Math.abs(p1_coord[1] - p2_coord[1]) == 1 && p1_coord[0] == p2_coord[0])
   ) {
-    color = "#EE4F3A";
+    let color = "#EE4F3A";
     drawRoundedRect(
       (p1_coord[0] + 1) * 10 + p1_coord[0] * 67,
       (p1_coord[1] + 1) * 10 + p1_coord[1] * 67,
