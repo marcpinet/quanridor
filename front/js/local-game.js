@@ -307,7 +307,6 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
-  console.log(board_visibility);
   context.clearRect(0, 0, canvas.width, canvas.height);
   let gradient = context.createLinearGradient(0, 0, 0, canvas.height);
 
@@ -316,9 +315,10 @@ function drawBoard() {
   // '#161A3D'
   drawRoundedRect(0, 0, 703, 703, 20, gradient);
 
+  let color;
+
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
-      let color;
       if (tour % 2 == 0) {
         drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
         color =
@@ -352,6 +352,30 @@ function drawBoard() {
         color,
       );
     }
+  }
+  if (
+    (Math.abs(p1_coord[0] - p2_coord[0]) == 1 && p1_coord[1] == p2_coord[1]) ||
+    (Math.abs(p1_coord[1] - p2_coord[1]) == 1 && p1_coord[0] == p2_coord[0])
+  ) {
+    color = "#EE4F3A";
+    drawRoundedRect(
+      (p1_coord[0] + 1) * 10 + p1_coord[0] * 67,
+      (p1_coord[1] + 1) * 10 + p1_coord[1] * 67,
+      67,
+      67,
+      20,
+      color,
+    );
+    drawRoundedRect(
+      (p2_coord[0] + 1) * 10 + p2_coord[0] * 67,
+      (p2_coord[1] + 1) * 10 + p2_coord[1] * 67,
+      67,
+      67,
+      20,
+      color,
+    );
+    drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
+    drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
   }
   drawWalls();
 }
@@ -409,7 +433,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(1);
     drawBoard();
     sleeping = true;
-    await sleep(2000);
+    await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
@@ -431,7 +455,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(2);
     drawBoard();
     sleeping = true;
-    await sleep(2000);
+    await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
@@ -614,7 +638,7 @@ async function confirmWall() {
     drawBoard();
     tour++;
     sleeping = true;
-    await sleep(2000);
+    await sleep(1000);
     sleeping = false;
     getReady();
   }
