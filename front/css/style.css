@@ -430,7 +430,7 @@ canvas {
 #result-popup {
   z-index: 3;
   background-size: cover;
-  background-color: rgba(1,5,37,0.85);
+  background-color: rgba(1,5,37,0.5);
   border: 15px solid rgba(126, 58, 238, 1);
   border-radius: 38px;
   padding: 20px;
