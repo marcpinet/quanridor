@@ -66,6 +66,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       token: localStorage.getItem("token"),
     });
     socket.on("retrieveGame", (game) => {
+      // Check if game has ended
+      if (game.status === 2) {
+        alert(
+          "Game has already ended, you can't join it. Redirecting to home page...",
+        );
+        window.location.href = "home.html";
+      }
+
       initializeGame(game);
     });
   } else {
@@ -77,6 +85,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       gameId = game._id;
       initializeGame(game);
       window.location.href = "http://localhost:8000/ai-game.html?id=" + gameId;
+
+      // Setting the game info display
+      // Usernames
+      const player1name = document.getElementById("player1-name");
+      player1name.textContent = game.players[0];
+      const player2name = document.getElementById("player2-name");
+      player2name.textContent = game.players[1];
+      // ELO
+      const player1elo = document.getElementById("player1-elo");
+      const player2elo = document.getElementById("player2-elo");
+      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
+      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
     });
   }
 });
@@ -384,14 +404,11 @@ function getCaseFromCoord(x, y) {
 }
 
 function movePlayer(player, coord) {
-  let legal = false;
   if (player == 1) {
-    legal = true;
     p1_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#FFFFFF");
     select1 = false;
   } else {
-    legal = true;
     p2_coord = coord;
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
     select2 = false;
@@ -405,29 +422,28 @@ function movePlayer(player, coord) {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
     smoke.style.display = "block";
-    //win.style.display = "block";
-    //win.textContent = gameStateReturned.winner + " won!";
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
     smoke.style.display = "block";
 
     // Créez une div pour le popup avec la classe "custom-popup"
-    const popup = document.createElement('div');
-    popup.classList.add('custom-popup');
+    const popup = document.createElement("div");
+    popup.classList.add("custom-popup");
+    popup.classList.add("bold-text");
     popup.textContent = gameStateReturned.winner + " won!";
 
     // Ajoutez un bouton "home" au popup
-    const homeButton = document.createElement('button');
-    homeButton.textContent = 'Home';
-    homeButton.addEventListener('click', function() {
-        window.location.href = 'home.html'; // Redirection vers la page d'accueil
+    const homeButton = document.createElement("button");
+    homeButton.textContent = "Home";
+    homeButton.classList.add("big-button");
+    homeButton.addEventListener("click", function () {
+      window.location.href = "home.html"; // Redirection vers la page d'accueil
     });
     popup.appendChild(homeButton);
 
     // Ajoutez la div du popup au body de la page
     document.body.appendChild(popup);
   });
-  tour++;
 }
 
 function getWallFromCoord(x, y) {
@@ -445,6 +461,7 @@ socket.on("legalMove", (new_coord) => {
     gameId: gameId,
     gameState: getGameState(),
   });
+  tour++;
 });
 
 function getMouseCoordOnCanvas(event) {
@@ -697,7 +714,13 @@ export function getGameState() {
 
 socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
-  movePlayer(2, newCoord);
+  if (newCoord[2] !== undefined) {
+    placeWall(newCoord, newCoord[2]);
+    updateFogOfWarWall(newCoord);
+  } else {
+    movePlayer(2, newCoord);
+  }
+  tour++;
   updateFogOfWar(2);
   drawBoard();
 });

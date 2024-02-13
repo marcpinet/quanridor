@@ -1,4 +1,4 @@
-import { determinePlayerTurn } from "./game-utils.js";
+import { determinePlayerTurn } from "./game-utils.js"; // This function will be deprecated in the future (once multiplayer is implemented), I guess?
 
 // CONTINUE GAME
 document.addEventListener("DOMContentLoaded", function () {
