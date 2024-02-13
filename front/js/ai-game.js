@@ -387,14 +387,37 @@ function drawBoard() {
       );
     }
   }
-  drawWalls();
-
   drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
   if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
   } else {
     drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
   }
+  if (
+    (Math.abs(p1_coord[0] - p2_coord[0]) == 1 && p1_coord[1] == p2_coord[1]) ||
+    (Math.abs(p1_coord[1] - p2_coord[1]) == 1 && p1_coord[0] == p2_coord[0])
+  ) {
+    color = "#EE4F3A";
+    drawRoundedRect(
+      (p1_coord[0] + 1) * 10 + p1_coord[0] * 67,
+      (p1_coord[1] + 1) * 10 + p1_coord[1] * 67,
+      67,
+      67,
+      20,
+      color,
+    );
+    drawRoundedRect(
+      (p2_coord[0] + 1) * 10 + p2_coord[0] * 67,
+      (p2_coord[1] + 1) * 10 + p2_coord[1] * 67,
+      67,
+      67,
+      20,
+      color,
+    );
+    drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
+    drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
+  }
+  drawWalls();
 }
 
 drawBoard();
