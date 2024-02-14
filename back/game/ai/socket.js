@@ -56,6 +56,12 @@ function createSocket(server) {
         _id: new ObjectId(result.insertedId),
       });
 
+      // Get users elo
+      const userElo = user.elo;
+      const aiElo = 450 + 450 * data.difficulty;
+
+      game.elos = [userElo, aiElo];
+
       // Join the game
       socket.join(game._id.toString());
       socket.emit("gameCreated", game);
@@ -89,6 +95,12 @@ function createSocket(server) {
         socket.emit("error", "Game not found");
         return;
       }
+
+      // Get users elo
+      const userElo = user.elo;
+      const aiElo = 450 + 450 * data.difficulty;
+
+      game.elos = [userElo, aiElo];
 
       // Check if user is part of the game
       if (game.players.includes(user.username)) {
