@@ -77,6 +77,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "home.html";
       }
 
+      const player1name = document.getElementById("player1-name");
+      player1name.textContent = game.players[0];
+      const player2name = document.getElementById("player2-name");
+      player2name.textContent = game.players[1];
+      // ELO
+      const player1elo = document.getElementById("player1-elo");
+      const player2elo = document.getElementById("player2-elo");
+
+      console.log(game.elos);
+
+      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
+      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
+
       initializeGame(game);
     });
   } else {

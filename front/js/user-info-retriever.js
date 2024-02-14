@@ -22,11 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       const username = data.username;
       if (username) {
-        document.querySelector("#username").textContent = username;
-        document.getElementById("player1-elo").textContent =
-          data.elos?.[0] ?? "ELO : N/A";
-        document.getElementById("player2-elo").textContent =
-          data.elos?.[1] ?? "ELO : N/A";
+        document.getElementById("username").textContent = username;
+        if (data.elo) {
+          document.getElementById("player1-elo").textContent =
+            "ELO: " + data.elo;
+        } else {
+          document.getElementById("player1-elo").textContent = "ELO: " + "N/A";
+        }
       } else {
         console.log("Username not found in response.");
       }
