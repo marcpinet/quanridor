@@ -4,7 +4,9 @@ const anticheat = document.getElementsByClassName("anticheat");
 const ready = document.getElementById("ready");
 const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
-const confirm = document.getElementById("confirm");
+const confirmWallButton = document.getElementById("confirm");
+const leaveButton = document.getElementById("leave");
+const winText = document.getElementById("win-text");
 
 canvas.width = 703;
 canvas.height = 703;
@@ -412,8 +414,17 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function clearAfterWin() {
+  confirmWallButton.style.display = "none";
+  leaveButton.style.display = "none";
+  clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+  clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+}
+
+let lastMovePlayer2 = false;
+
 async function getMouseCoordOnCanvas(event) {
-  if (sleeping) return;
+  if (sleeping || !playing) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
@@ -439,13 +450,9 @@ async function getMouseCoordOnCanvas(event) {
     await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
-      clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-      clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-      smoke.style.display = "block";
-      winPopup.style.display = "block";
-
-      const winText = document.getElementById("win-text");
-      winText.textContent = "Player N°" + 1 + " WON!";
+      lastMovePlayer2 = true;
+      tour++;
+      getReady();
     } else {
       tour++;
       getReady();
@@ -462,17 +469,33 @@ async function getMouseCoordOnCanvas(event) {
     sleeping = true;
     await sleep(1000);
     sleeping = false;
-    if (checkWin(2)) {
-      clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-      clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-      smoke.style.display = "block";
+    if (lastMovePlayer2) {
+      playing = false;
+      clearAfterWin();
+      winPopup.style.display = "block";
+      if (checkWin(2)) {
+        winText.textContent = "DRAW!";
+      } else {
+        winText.textContent = "Player N°1 WON!";
+      }
+    } else if (checkWin(2)) {
+      playing = false;
+      clearAfterWin();
       winPopup.style.display = "block";
 
       const winText = document.getElementById("win-text");
-      winText.textContent = "Player N°" + 2 + " WON!";
+      winText.textContent = "Player N°2 WON!";
     } else {
       tour++;
-      getReady();
+      if (tour == 201) {
+        clearAfterWin();
+        winPopup.style.display = "block";
+        if (checkWin(2)) {
+          winText.textContent = "DRAW!";
+        }
+      } else {
+        getReady();
+      }
     }
   } else {
     select1 = false;
@@ -637,6 +660,7 @@ function updateFogOfWarWall(wall_coord) {
 }
 
 async function confirmWall() {
+  if (!playing) return;
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
@@ -718,15 +742,14 @@ canvas.addEventListener("click", getMouseCoordOnCanvas);
 
 ready.addEventListener("click", isReady);
 
-confirm.addEventListener("click", confirmWall);
+confirmWallButton.addEventListener("click", confirmWall);
 
 initializeGame(getGameState());
 
 // ALLOW POSTING TO BACKEND
-export function getGameState() {
+function getGameState() {
   return {
     playerspositions: [p1_coord, p2_coord],
-    status: playing ? 1 : 2,
     p1walls: p1_walls,
     p2walls: p2_walls,
     vwalls: v_walls,
