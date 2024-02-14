@@ -61,7 +61,7 @@ svg {
 #bot {
   background: url("../assets/user-circle.svg") center/150px no-repeat;
   width: 200px;
-  height: 17vh;
+  height: 18vh;
   filter: none;
   transition: width 0.3s ease, height 0.3s ease;
 }
@@ -70,7 +70,7 @@ svg {
   cursor: pointer;
   filter: none;
   width: 230px;
-  height: 20vh;
+  height: 21vh;
 
 }
 
