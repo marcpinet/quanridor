@@ -1,6 +1,6 @@
 body {
   font-family: "Nunito", sans-serif;
-  background-image: url("../assets/Background.svg");
+  background-image: url("../assets/background.svg");
   background-size: cover;
   color: white;
 }
@@ -18,7 +18,7 @@ body {
 
 .title {
   display: flex;
-  background: url("../assets/Quanridor_title.svg") center/900px no-repeat;
+  background: url("../assets/quanridor-title.svg") center/900px no-repeat;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -40,7 +40,7 @@ svg {
 }
 
 #bell {
-  background: url("../assets/Bell.svg") center/60px no-repeat;
+  background: url("../assets/bell.svg") center/60px no-repeat;
   width: 100px;
   height: 10vh;
 }
@@ -58,9 +58,25 @@ svg {
   height: 50%;
 }
 
+#bot {
+  background: url("../assets/user-circle.svg") center/150px no-repeat;
+  width: 200px;
+  height: 17vh;
+  filter: none;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+#bot:hover {
+  cursor: pointer;
+  filter: none;
+  width: 230px;
+  height: 20vh;
+
+}
+
 .small-title {
   display: flex;
-  background: url("../assets/Quanridor_title.svg") center/650px no-repeat;
+  background: url("../assets/quanridor-title.svg") center/650px no-repeat;
   width: 100vh;
   justify-content: center;
   align-items: center;
@@ -207,13 +223,19 @@ input:hover {
   cursor: pointer;
 }
 
-#game {
+/*#game {
   background-image: linear-gradient(
       to bottom,
       rgba(185, 7, 68, 0.1),
       rgba(75, 6, 164, 0.1)
     ),
     url("../assets/Background.svg");
+  background-size: cover;
+  color: white;
+}*/
+
+#game {
+  background-image: url("../assets/game-background.svg");
   background-size: cover;
   color: white;
 }
@@ -286,6 +308,29 @@ canvas {
 .profile-box {
   background-color: #010525;
   border-radius: 38px;
+}
+
+.bento-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background-color: #010525;
+  border-radius: 38px;
+  width: 25vh;
+  height: 40vh;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+    background-color: 0.3s ease;
+}
+
+.bento-box:hover {
+  cursor: pointer;
+  background-color: #4650a8;
+  width: 30vh;
+  height: 45vh;
 }
 
 .friend-box {
@@ -473,3 +518,27 @@ canvas {
   text-shadow: none;
   rotate: 5deg;
 }
+
+#easy {
+  color: #3AADEE;
+  filter: none;
+  text-shadow: none;
+  rotate: -5deg;
+}
+
+#medium {
+  text-shadow: none;
+  color: #F3B9FF;
+  rotate: 0deg;
+}
+
+#hard {
+  color: #EE4F3A;
+  filter: none;
+  text-shadow: none;
+  rotate: 8deg;
+
+}
+
+/*  text-shadow: 4px 0 #111430, -4px 0 #111430, 0 4px #111430, 0 -4px #111430,
+               3px 3px #111430, -3px -3px #111430, 3px -3px #111430, -3px 3px #111430;*/
