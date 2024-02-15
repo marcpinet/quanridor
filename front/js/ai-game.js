@@ -11,7 +11,8 @@ const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
-const confirm = document.getElementById("confirm");
+const confirmWallButton = document.getElementById("confirm");
+const leaveButton = document.getElementById("leave");
 
 canvas.width = 703;
 canvas.height = 703;
@@ -444,6 +445,15 @@ function getCaseFromCoord(x, y) {
   return [Math.floor(x / 77), Math.floor(y / 77)];
 }
 
+function clearAfterWin() {
+  confirmWallButton.style.display = "none";
+  leaveButton.style.display = "none";
+  clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+  clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+}
+
+const winText = document.getElementById("win-text");
+
 function movePlayer(player, coord) {
   if (player == 1) {
     p1_coord = coord;
@@ -459,32 +469,22 @@ function movePlayer(player, coord) {
     gameState: getGameState(),
     token: localStorage.getItem("token"),
   });
-
-  const winText = document.getElementById("win-text");
-
-  function clearAfterWin() {
-    confirmWallButton.style.display = "none";
-    leaveButton.style.display = "none";
-    clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-  }
-
-  socket.on("win", (gameStateReturned) => {
-    clearAfterWin();
-    winPopup.style.display = "block";
-
-    winText.textContent = gameStateReturned.winner + " WON!";
-
-    const eloWin = document.getElementById("elo-score-win");
-    eloWin.textContent = gameStateReturned.winner + ": +144";
-
-    const eloLost = document.getElementById("elo-score-lose");
-    let loser =
-      gameStateReturned.winner == players[0] ? players[1] : players[0];
-    eloLost.textContent = loser + ": -144";
-    playing = false;
-  });
 }
+
+socket.on("win", (gameStateReturned) => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+
+  winText.textContent = gameStateReturned.winner + " WON!";
+
+  const eloWin = document.getElementById("elo-score-win");
+  eloWin.textContent = gameStateReturned.winner + ": +144";
+
+  const eloLost = document.getElementById("elo-score-lose");
+  let loser = gameStateReturned.winner == players[0] ? players[1] : players[0];
+  eloLost.textContent = loser + ": -144";
+  playing = false;
+});
 
 socket.on("draw", () => {
   clearAfterWin();
@@ -749,7 +749,7 @@ function clearPlayer(x, y) {
 
 canvas.addEventListener("click", getMouseCoordOnCanvas);
 
-confirm.addEventListener("click", confirmWall);
+confirmWallButton.addEventListener("click", confirmWall);
 
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
@@ -776,6 +776,23 @@ socket.on("aiMove", (newCoord) => {
     updateFogOfWarWall(newCoord);
   } else {
     movePlayer(2, newCoord);
+  }
+  tour++;
+  updateFogOfWar(2);
+  drawBoard();
+});
+
+socket.on("aiLastMove", (newCoord) => {
+  updateFogOfWarReverse(2);
+  if (newCoord[2] !== undefined) {
+    placeWall(newCoord, newCoord[2]);
+    updateWallBar(p2_walls, tour);
+    p2_walls--;
+    updateFogOfWarWall(newCoord);
+  } else {
+    p2_coord = newCoord;
+    drawPlayer(42 + newCoord[0] * 77, 42 + newCoord[1] * 77, "#000000");
+    select2 = false;
   }
   tour++;
   updateFogOfWar(2);
