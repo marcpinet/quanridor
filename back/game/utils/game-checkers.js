@@ -21,6 +21,148 @@ let p2_goals = [
   [8, 8],
 ];
 
+function getPossibleMovesAndWalls(gameState, player) {
+  let pos = gameState.playerspositions[player - 1];
+  let possibleMoves = [];
+  let possibleWalls = [];
+
+  // Check if moving left is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0] - 1, pos[1]],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0] - 1, pos[1]]);
+
+  // Check if moving right is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0] + 1, pos[1]],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0] + 1, pos[1]]);
+
+  // Check if moving down is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0], pos[1] + 1],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0], pos[1] + 1]);
+
+  // Check if moving up is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0], pos[1] - 1],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0], pos[1] - 1]);
+
+  // Check if jumping is possible.
+  let jump_coord = canJump(
+    gameState.playerspositions[1],
+    gameState.playerspositions[0],
+    gameState.playerspositions[1],
+    gameState.vwalls,
+    gameState.hwalls,
+  );
+  if (jump_coord.length > 0) possibleMoves.push(jump_coord);
+
+  // Check if placing a vertical wall is possible.
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (
+        isWallLegal(
+          2,
+          [i, j],
+          "v",
+          gameState.p1walls,
+          gameState.p2walls,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        )
+      )
+        possibleWalls.push([i, j, "v"]);
+    }
+  }
+
+  // Check if placing a horizontal wall is possible.
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      if (
+        isWallLegal(
+          2,
+          [i, j],
+          "h",
+          gameState.p1walls,
+          gameState.p2walls,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        )
+      )
+        possibleWalls.push([i, j, "h"]);
+    }
+  }
+
+  if (player === 1) {
+    if (gameState.p1walls === 0) {
+      possibleWalls = [];
+    }
+  } else {
+    if (gameState.p2walls === 0) {
+      possibleWalls = [];
+    }
+  }
+
+  // Keep only walls close to the opponent and not too close to the player
+  possibleWalls = possibleWalls.filter((wall) => {
+    if (wall[2] === "v") {
+      return (
+        wall[0] < 7 &&
+        !gameState.vwalls.some((w) => w[0] === wall[0] && w[1] === wall[1]) &&
+        !gameState.vwalls.some((w) => w[0] === wall[0] + 1 && w[1] === wall[1])
+      );
+    } else {
+      return (
+        wall[1] < 7 &&
+        !gameState.hwalls.some((w) => w[1] === wall[1] && w[0] === wall[0]) &&
+        !gameState.hwalls.some((w) => w[1] === wall[1] + 1 && w[0] === wall[0])
+      );
+    }
+  });
+
+  // Remove current position from possible moves
+  possibleMoves = possibleMoves.filter((move) => {
+    return move[0] !== pos[0] || move[1] !== pos[1];
+  });
+
+  return { possibleMoves, possibleWalls };
+}
+
 function isLegal(
   current_coord,
   new_coord,
@@ -190,6 +332,59 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
   return false;
 }
 
+function getShortestPath(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
+  let openSet = [];
+  let closedSet = [];
+  let cameFrom = new Map(); // To track the path
+  let current;
+  openSet.push(start);
+
+  while (openSet.length > 0) {
+    current = openSet.pop();
+
+    if (isInclude(goals, current)) {
+      return reconstructPath(cameFrom, current);
+    }
+    closedSet.push(current);
+
+    let neighbors = getPlayerNeighbour(current);
+
+    for (let neighbor of neighbors) {
+      if (
+        isInclude(closedSet, neighbor) ||
+        !isLegal(current, neighbor, v_walls, h_walls, p1_coord, p2_coord)
+      )
+        continue;
+
+      if (!isInclude(openSet, neighbor)) {
+        openSet.push(neighbor);
+        cameFrom.set(neighbor, current); // Track path
+      }
+    }
+    let jump_coord = canJump(current, p1_coord, p2_coord, v_walls, h_walls);
+    if (
+      jump_coord.length > 0 &&
+      !isInclude(closedSet, jump_coord) &&
+      !isInclude(openSet, jump_coord)
+    ) {
+      openSet.push(jump_coord);
+      cameFrom.set(jump_coord, current); // Track path for jump
+    }
+  }
+
+  return false; // Return false if no path is found
+}
+
+// Helper function to reconstruct the path from cameFrom map
+function reconstructPath(cameFrom, current) {
+  let totalPath = [current];
+  while (cameFrom.has(current)) {
+    current = cameFrom.get(current);
+    totalPath.unshift(current); // Add to the beginning of the path
+  }
+  return totalPath;
+}
+
 function isWallLegal(
   player,
   coord,
@@ -255,4 +450,6 @@ module.exports = {
   canJump,
   isWallLegal,
   checkWin,
+  getPossibleMovesAndWalls,
+  getShortestPath,
 };

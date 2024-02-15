@@ -4,8 +4,8 @@ socket.on("connect", () => {
   console.log("Connected to server.");
 });
 
-const urlParams = new URLSearchParams(window.location.search);
 let gameId;
+let difficulty;
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
@@ -62,6 +62,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   winPopup.style.display = "none";
   const urlParams = new URLSearchParams(window.location.search);
   gameId = urlParams.get("id");
+  difficulty = urlParams.get("difficulty");
+  difficulty = parseInt(difficulty);
 
   if (gameId) {
     socket.emit("gameId", {
@@ -94,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   } else {
     socket.emit("createGameAI", {
-      difficulty: 0,
+      difficulty: difficulty,
       token: localStorage.getItem("token"),
     });
     socket.on("gameCreated", (game) => {
@@ -125,6 +127,7 @@ function initializeGame(gameState) {
   p2_walls = gameState.p2walls;
   v_walls = gameState.vwalls;
   h_walls = gameState.hwalls;
+  difficulty = gameState.difficulty;
   tour = gameState.turn;
   board_visibility = gameState.board_visibility;
   players = gameState.players;
@@ -737,6 +740,7 @@ confirm.addEventListener("click", confirmWall);
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
+    difficulty: difficulty,
     players: players,
     playerspositions: [p1_coord, p2_coord],
     status: playing ? 1 : 2,
