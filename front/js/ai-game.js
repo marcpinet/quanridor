@@ -459,13 +459,14 @@ function movePlayer(player, coord) {
     gameState: getGameState(),
     token: localStorage.getItem("token"),
   });
+
+  const winText = document.getElementById("win-text");
+
   socket.on("win", (gameStateReturned) => {
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-    smoke.style.display = "block";
     winPopup.style.display = "block";
 
-    const winText = document.getElementById("win-text");
     winText.textContent = gameStateReturned.winner + " WON!";
 
     const eloWin = document.getElementById("elo-score-win");
@@ -477,6 +478,13 @@ function movePlayer(player, coord) {
     eloLost.textContent = loser + ": -144";
   });
 }
+
+socket.on("draw", () => {
+  clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+  clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+  winPopup.style.display = "block";
+  winText.textContent = "DRAW!";
+});
 
 function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
