@@ -462,9 +462,15 @@ function movePlayer(player, coord) {
 
   const winText = document.getElementById("win-text");
 
-  socket.on("win", (gameStateReturned) => {
+  function clearAfterWin() {
+    confirmWallButton.style.display = "none";
+    leaveButton.style.display = "none";
     clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
     clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+  }
+
+  socket.on("win", (gameStateReturned) => {
+    clearAfterWin();
     winPopup.style.display = "block";
 
     winText.textContent = gameStateReturned.winner + " WON!";
@@ -476,14 +482,15 @@ function movePlayer(player, coord) {
     let loser =
       gameStateReturned.winner == players[0] ? players[1] : players[0];
     eloLost.textContent = loser + ": -144";
+    playing = false;
   });
 }
 
 socket.on("draw", () => {
-  clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-  clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+  clearAfterWin();
   winPopup.style.display = "block";
   winText.textContent = "DRAW!";
+  playing = false;
 });
 
 function getWallFromCoord(x, y) {
@@ -505,6 +512,7 @@ socket.on("legalMove", (new_coord) => {
 });
 
 function getMouseCoordOnCanvas(event) {
+  if (!playing) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
@@ -669,6 +677,7 @@ socket.on("legalWall", () => {
 });
 
 function confirmWall() {
+  if (!playing) return;
   if (temp_wall.length > 0 && !wallChecking) {
     wallChecking = true;
     socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
