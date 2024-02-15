@@ -196,27 +196,57 @@ async function handleLogin(request, response) {
 async function handleUsersGet(request, response, decodedToken) {
   addCors(response, ["GET"]);
 
-  try {
-    const db = getDB();
-    const users = db.collection("users");
+  let requestForOtherUser = false;
 
-    const username = decodedToken.username;
-    const user = await users.findOne({ username });
+  let body = "";
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
 
-    if (!user) {
-      response.writeHead(401, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "User not authenticated" }));
+  request.on("end", async () => {
+    if (body.length > 0) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Body not allowed" }));
       return;
     }
 
-    // Return every information about the user except the password
-    response.writeHead(200, { "Content-Type": "application/json" });
-    response.end(JSON.stringify({ username: user.username })); // For now, we have nothing more...
-  } catch (e) {
-    console.error("Error in handleUsersGet:", e);
-    response.writeHead(400, { "Content-Type": "application/json" });
-    response.end(JSON.stringify({ message: "Failed to retrieve user" }));
-  }
+    try {
+      const db = getDB();
+      const users = db.collection("users");
+
+      const username = decodedToken.username;
+      const user = await users.findOne({ username });
+
+      if (!user) {
+        response.writeHead(401, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not authenticated" }));
+        return;
+      }
+
+      if (requestForOtherUser) {
+        const otherUser = await users.findOne({ username: body.username });
+        if (!otherUser) {
+          response.writeHead(404, { "Content-Type": "application/json" });
+          response.end(JSON.stringify({ message: "User not found" }));
+          return;
+        }
+
+        response.writeHead(200, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ username: otherUser.username, elo: otherUser.elo }),
+        );
+        return;
+      }
+
+      // Return every information about the user except the password
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ username: user.username, elo: user.elo })); // For now, we have nothing more...
+    } catch (e) {
+      console.error("Error in handleUsersGet:", e);
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Failed to retrieve user" }));
+    }
+  });
 }
 
 // ------------------------------ GAME HANDLING ------------------------------

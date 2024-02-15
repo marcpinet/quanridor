@@ -77,6 +77,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "home.html";
       }
 
+      const player1name = document.getElementById("player1-name");
+      player1name.textContent = game.players[0];
+      const player2name = document.getElementById("player2-name");
+      player2name.textContent = game.players[1];
+      // ELO
+      const player1elo = document.getElementById("player1-elo");
+      const player2elo = document.getElementById("player2-elo");
+
+      console.log(game.elos);
+
+      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
+      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
+
       initializeGame(game);
     });
   } else {
@@ -116,6 +129,8 @@ function initializeGame(gameState) {
   board_visibility = gameState.board_visibility;
   players = gameState.players;
   drawBoard();
+  initWallBar(p1_walls, 0);
+  initWallBar(p2_walls, 1);
 }
 
 let board_visibility = [
@@ -631,8 +646,13 @@ socket.on("legalWall", () => {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) p1_walls--;
-    else p2_walls--;
+    if (tour % 2 == 0) {
+      updateWallBar(p1_walls, tour);
+      p1_walls--;
+    } else {
+      updateWallBar(p2_walls, tour);
+      p2_walls--;
+    }
     tour++;
   }
   drawBoard();
@@ -733,6 +753,9 @@ socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
   if (newCoord[2] !== undefined) {
     placeWall(newCoord, newCoord[2]);
+    updateWallBar(p2_walls, tour);
+    p2_walls--;
+    console.log("ai walls : " + p2_walls);
     updateFogOfWarWall(newCoord);
   } else {
     movePlayer(2, newCoord);
@@ -755,3 +778,20 @@ window.addEventListener("onbeforeunload", function (event) {
 window.addEventListener("unload", function (event) {
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
 });
+
+function updateWallBar(value, t) {
+  var wallId = "p" + ((t % 2) + 1) + "-wall" + value;
+  makeSquareTransparent(wallId);
+}
+
+function makeSquareTransparent(squareId) {
+  console.log(squareId);
+  var square = document.getElementById(squareId);
+  square.classList.add("transparent");
+}
+
+function initWallBar(value, p) {
+  for (var i = 10; i > value; i--) {
+    updateWallBar(i, p);
+  }
+}

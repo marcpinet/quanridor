@@ -640,8 +640,13 @@ async function confirmWall() {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) p1_walls--;
-    else p2_walls--;
+    if (tour % 2 == 0) {
+      updateWallBar(p1_walls, tour);
+      p1_walls--;
+    } else {
+      updateWallBar(p2_walls, tour);
+      p2_walls--;
+    }
     drawBoard();
     tour++;
     sleeping = true;
@@ -733,4 +738,14 @@ export function getGameState() {
     hwalls: h_walls,
     turn: tour,
   };
+}
+
+function updateWallBar(value, t) {
+  var wallId = "p" + ((t % 2) + 1) + "-wall" + value;
+  makeSquareTransparent(wallId);
+}
+
+function makeSquareTransparent(squareId) {
+  var square = document.getElementById(squareId);
+  square.classList.add("transparent");
 }
