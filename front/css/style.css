@@ -450,6 +450,7 @@ canvas {
   font-weight: 700;
 }
 
+
 #elo-score-win {
   color: #3AADEE;
   filter: none;
@@ -472,4 +473,30 @@ canvas {
 #elo-scores {
   text-shadow: none;
   rotate: 5deg;
+}
+
+.wall-bar-container {
+  width: 80%;
+  height: 20%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.wall-bar {
+  display: flex;
+  justify-content: center;
+}
+.square {
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border: 2px #000000;
+  margin: 5px 1px;
+  transition: opacity 1s; /* Transition de l'opacité prenant 1 seconde */
+  opacity: 1;
+}
+
+.transparent {
+  opacity: 0; /* Classe pour rendre le carré transparent */
 }
