@@ -1,6 +1,8 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
-const AI0 = require("./ai.js");
+const AI0 = require("./random-ai.js");
+//const AI1 = require("./arturo-ai.js");
+const AI2 = require("./minimax-ai.js");
 const { getDB } = require("../../query-managers/db.js");
 const { initializeGame } = require("../utils/game-initializer.js");
 const { verifyToken } = require("../../utils/jwt-utils.js");
@@ -266,7 +268,17 @@ function createSocket(server) {
     socket.on("sendGameState", async (data) => {
       const gameId = data.gameId;
       const gameState = data.gameState;
-      let newCoord = AI0(gameState);
+      let newCoord;
+      console.log(gameState);
+      if (gameState.difficulty === 0) {
+        newCoord = AI0.computeMove(gameState);
+      } else if (gameState.difficulty === 1) {
+        //newCoord = AI1.computeMove(gameState);
+      } else if (gameState.difficulty === 2) {
+        newCoord = AI2.computeMove(gameState);
+      } else {
+        throw new Error("Invalid difficulty");
+      }
       gameState.playerspositions[1] = newCoord;
       const db = getDB();
       const games = db.collection("games");
