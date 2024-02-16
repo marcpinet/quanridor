@@ -332,55 +332,76 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
   return false;
 }
 
-function getShortestPath(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
-  let openSet = [];
-  let closedSet = [];
-  let cameFrom = new Map(); // To track the path
-  let current;
-  openSet.push(start);
+function getShortestPath(start, goals, gameState) {
+  // Initialisation
+  const openSet = [start];
+  const cameFrom = new Map();
+  const gScore = new Map();
+  const fScore = new Map();
+  const p1_coord = gameState.playerspositions[0];
+  const p2_coord = gameState.playerspositions[1];
+  const v_walls = gameState.vwalls;
+  const h_walls = gameState.hwalls;
+
+  gScore.set(JSON.stringify(start), 0);
+  fScore.set(JSON.stringify(start), heuristic(start, goals[0]));
 
   while (openSet.length > 0) {
-    current = openSet.pop();
+    openSet.sort(
+      (a, b) =>
+        (fScore.get(JSON.stringify(a)) || Infinity) -
+        (fScore.get(JSON.stringify(b)) || Infinity),
+    );
+    const current = openSet.shift();
 
-    if (isInclude(goals, current)) {
+    if (
+      goals.some((goal) => JSON.stringify(goal) === JSON.stringify(current))
+    ) {
       return reconstructPath(cameFrom, current);
     }
-    closedSet.push(current);
 
-    let neighbors = getPlayerNeighbour(current);
-
-    for (let neighbor of neighbors) {
-      if (
-        isInclude(closedSet, neighbor) ||
-        !isLegal(current, neighbor, v_walls, h_walls, p1_coord, p2_coord)
-      )
-        continue;
-
-      if (!isInclude(openSet, neighbor)) {
-        openSet.push(neighbor);
-        cameFrom.set(neighbor, current); // Track path
+    getPlayerNeighbour(current).forEach((neighbor) => {
+      if (!isLegal(current, neighbor, v_walls, h_walls, p1_coord, p2_coord)) {
+        return;
       }
-    }
-    let jump_coord = canJump(current, p1_coord, p2_coord, v_walls, h_walls);
-    if (
-      jump_coord.length > 0 &&
-      !isInclude(closedSet, jump_coord) &&
-      !isInclude(openSet, jump_coord)
-    ) {
-      openSet.push(jump_coord);
-      cameFrom.set(jump_coord, current); // Track path for jump
-    }
+
+      const tentativeGScore =
+        (gScore.get(JSON.stringify(current)) || Infinity) + 1;
+      if (
+        !gScore.has(JSON.stringify(neighbor)) ||
+        tentativeGScore < gScore.get(JSON.stringify(neighbor))
+      ) {
+        cameFrom.set(JSON.stringify(neighbor), current);
+        gScore.set(JSON.stringify(neighbor), tentativeGScore);
+        fScore.set(
+          JSON.stringify(neighbor),
+          tentativeGScore + heuristic(neighbor, goals[0]),
+        );
+
+        if (
+          !openSet.some(
+            (node) => JSON.stringify(node) === JSON.stringify(neighbor),
+          )
+        ) {
+          openSet.push(neighbor);
+        }
+      }
+    });
   }
 
-  return false; // Return false if no path is found
+  return []; // Si aucun chemin n'est trouvé
 }
 
-// Helper function to reconstruct the path from cameFrom map
+function heuristic(a, goal) {
+  // Use Manhattan distance as heuristic for simplicity
+  return Math.abs(a[0] - goal[0]) + Math.abs(a[1] - goal[1]);
+}
+
 function reconstructPath(cameFrom, current) {
   let totalPath = [current];
-  while (cameFrom.has(current)) {
-    current = cameFrom.get(current);
-    totalPath.unshift(current); // Add to the beginning of the path
+  while (cameFrom.has(JSON.stringify(current))) {
+    current = cameFrom.get(JSON.stringify(current));
+    totalPath.unshift(current);
   }
   return totalPath;
 }
