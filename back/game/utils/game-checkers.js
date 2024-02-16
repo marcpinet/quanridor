@@ -441,15 +441,29 @@ function isWallLegal(
   if (current_direction == "v") {
     v_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(
+        p1_coord,
+        p1_goals,
+        p1_coord,
+        p2_coord,
+        v_walls,
+        h_walls,
+      ) &&
+      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
     );
     v_walls.pop();
   } else {
     h_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(
+        p1_coord,
+        p1_goals,
+        p1_coord,
+        p2_coord,
+        v_walls,
+        h_walls,
+      ) &&
+      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
     );
     h_walls.pop();
   }
