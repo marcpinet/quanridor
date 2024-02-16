@@ -841,3 +841,7 @@ function initWallBar(value, p) {
     updateWallBar(i, p);
   }
 }
+
+document.getElementById("replay").addEventListener("click", () => {
+  window.location.href = "ai-game.html?difficulty=" + difficulty;
+});

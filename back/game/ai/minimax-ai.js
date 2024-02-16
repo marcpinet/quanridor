@@ -96,17 +96,23 @@ function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
     maximizingPlayer ? 2 : 1,
   );
   // add walls to possible moves
-  //possibleMoves = possibleMoves.concat(possibleWalls);
+  // possibleMoves = possibleMoves.concat(possibleWalls);
+
   if (possibleMoves.length == 0) {
     return {
-      value: -Infinity,
+      value: -10000000,
       move: gameState.playerspositions[1],
     };
   }
 
   for (let someMove of possibleMoves) {
+    let chosenMove = applyMove(gameState, someMove, maximizingPlayer ? 2 : 1);
+    if (!chosenMove) {
+      continue;
+    }
+
     let { value, move } = minimax(
-      applyMove(gameState, someMove, maximizingPlayer ? 2 : 1),
+      chosenMove,
       depth - 1,
       alpha,
       beta,
@@ -147,17 +153,11 @@ function evaluate(gameState, player) {
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
   if (checkWin(player, { p1_coord: p1_coord, p2_coord: p2_coord }))
-    return Infinity;
+    return 100000000;
   if (
     checkWin(player === 1 ? 2 : 1, { p1_coord: p1_coord, p2_coord: p2_coord })
   )
-    return -Infinity;
-
-  gameState.hwalls = [
-    [4, 7],
-    [4, 8],
-    [4, 9],
-  ];
+    return -100000000;
 
   let playerShortestPath = getShortestPath(
     playerPosition,
@@ -192,6 +192,10 @@ function simulateWall(gameState, x, y, orientation) {
 function applyMove(gameState, move, player) {
   const newGameState = cloneGameState(gameState);
   if (move.length == 3) {
+    let wallsnum = player === 1 ? newGameState.p1walls : newGameState.p2walls;
+    if (wallsnum <= 0) {
+      return null;
+    }
     if (move[2] == "v") {
       newGameState.vwalls.push(move);
     } else {

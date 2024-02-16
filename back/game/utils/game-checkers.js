@@ -151,26 +151,20 @@ function getPossibleMovesAndWalls(gameState, player) {
     }
   }
 
-  // Keep only walls close to the opponent and not too close to the player
+  // Keep only walls around the opponent's current position and not too close to the goals or the player
   possibleWalls = possibleWalls.filter((wall) => {
-    if (wall[2] === "v") {
-      return (
-        wall[0] < 7 &&
-        !gameState.vwalls.some((w) => w[0] === wall[0] && w[1] === wall[1]) &&
-        !gameState.vwalls.some((w) => w[0] === wall[0] + 1 && w[1] === wall[1])
-      );
-    } else {
-      return (
-        wall[1] < 7 &&
-        !gameState.hwalls.some((w) => w[1] === wall[1] && w[0] === wall[0]) &&
-        !gameState.hwalls.some((w) => w[1] === wall[1] + 1 && w[0] === wall[0])
-      );
-    }
-  });
-
-  // Remove current position from possible moves
-  possibleMoves = possibleMoves.filter((move) => {
-    return move[0] !== pos[0] || move[1] !== pos[1];
+    return (
+      Math.abs(wall[0] - gameState.playerspositions[0][0]) < 3 &&
+      Math.abs(wall[1] - gameState.playerspositions[0][1]) < 3 &&
+      Math.abs(wall[0] - gameState.playerspositions[1][0]) < 3 &&
+      Math.abs(wall[1] - gameState.playerspositions[1][1]) < 3 &&
+      Math.abs(wall[0] - gameState.playerspositions[0][0]) +
+        Math.abs(wall[1] - gameState.playerspositions[0][1]) >=
+        2 &&
+      Math.abs(wall[0] - gameState.playerspositions[1][0]) +
+        Math.abs(wall[1] - gameState.playerspositions[1][1]) >=
+        2
+    );
   });
 
   return { possibleMoves, possibleWalls };
