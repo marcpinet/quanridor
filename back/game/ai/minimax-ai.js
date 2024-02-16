@@ -178,17 +178,6 @@ function evaluate(gameState, player) {
   return score;
 }
 
-function simulateWall(gameState, x, y, orientation) {
-  const newGameState = cloneGameState(gameState);
-  if (orientation === "v") {
-    newGameState.vwalls.push([x, y]);
-  } else {
-    newGameState.hwalls.push([x, y]);
-  }
-  newGameState.turn++;
-  return newGameState;
-}
-
 function applyMove(gameState, move, player) {
   const newGameState = cloneGameState(gameState);
   if (move.length == 3) {
