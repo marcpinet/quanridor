@@ -148,7 +148,7 @@ function createSocket(server) {
       ) {
         const gameId = data.gameId;
         const gameState = data.gameState;
-        let newCoord = AI0(gameState);
+        let newCoord = AI0.computeMove(gameState);
         gameState.playerspositions[1] = newCoord;
         const db = getDB();
         const games = db.collection("games");

@@ -422,11 +422,23 @@ function isWallLegal(
     return false;
   if (coord[0] > 7 || coord[0] < 0 || coord[1] > 7 || coord[1] < 0)
     return false;
+  for (let wall of v_walls) {
+    if (
+      wall[0] == coord[0] &&
+      ((Math.abs(wall[1] - coord[1]) == 1 && current_direction == "v") ||
+        Math.abs(wall[1] - coord[1]) == 0)
+    )
+      return false;
+  }
+  for (let wall of h_walls) {
+    if (
+      wall[1] == coord[1] &&
+      ((Math.abs(wall[0] - coord[0]) == 1 && current_direction == "h") ||
+        Math.abs(wall[0] - coord[0]) == 0)
+    )
+      return false;
+  }
   if (current_direction == "v") {
-    for (let wall of v_walls) {
-      if (wall[0] == coord[0] && Math.abs(wall[1] - coord[1]) <= 1)
-        return false;
-    }
     v_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(
@@ -441,10 +453,6 @@ function isWallLegal(
     );
     v_walls.pop();
   } else {
-    for (let wall of h_walls) {
-      if (wall[1] == coord[1] && Math.abs(wall[0] - coord[0]) <= 1)
-        return false;
-    }
     h_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(
