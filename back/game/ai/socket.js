@@ -67,8 +67,6 @@ function createSocket(server) {
       // Join the game
       socket.join(game._id.toString());
       socket.emit("gameCreated", game);
-
-      console.log(game);
     });
 
     socket.on("gameId", async (data) => {
@@ -269,7 +267,6 @@ function createSocket(server) {
       const gameId = data.gameId;
       const gameState = data.gameState;
       let newCoord;
-      console.log(gameState);
       if (gameState.difficulty === 0) {
         newCoord = AI0.computeMove(gameState);
       } else if (gameState.difficulty === 1) {

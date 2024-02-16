@@ -96,7 +96,7 @@ function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
     maximizingPlayer ? 2 : 1,
   );
   // add walls to possible moves
-  possibleMoves = possibleMoves.concat(possibleWalls);
+  //possibleMoves = possibleMoves.concat(possibleWalls);
   if (possibleMoves.length == 0) {
     return {
       value: -Infinity,
@@ -139,7 +139,11 @@ function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
 }
 
 function evaluate(gameState, player) {
-  // Basic win condition checks
+  const playerGoals = player === 1 ? p1goals : p2goals;
+  const opponentGoals = player === 1 ? p2goals : p1goals;
+  const playerPosition = gameState.playerspositions[player - 1];
+  const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
+
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
   if (checkWin(player, { p1_coord: p1_coord, p2_coord: p2_coord }))
@@ -149,108 +153,39 @@ function evaluate(gameState, player) {
   )
     return -Infinity;
 
-  let score = 0;
-  let playerDistance = calculateDistanceToGoal(gameState, player);
-  let opponentDistance = calculateDistanceToGoal(
+  let playerDistanceToGoal = getShortestPath(
+    playerPosition,
+    playerGoals,
     gameState,
-    player === 1 ? 2 : 1,
+  ).length;
+  let opponentDistanceToGoal = getShortestPath(
+    opponentPosition,
+    opponentGoals,
+    gameState,
+  ).length;
+  console.log(
+    "I'm player",
+    player,
+    "and my distance to goal is",
+    playerDistanceToGoal,
+    "and my opponent's distance to goal is",
+    opponentDistanceToGoal,
   );
-  let wallDifference =
-    player === 2
-      ? gameState.p2walls - gameState.p1walls
-      : gameState.p1walls - gameState.p2walls;
 
-  // Prioritize advancing towards the goal
-  score += (opponentDistance - playerDistance) * 10;
-
-  // Wall placement strategy
-  if (gameState.p1walls > 0 || gameState.p2walls > 0) {
-    score += evaluateWallPlacement(gameState, player);
-  }
-
-  // Endgame strategy: if the opponent has no walls, focus on path advancement
-  //if ((player === 1 && gameState.p2walls === 0) || (player === 2 && gameState.p1walls === 0)) {
-  //  score += evaluateEndgameStrategy(gameState, player);
-  //}
-
-  // Wall difference impact
-  score += wallDifference;
-
-  return score;
-}
-
-function evaluateWallPlacement(gameState, player) {
-  let score = 0;
-  let opponent = player === 1 ? 2 : 1;
-  let playerShortestPath = getShortestPath(
-    gameState.playerspositions[player - 1],
-    player === 1 ? p1goals : p2goals,
-    gameState.playerspositions[0],
-    gameState.playerspositions[1],
-    gameState.vwalls,
-    gameState.hwalls,
-  ).length;
-  let opponentShortestPath = getShortestPath(
-    gameState.playerspositions[player - 1],
-    player === 1 ? p1goals : p2goals,
-    gameState.playerspositions[0],
-    gameState.playerspositions[1],
-    gameState.vwalls,
-    gameState.hwalls,
-  ).length;
-
-  // Assume gameState has a method to simulate wall placement without permanently altering the state
-  let simulatedGameState = cloneGameState(gameState); // Deep copy to simulate wall placements
-
-  // Iterate through all possible wall placements (this is a simplification)
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      // Simulate placing a wall and calculate its impact
-      simulateWall(simulatedGameState, i, j, "v"); // Simulate a vertical wall
-      let newOpponentPath = getShortestPath(
-        simulatedGameState.playerspositions[player - 1],
-        player === 1 ? p1goals : p2goals,
-        simulatedGameState.playerspositions[0],
-        simulatedGameState.playerspositions[1],
-        simulatedGameState.vwalls,
-        simulatedGameState.hwalls,
-      ).length;
-      let newPlayerPath = getShortestPath(
-        simulatedGameState.playerspositions[player - 1],
-        player === 1 ? p1goals : p2goals,
-        simulatedGameState.playerspositions[0],
-        simulatedGameState.playerspositions[1],
-        simulatedGameState.vwalls,
-        simulatedGameState.hwalls,
-      ).length;
-
-      // Evaluate the impact
-      if (newOpponentPath > opponentShortestPath) {
-        // The wall placement increases the opponent's path length
-        score += (newOpponentPath - opponentShortestPath) * 5; // Weight the score by the increase
-      }
-      if (newPlayerPath <= playerShortestPath) {
-        // The wall does not negatively impact, or even potentially aids, the player's path
-        score += (playerShortestPath - newPlayerPath) * 3; // Reward for aiding the player's path
-      } else {
-        // Penalize wall placements that worsen the player's path significantly
-        score -= (newPlayerPath - playerShortestPath) * 10;
-      }
-
-      // Reset simulated game state for the next iteration
-      simulatedGameState = cloneGameState(gameState);
-    }
-  }
+  let score = playerDistanceToGoal - opponentDistanceToGoal;
 
   return score;
 }
 
 function simulateWall(gameState, x, y, orientation) {
+  const newGameState = cloneGameState(gameState);
   if (orientation === "v") {
-    gameState.vwalls.push([x, y]);
+    newGameState.vwalls.push([x, y]);
   } else {
-    gameState.hwalls.push([x, y]);
+    newGameState.hwalls.push([x, y]);
   }
+  newGameState.turn++;
+  return newGameState;
 }
 
 function applyMove(gameState, move, player) {
@@ -306,25 +241,8 @@ function cloneGameState(gameState) {
   return simplifiedGameState;
 }
 
-function calculateDistanceToGoal(gameState, player) {
-  let playerPosition = gameState.playerspositions[player - 1];
-  let goals = player == 1 ? p1goals : p2goals;
-  let minDistance = Infinity;
-
-  for (let goal of goals) {
-    let distance =
-      Math.abs(goal[0] - playerPosition[0]) +
-      Math.abs(goal[1] - playerPosition[1]);
-    if (distance < minDistance) {
-      minDistance = distance;
-    }
-  }
-
-  return minDistance;
-}
-
 function computeMove(gameState) {
-  let depth = 3;
+  let depth = 10;
   let { value, move } = minimax(gameState, depth, -Infinity, +Infinity, true);
   console.log("AI played!", move);
   return move;
