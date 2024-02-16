@@ -1,3 +1,5 @@
+const PriorityQueue = require("./priorityqueue");
+
 let p1_goals = [
   [0, 0],
   [1, 0],
@@ -21,10 +23,21 @@ let p2_goals = [
   [8, 8],
 ];
 
-function getPossibleMovesAndWalls(gameState, player) {
-  let pos = gameState.playerspositions[player - 1];
+function getPossibleMoves(gameState, pos) {
   let possibleMoves = [];
-  let possibleWalls = [];
+
+  // Check if moving down is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0], pos[1] + 1],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0], pos[1] + 1]);
 
   // Check if moving left is possible.
   if (
@@ -52,19 +65,6 @@ function getPossibleMovesAndWalls(gameState, player) {
   )
     possibleMoves.push([pos[0] + 1, pos[1]]);
 
-  // Check if moving down is possible.
-  if (
-    isLegal(
-      pos,
-      [pos[0], pos[1] + 1],
-      gameState.vwalls,
-      gameState.hwalls,
-      gameState.playerspositions[0],
-      gameState.playerspositions[1],
-    )
-  )
-    possibleMoves.push([pos[0], pos[1] + 1]);
-
   // Check if moving up is possible.
   if (
     isLegal(
@@ -87,6 +87,19 @@ function getPossibleMovesAndWalls(gameState, player) {
     gameState.hwalls,
   );
   if (jump_coord.length > 0) possibleMoves.push(jump_coord);
+
+  // Remove current position from possible moves
+  possibleMoves = possibleMoves.filter((move) => {
+    return move[0] !== pos[0] || move[1] !== pos[1];
+  });
+
+  return possibleMoves;
+}
+
+function getPossibleMovesAndWalls(gameState, player) {
+  let pos = gameState.playerspositions[player - 1];
+  let possibleMoves = getPossibleMoves(gameState, pos);
+  let possibleWalls = [];
 
   // Check if placing a vertical wall is possible.
   for (let i = 0; i < 8; i++) {
@@ -334,76 +347,64 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 
 function getShortestPath(start, goals, gameState) {
   // Initialisation
-  const openSet = [start];
-  const cameFrom = new Map();
-  const gScore = new Map();
-  const fScore = new Map();
-  const p1_coord = gameState.playerspositions[0];
-  const p2_coord = gameState.playerspositions[1];
-  const v_walls = gameState.vwalls;
-  const h_walls = gameState.hwalls;
+  let openSet = new PriorityQueue((a, b) => a.distance < b.distance);
+  let cameFrom = new Map();
+  let gScore = new Map();
+  let startKey = start.join(",");
+  gScore.set(startKey, 0);
+  openSet.enqueue({ position: start, distance: 0 });
 
-  gScore.set(JSON.stringify(start), 0);
-  fScore.set(JSON.stringify(start), heuristic(start, goals[0]));
+  // Fonction pour reconstruire le chemin une fois l'objectif atteint
+  function reconstructPath(cameFrom, current) {
+    let totalPath = [current];
+    while (cameFrom.has(current.join(","))) {
+      current = cameFrom.get(current.join(","));
+      totalPath.unshift(current);
+    }
+    return totalPath;
+  }
 
-  while (openSet.length > 0) {
-    openSet.sort(
-      (a, b) =>
-        (fScore.get(JSON.stringify(a)) || Infinity) -
-        (fScore.get(JSON.stringify(b)) || Infinity),
-    );
-    const current = openSet.shift();
+  while (!openSet.isEmpty()) {
+    let current = openSet.dequeue().position;
 
-    if (
-      goals.some((goal) => JSON.stringify(goal) === JSON.stringify(current))
-    ) {
-      return reconstructPath(cameFrom, current);
+    // Vérifier si le but est atteint
+    for (let goal of goals) {
+      if (current[0] === goal[0] && current[1] === goal[1]) {
+        return reconstructPath(cameFrom, current);
+      }
     }
 
-    getPlayerNeighbour(current).forEach((neighbor) => {
-      if (!isLegal(current, neighbor, v_walls, h_walls, p1_coord, p2_coord)) {
-        return;
-      }
+    let possibleMoves = getPossibleMoves(gameState, current);
+    // Vérifiez les sauts pour chaque mouvement possible et ajoutez-les si légaux
+    let jumpMove = canJump(
+      current,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+      gameState.vwalls,
+      gameState.hwalls,
+    );
+    if (jumpMove.length > 0) {
+      possibleMoves.push(jumpMove);
+    }
 
-      const tentativeGScore =
-        (gScore.get(JSON.stringify(current)) || Infinity) + 1;
+    for (let neighbor of possibleMoves) {
+      let tentativeGScore = gScore.get(current.join(",")) + 1; // Coût supposé de 1 pour se déplacer entre voisins
+      let neighborKey = neighbor.join(",");
+
       if (
-        !gScore.has(JSON.stringify(neighbor)) ||
-        tentativeGScore < gScore.get(JSON.stringify(neighbor))
+        !gScore.has(neighborKey) ||
+        tentativeGScore < gScore.get(neighborKey)
       ) {
-        cameFrom.set(JSON.stringify(neighbor), current);
-        gScore.set(JSON.stringify(neighbor), tentativeGScore);
-        fScore.set(
-          JSON.stringify(neighbor),
-          tentativeGScore + heuristic(neighbor, goals[0]),
-        );
-
-        if (
-          !openSet.some(
-            (node) => JSON.stringify(node) === JSON.stringify(neighbor),
-          )
-        ) {
-          openSet.push(neighbor);
+        cameFrom.set(neighborKey, current);
+        gScore.set(neighborKey, tentativeGScore);
+        if (!openSet.contains({ position: neighbor })) {
+          openSet.enqueue({ position: neighbor, distance: tentativeGScore });
         }
       }
-    });
+    }
   }
 
-  return []; // Si aucun chemin n'est trouvé
-}
-
-function heuristic(a, goal) {
-  // Use Manhattan distance as heuristic for simplicity
-  return Math.abs(a[0] - goal[0]) + Math.abs(a[1] - goal[1]);
-}
-
-function reconstructPath(cameFrom, current) {
-  let totalPath = [current];
-  while (cameFrom.has(JSON.stringify(current))) {
-    current = cameFrom.get(JSON.stringify(current));
-    totalPath.unshift(current);
-  }
-  return totalPath;
+  return []; // Aucun chemin trouvé
 }
 
 function isWallLegal(

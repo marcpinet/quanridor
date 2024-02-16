@@ -153,26 +153,27 @@ function evaluate(gameState, player) {
   )
     return -Infinity;
 
-  let playerDistanceToGoal = getShortestPath(
+  gameState.hwalls = [
+    [4, 7],
+    [4, 8],
+    [4, 9],
+  ];
+
+  let playerShortestPath = getShortestPath(
     playerPosition,
     playerGoals,
     gameState,
-  ).length;
-  let opponentDistanceToGoal = getShortestPath(
+  );
+  let opponentShortestPath = getShortestPath(
     opponentPosition,
     opponentGoals,
     gameState,
-  ).length;
-  console.log(
-    "I'm player",
-    player,
-    "and my distance to goal is",
-    playerDistanceToGoal,
-    "and my opponent's distance to goal is",
-    opponentDistanceToGoal,
   );
 
-  let score = playerDistanceToGoal - opponentDistanceToGoal;
+  let playerDistanceToGoal = playerShortestPath.length;
+  let opponentDistanceToGoal = opponentShortestPath.length;
+
+  let score = opponentDistanceToGoal - playerDistanceToGoal;
 
   return score;
 }
@@ -205,40 +206,16 @@ function applyMove(gameState, move, player) {
 }
 
 function cloneGameState(gameState) {
-  const simplifiedGameState = {
-    playerspositions: [
-      [4, 8],
-      [4, 0],
-    ],
-    p1walls: 10,
-    p2walls: 10,
-    vwalls: [],
-    hwalls: [],
-    turn: 0,
-    winner: null,
-    board_visibility: [
-      [-1, -1, -1, -2, -2, -2, -1, -1, -1],
-      [-1, -1, -1, -1, -2, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 2, 1, 1, 1, 1],
-      [1, 1, 1, 2, 2, 2, 1, 1, 1],
-    ],
+  return {
+    playerspositions: JSON.parse(JSON.stringify(gameState.playerspositions)),
+    p1walls: gameState.p1walls,
+    p2walls: gameState.p2walls,
+    vwalls: JSON.parse(JSON.stringify(gameState.vwalls)),
+    hwalls: JSON.parse(JSON.stringify(gameState.hwalls)),
+    turn: gameState.turn,
+    winner: gameState.winner,
+    board_visibility: JSON.parse(JSON.stringify(gameState.board_visibility)),
   };
-
-  simplifiedGameState.playerspositions = gameState.playerspositions;
-  simplifiedGameState.p1walls = gameState.p1walls;
-  simplifiedGameState.p2walls = gameState.p2walls;
-  simplifiedGameState.vwalls = gameState.vwalls;
-  simplifiedGameState.hwalls = gameState.hwalls;
-  simplifiedGameState.turn = gameState.turn;
-  simplifiedGameState.winner = gameState.winner;
-  simplifiedGameState.board_visibility = gameState.board_visibility;
-
-  return simplifiedGameState;
 }
 
 function computeMove(gameState) {
