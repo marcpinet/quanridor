@@ -4,14 +4,15 @@ socket.on("connect", () => {
   console.log("Connected to server.");
 });
 
-const urlParams = new URLSearchParams(window.location.search);
 let gameId;
+let difficulty;
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
-const confirm = document.getElementById("confirm");
+const confirmWallButton = document.getElementById("confirm");
+const leaveButton = document.getElementById("leave");
 
 canvas.width = 703;
 canvas.height = 703;
@@ -62,6 +63,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   winPopup.style.display = "none";
   const urlParams = new URLSearchParams(window.location.search);
   gameId = urlParams.get("id");
+  difficulty = urlParams.get("difficulty");
+  difficulty = parseInt(difficulty);
 
   if (gameId) {
     socket.emit("gameId", {
@@ -77,11 +80,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "home.html";
       }
 
+      const player1name = document.getElementById("player1-name");
+      player1name.textContent = game.players[0];
+      const player2name = document.getElementById("player2-name");
+      player2name.textContent = game.players[1];
+      // ELO
+      const player1elo = document.getElementById("player1-elo");
+      const player2elo = document.getElementById("player2-elo");
+
+      console.log(game.elos);
+
+      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
+      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
+
       initializeGame(game);
     });
   } else {
     socket.emit("createGameAI", {
-      difficulty: 0,
+      difficulty: difficulty,
       token: localStorage.getItem("token"),
     });
     socket.on("gameCreated", (game) => {
@@ -112,10 +128,13 @@ function initializeGame(gameState) {
   p2_walls = gameState.p2walls;
   v_walls = gameState.vwalls;
   h_walls = gameState.hwalls;
+  difficulty = gameState.difficulty;
   tour = gameState.turn;
   board_visibility = gameState.board_visibility;
   players = gameState.players;
   drawBoard();
+  initWallBar(p1_walls, 0);
+  initWallBar(p2_walls, 1);
 }
 
 let board_visibility = [
@@ -206,11 +225,23 @@ function isWallLegal(player, coord) {
     return false;
   if (coord[0] > 7 || coord[0] < 0 || coord[1] > 7 || coord[1] < 0)
     return false;
+  for (let wall of v_walls) {
+    if (
+      wall[0] == coord[0] &&
+      ((Math.abs(wall[1] - coord[1]) == 1 && current_direction == "v") ||
+        Math.abs(wall[1] - coord[1]) == 0)
+    )
+      return false;
+  }
+  for (let wall of h_walls) {
+    if (
+      wall[1] == coord[1] &&
+      ((Math.abs(wall[0] - coord[0]) == 1 && current_direction == "h") ||
+        Math.abs(wall[0] - coord[0]) == 0)
+    )
+      return false;
+  }
   if (current_direction == "v") {
-    for (let wall of v_walls) {
-      if (wall[0] == coord[0] && Math.abs(wall[1] - coord[1]) <= 1)
-        return false;
-    }
     v_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(p1_coord, p1_goals) &&
@@ -218,10 +249,6 @@ function isWallLegal(player, coord) {
     );
     v_walls.pop();
   } else {
-    for (let wall of h_walls) {
-      if (wall[1] == coord[1] && Math.abs(wall[0] - coord[0]) <= 1)
-        return false;
-    }
     h_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(p1_coord, p1_goals) &&
@@ -429,6 +456,15 @@ function getCaseFromCoord(x, y) {
   return [Math.floor(x / 77), Math.floor(y / 77)];
 }
 
+function clearAfterWin() {
+  confirmWallButton.style.display = "none";
+  leaveButton.style.display = "none";
+  clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+  clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+}
+
+const winText = document.getElementById("win-text");
+
 function movePlayer(player, coord) {
   if (player == 1) {
     p1_coord = coord;
@@ -444,24 +480,29 @@ function movePlayer(player, coord) {
     gameState: getGameState(),
     token: localStorage.getItem("token"),
   });
-  socket.on("win", (gameStateReturned) => {
-    clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
-    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-    smoke.style.display = "block";
-    winPopup.style.display = "block";
-
-    const winText = document.getElementById("win-text");
-    winText.textContent = gameStateReturned.winner + " WON!";
-
-    const eloWin = document.getElementById("elo-score-win");
-    eloWin.textContent = gameStateReturned.winner + ": +144";
-
-    const eloLost = document.getElementById("elo-score-lose");
-    let loser =
-      gameStateReturned.winner == players[0] ? players[1] : players[0];
-    eloLost.textContent = loser + ": -144";
-  });
 }
+
+socket.on("win", (gameStateReturned) => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+
+  winText.textContent = gameStateReturned.winner + " WON!";
+
+  const eloWin = document.getElementById("elo-score-win");
+  eloWin.textContent = gameStateReturned.winner + ": +144";
+
+  const eloLost = document.getElementById("elo-score-lose");
+  let loser = gameStateReturned.winner == players[0] ? players[1] : players[0];
+  eloLost.textContent = loser + ": -144";
+  playing = false;
+});
+
+socket.on("draw", () => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+  winText.textContent = "DRAW!";
+  playing = false;
+});
 
 function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
@@ -482,6 +523,7 @@ socket.on("legalMove", (new_coord) => {
 });
 
 function getMouseCoordOnCanvas(event) {
+  if (!playing) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
@@ -631,8 +673,13 @@ socket.on("legalWall", () => {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) p1_walls--;
-    else p2_walls--;
+    if (tour % 2 == 0) {
+      updateWallBar(p1_walls, tour);
+      p1_walls--;
+    } else {
+      updateWallBar(p2_walls, tour);
+      p2_walls--;
+    }
     tour++;
   }
   drawBoard();
@@ -641,6 +688,7 @@ socket.on("legalWall", () => {
 });
 
 function confirmWall() {
+  if (!playing) return;
   if (temp_wall.length > 0 && !wallChecking) {
     wallChecking = true;
     socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
@@ -712,11 +760,12 @@ function clearPlayer(x, y) {
 
 canvas.addEventListener("click", getMouseCoordOnCanvas);
 
-confirm.addEventListener("click", confirmWall);
+confirmWallButton.addEventListener("click", confirmWall);
 
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
+    difficulty: difficulty,
     players: players,
     playerspositions: [p1_coord, p2_coord],
     status: playing ? 1 : 2,
@@ -733,9 +782,29 @@ socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
   if (newCoord[2] !== undefined) {
     placeWall(newCoord, newCoord[2]);
+    updateWallBar(p2_walls, tour);
+    p2_walls--;
+    console.log("ai walls : " + p2_walls);
     updateFogOfWarWall(newCoord);
   } else {
     movePlayer(2, newCoord);
+  }
+  tour++;
+  updateFogOfWar(2);
+  drawBoard();
+});
+
+socket.on("aiLastMove", (newCoord) => {
+  updateFogOfWarReverse(2);
+  if (newCoord[2] !== undefined) {
+    placeWall(newCoord, newCoord[2]);
+    updateWallBar(p2_walls, tour);
+    p2_walls--;
+    updateFogOfWarWall(newCoord);
+  } else {
+    p2_coord = newCoord;
+    drawPlayer(42 + newCoord[0] * 77, 42 + newCoord[1] * 77, "#000000");
+    select2 = false;
   }
   tour++;
   updateFogOfWar(2);
@@ -754,4 +823,25 @@ window.addEventListener("onbeforeunload", function (event) {
 
 window.addEventListener("unload", function (event) {
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+});
+
+function updateWallBar(value, t) {
+  var wallId = "p" + ((t % 2) + 1) + "-wall" + value;
+  makeSquareTransparent(wallId);
+}
+
+function makeSquareTransparent(squareId) {
+  console.log(squareId);
+  var square = document.getElementById(squareId);
+  square.classList.add("transparent");
+}
+
+function initWallBar(value, p) {
+  for (var i = 10; i > value; i--) {
+    updateWallBar(i, p);
+  }
+}
+
+document.getElementById("replay").addEventListener("click", () => {
+  window.location.href = "ai-game.html?difficulty=" + difficulty;
 });

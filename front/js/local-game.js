@@ -153,11 +153,23 @@ function isWallLegal(player, coord) {
     return false;
   if (coord[0] > 7 || coord[0] < 0 || coord[1] > 7 || coord[1] < 0)
     return false;
+  for (let wall of v_walls) {
+    if (
+      wall[0] == coord[0] &&
+      ((Math.abs(wall[1] - coord[1]) == 1 && current_direction == "v") ||
+        Math.abs(wall[1] - coord[1]) == 0)
+    )
+      return false;
+  }
+  for (let wall of h_walls) {
+    if (
+      wall[1] == coord[1] &&
+      ((Math.abs(wall[0] - coord[0]) == 1 && current_direction == "h") ||
+        Math.abs(wall[0] - coord[0]) == 0)
+    )
+      return false;
+  }
   if (current_direction == "v") {
-    for (let wall of v_walls) {
-      if (wall[0] == coord[0] && Math.abs(wall[1] - coord[1]) <= 1)
-        return false;
-    }
     v_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(p1_coord, p1_goals) &&
@@ -165,10 +177,6 @@ function isWallLegal(player, coord) {
     );
     v_walls.pop();
   } else {
-    for (let wall of h_walls) {
-      if (wall[1] == coord[1] && Math.abs(wall[0] - coord[0]) <= 1)
-        return false;
-    }
     h_walls.push(coord);
     isPossible = !!(
       aStarPathfinding(p1_coord, p1_goals) &&
@@ -664,8 +672,13 @@ async function confirmWall() {
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) p1_walls--;
-    else p2_walls--;
+    if (tour % 2 == 0) {
+      updateWallBar(p1_walls, tour);
+      p1_walls--;
+    } else {
+      updateWallBar(p2_walls, tour);
+      p2_walls--;
+    }
     drawBoard();
     tour++;
     sleeping = true;
@@ -756,4 +769,14 @@ function getGameState() {
     hwalls: h_walls,
     turn: tour,
   };
+}
+
+function updateWallBar(value, t) {
+  var wallId = "p" + ((t % 2) + 1) + "-wall" + value;
+  makeSquareTransparent(wallId);
+}
+
+function makeSquareTransparent(squareId) {
+  var square = document.getElementById(squareId);
+  square.classList.add("transparent");
 }
