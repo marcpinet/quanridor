@@ -132,7 +132,7 @@ exports.nextMove = function (gameState) {
             player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
-        },
+        }
       );
       move = {
         action: "move",
@@ -149,7 +149,7 @@ exports.nextMove = function (gameState) {
               : [opponentPosition, ownPosition],
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
-        },
+        }
       );
       let opponentShortestPath = getShortestPath(
         opponentPosition,
@@ -161,7 +161,7 @@ exports.nextMove = function (gameState) {
               : [opponentPosition, ownPosition],
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
-        },
+        }
       );
       if (ourShortestPath.length <= opponentShortestPath) {
         move = {
@@ -173,7 +173,7 @@ exports.nextMove = function (gameState) {
         for (let i = 0; i < opponentShortestPath.length - 1; i++) {
           let direction = computeDirection(
             opponentShortestPath[i],
-            opponentShortestPath[i + 1],
+            opponentShortestPath[i + 1]
           );
           if (
             (direction == "l" || direction == "r") &&
@@ -186,7 +186,7 @@ exports.nextMove = function (gameState) {
               walls.vwalls,
               walls.hwalls,
               ownPosition,
-              opponentPosition,
+              opponentPosition
             )
           ) {
             wallCoord = opponentShortestPath[1] + ["v"];
@@ -200,7 +200,7 @@ exports.nextMove = function (gameState) {
               walls.vwalls,
               walls.hwalls,
               ownPosition,
-              opponentPosition,
+              opponentPosition
             )
           ) {
             wallCoord = opponentShortestPath[1] + ["h"];
@@ -263,7 +263,7 @@ function computeMove(gameState) {
           player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
         hwalls: walls.hwalls,
         vwalls: walls.vwalls,
-      },
+      }
     );
     move = {
       action: "move",
@@ -280,7 +280,7 @@ function computeMove(gameState) {
             : [opponentPosition, ownPosition],
         hwalls: walls.hwalls,
         vwalls: walls.vwalls,
-      },
+      }
     );
     let opponentShortestPath = getShortestPath(
       opponentPosition,
@@ -292,7 +292,7 @@ function computeMove(gameState) {
             : [opponentPosition, ownPosition],
         hwalls: walls.hwalls,
         vwalls: walls.vwalls,
-      },
+      }
     );
     if (ourShortestPath.length <= opponentShortestPath.length) {
       move = {
@@ -305,7 +305,7 @@ function computeMove(gameState) {
         for (let i = 0; i < opponentShortestPath.length - 1; i++) {
           let direction = computeDirection(
             opponentShortestPath[i],
-            opponentShortestPath[i + 1],
+            opponentShortestPath[i + 1]
           );
           switch (direction) {
             case "l":
@@ -319,7 +319,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [opponentShortestPath[1], "v"];
@@ -333,7 +333,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [
@@ -353,7 +353,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [opponentShortestPath[0], "v"];
@@ -367,7 +367,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [
@@ -387,7 +387,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [opponentShortestPath[0], "h"];
@@ -401,7 +401,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [
@@ -421,7 +421,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [opponentShortestPath[1], "h"];
@@ -435,7 +435,7 @@ function computeMove(gameState) {
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
-                  opponentPosition,
+                  opponentPosition
                 )
               ) {
                 wallCoord = [
