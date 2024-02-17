@@ -239,3 +239,133 @@ exports.updateBoard = function (gameState) {
     resolve(true);
   });
 };
+
+function computeMove(gameState) {
+  let ownPosition = gameState.playerspositions[1];
+  let opponentPosition =
+    gameState.board_visibility[gameState.playerspositions[0][1]][
+      gameState.playerspositions[0][0]
+    ] <= 0
+      ? gameState.playerspositions[0]
+      : [];
+  player = 2;
+  let walls = {
+    vwalls: gameState.vwalls,
+    hwalls: gameState.hwalls,
+  };
+  if (opponentPosition.length == 0) {
+    let shortestPath = getShortestPath(
+      ownPosition,
+      player == 1 ? p1_goals : p2_goals,
+      {
+        playerspositions:
+          player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
+        hwalls: walls.hwalls,
+        vwalls: walls.vwalls,
+      },
+    );
+    move = {
+      action: "move",
+      value: shortestPath[1][0] + "" + shortestPath[1][1],
+    };
+  } else {
+    let ourShortestPath = getShortestPath(
+      ownPosition,
+      player == 1 ? p1_goals : p2_goals,
+      {
+        playerspositions:
+          player == 1
+            ? [ownPosition, opponentPosition]
+            : [opponentPosition, ownPosition],
+        hwalls: walls.hwalls,
+        vwalls: walls.vwalls,
+      },
+    );
+    let opponentShortestPath = getShortestPath(
+      opponentPosition,
+      player == 1 ? p2_goals : p1_goals,
+      {
+        playerspositions:
+          player == 1
+            ? [ownPosition, opponentPosition]
+            : [opponentPosition, ownPosition],
+        hwalls: walls.hwalls,
+        vwalls: walls.vwalls,
+      },
+    );
+    if (ourShortestPath.length <= opponentShortestPath) {
+      move = {
+        action: "move",
+        value: ourShortestPath[1][0] + "" + ourShortestPath[1][1],
+      };
+    } else {
+      let wallCoord = [];
+      for (let i = 0; i < opponentShortestPath.length - 1; i++) {
+        let direction = computeDirection(
+          opponentShortestPath[i],
+          opponentShortestPath[i + 1],
+        );
+        if (
+          (direction == "l" || direction == "r") &&
+          isWallLegal(
+            player,
+            opponentShortestPath[1],
+            "v",
+            1,
+            1,
+            walls.vwalls,
+            walls.hwalls,
+            ownPosition,
+            opponentPosition,
+          )
+        ) {
+          wallCoord = [opponentShortestPath[1], "v"];
+        } else if (
+          isWallLegal(
+            player,
+            opponentShortestPath[1],
+            "h",
+            1,
+            1,
+            walls.vwalls,
+            walls.hwalls,
+            ownPosition,
+            opponentPosition,
+          )
+        ) {
+          wallCoord = [opponentShortestPath[1], "h"];
+        }
+        if (wallCoord.length != 0) break;
+      }
+      if (wallCoord.length == 0) {
+        move = {
+          action: "move",
+          value: ourShortestPath[1][0] + "" + ourShortestPath[1][1],
+        };
+      } else {
+        console.log(wallCoord);
+        move = {
+          action: "wall",
+          value: [
+            wallCoord[0][0] + "" + wallCoord[0][1],
+            wallCoord[1][0] == "h" ? 0 : 1,
+          ],
+        };
+      }
+    }
+  }
+  console.log(move);
+  if (move.action == "move") {
+    return [parseInt(move.value[0]), parseInt(move.value[1])];
+  } else if (move.action == "wall") {
+    return [
+      parseInt(move.value[0][0]),
+      parseInt(move.value[0][1]),
+      move.value[1] == 0 ? "h" : "v",
+    ];
+  } else {
+    return [];
+  }
+}
+
+module.exports = { computeMove };
