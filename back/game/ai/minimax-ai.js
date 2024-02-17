@@ -3,7 +3,8 @@ const {
   canJump,
   checkWin,
   isWallLegal,
-  getPossibleMovesAndWalls,
+  cloneGameState,
+  getPossibleMovesAndStrategicWalls,
   getShortestPath,
 } = require("../utils/game-checkers.js");
 
@@ -91,12 +92,12 @@ function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
     };
   }
 
-  let { possibleMoves, possibleWalls } = getPossibleMovesAndWalls(
+  let { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
     gameState,
     maximizingPlayer ? 2 : 1,
   );
   // add walls to possible moves
-  // possibleMoves = possibleMoves.concat(possibleWalls);
+  possibleMoves = possibleMoves.concat(possibleWalls);
 
   if (possibleMoves.length == 0) {
     return {
@@ -144,36 +145,41 @@ function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
   return best;
 }
 
+function canWin(gameState, player) {
+  const playerGoals = player === 1 ? p1goals : p2goals;
+  const playerPosition = gameState.playerspositions[player - 1];
+  let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
+  return playerPath.length <= 2;
+}
+
 function evaluate(gameState, player) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
 
-  let p1_coord = gameState.playerspositions[0];
-  let p2_coord = gameState.playerspositions[1];
-  if (checkWin(player, { p1_coord: p1_coord, p2_coord: p2_coord }))
-    return 100000000;
-  if (
-    checkWin(player === 1 ? 2 : 1, { p1_coord: p1_coord, p2_coord: p2_coord })
-  )
-    return -100000000;
+  if (canWin(gameState, player)) return 100000;
+  if (canWin(gameState, player === 1 ? 2 : 1)) return -100000;
 
-  let playerShortestPath = getShortestPath(
-    playerPosition,
-    playerGoals,
-    gameState,
-  );
-  let opponentShortestPath = getShortestPath(
+  let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
+  let opponentPath = getShortestPath(
     opponentPosition,
     opponentGoals,
     gameState,
   );
 
-  let playerDistanceToGoal = playerShortestPath.length;
-  let opponentDistanceToGoal = opponentShortestPath.length;
+  let score = 0;
 
-  let score = opponentDistanceToGoal - playerDistanceToGoal;
+  // Adjust score based on path length difference
+  score += (opponentPath.length - playerPath.length) * 10;
+
+  // Prioritize endgame scenarios
+  if (playerPath.length <= 2) score += 1000; // Near victory
+  if (opponentPath.length <= 2) score -= 1000; // Opponent near victory
+
+  // Adjust for remaining walls - incentivize saving walls for critical moments
+  let wallsDifference = gameState.p1walls - gameState.p2walls;
+  score += player === 1 ? wallsDifference * 5 : -wallsDifference * 5;
 
   return score;
 }
@@ -198,21 +204,8 @@ function applyMove(gameState, move, player) {
   return newGameState;
 }
 
-function cloneGameState(gameState) {
-  return {
-    playerspositions: JSON.parse(JSON.stringify(gameState.playerspositions)),
-    p1walls: gameState.p1walls,
-    p2walls: gameState.p2walls,
-    vwalls: JSON.parse(JSON.stringify(gameState.vwalls)),
-    hwalls: JSON.parse(JSON.stringify(gameState.hwalls)),
-    turn: gameState.turn,
-    winner: gameState.winner,
-    board_visibility: JSON.parse(JSON.stringify(gameState.board_visibility)),
-  };
-}
-
 function computeMove(gameState) {
-  let depth = 10;
+  let depth = 2;
   let { value, move } = minimax(gameState, depth, -Infinity, +Infinity, true);
   console.log("AI played!", move);
   return move;

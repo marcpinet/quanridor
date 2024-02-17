@@ -3,7 +3,7 @@ const {
   canJump,
   checkWin,
   isWallLegal,
-  getPossibleMovesAndWalls,
+  getPossibleMovesAndStrategicWalls,
 } = require("../utils/game-checkers.js");
 
 function decide(possibleMoves, possibleWalls) {
@@ -18,8 +18,10 @@ function decide(possibleMoves, possibleWalls) {
 }
 
 function computeMove(gameState) {
-  let { possibleMoves, possibleWalls } = getPossibleMovesAndWalls(gameState, 2);
-
+  let { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
+    gameState,
+    2,
+  );
   return decide(possibleMoves, possibleWalls);
 }
 
