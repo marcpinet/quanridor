@@ -102,34 +102,9 @@ function shortestPath(start, goals, walls) {
 
 exports.nextMove = function (gameState) {
   return new Promise((resolve, reject) => {
-    let move;
-    let ownPath = shortestPath(
-      [ownPos[0], ownPos[1]],
-      player == 1 ? p1_goals : p2_goals,
-      [gameState.opponentWalls + gameState.ownWalls],
-    );
-    let opponentPath;
-
-    let tempPosition = retrieveOpponentPosition(gameState.board);
-    if (tempPosition == []) opponentPosition = "";
-    else opponentPosition = tempPosition[0] + "" + tempPosition[1];
-
-    if (opponentPosition != "") {
-      opponentPath = shortestPath(
-        [opponentPosition[0], opponentPosition[1]],
-        player == 1
-          ? p2_goals
-          : p1_goals[gameState.opponentWalls + gameState.ownWalls],
-      );
-    }
-    if (ownPath.length >= opponentPath.length) {
-      coordToMoveTo = ownPath[1];
-      move = {
-        action: "move",
-        value: coordToMoveTo[0] + "" + coordToMoveTo[1],
-      };
-    } else if (ownPath.length) {
-    }
+    const move = {
+      action: "idle",
+    };
     resolve(move);
   });
 };
@@ -146,55 +121,3 @@ exports.updateBoard = function (gameState) {
     resolve(true);
   });
 };
-
-class Node {
-  constructor(gameState, action = null, parent = null) {
-    this.gameState = gameState;
-    this.action = action;
-    this.parent = parent;
-    this.children = [];
-    this.visits = 0;
-    this.totalReward = 0;
-  }
-
-  isTerminal() {
-    return this.gameState.isGameOver();
-  }
-
-  isFullyExpanded() {
-    return this.children.length === this.getUntriedActions().length;
-  }
-
-  getUntriedActions() {
-    return getLegalActions(this.gameState);
-  }
-
-  selectChild() {
-    // Implement UCB1 selection
-    const logTotalVisits = Math.log(this.visits);
-    const child = this.children.reduce(
-      (selected, current) => {
-        const ucb1Value =
-          current.totalReward / current.visits +
-          C * Math.sqrt(logTotalVisits / current.visits);
-        return ucb1Value > selected.ucb1Value
-          ? { node: current, ucb1Value: ucb1Value }
-          : selected;
-      },
-      { node: null, ucb1Value: -Infinity },
-    );
-
-    return child.node;
-  }
-
-  expand(action, gameState) {
-    const childNode = new Node(gameState, action, this);
-    this.children.push(childNode);
-    return childNode;
-  }
-
-  update(reward) {
-    this.visits++;
-    this.totalReward += reward;
-  }
-}
