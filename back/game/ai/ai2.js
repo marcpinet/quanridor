@@ -240,6 +240,8 @@ exports.updateBoard = function (gameState) {
   });
 };
 
+let wallsRemaining = 10;
+
 function computeMove(gameState) {
   let ownPosition = gameState.playerspositions[1];
   let opponentPosition =
@@ -293,49 +295,159 @@ function computeMove(gameState) {
         vwalls: walls.vwalls,
       },
     );
-    if (ourShortestPath.length <= opponentShortestPath) {
+    if (ourShortestPath.length <= opponentShortestPath.length) {
       move = {
         action: "move",
         value: ourShortestPath[1][0] + "" + ourShortestPath[1][1],
       };
     } else {
       let wallCoord = [];
-      for (let i = 0; i < opponentShortestPath.length - 1; i++) {
-        let direction = computeDirection(
-          opponentShortestPath[i],
-          opponentShortestPath[i + 1],
-        );
-        if (
-          (direction == "l" || direction == "r") &&
-          isWallLegal(
-            player,
-            opponentShortestPath[1],
-            "v",
-            1,
-            1,
-            walls.vwalls,
-            walls.hwalls,
-            ownPosition,
-            opponentPosition,
-          )
-        ) {
-          wallCoord = [opponentShortestPath[1], "v"];
-        } else if (
-          isWallLegal(
-            player,
-            opponentShortestPath[1],
-            "h",
-            1,
-            1,
-            walls.vwalls,
-            walls.hwalls,
-            ownPosition,
-            opponentPosition,
-          )
-        ) {
-          wallCoord = [opponentShortestPath[1], "h"];
+      if (wallsRemaining > 0) {
+        for (let i = 0; i < opponentShortestPath.length - 1; i++) {
+          let direction = computeDirection(
+            opponentShortestPath[i],
+            opponentShortestPath[i + 1],
+          );
+          switch (direction) {
+            case "l":
+              if (
+                isWallLegal(
+                  player,
+                  opponentShortestPath[1],
+                  "v",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [opponentShortestPath[1], "v"];
+              } else if (
+                isWallLegal(
+                  player,
+                  [opponentShortestPath[1][0], opponentShortestPath[1][1] - 1],
+                  "v",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [
+                  [opponentShortestPath[1][0], opponentShortestPath[1][1] - 1],
+                  "v",
+                ];
+              }
+              break;
+            case "r":
+              if (
+                isWallLegal(
+                  player,
+                  opponentShortestPath[0],
+                  "v",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [opponentShortestPath[1], "v"];
+              } else if (
+                isWallLegal(
+                  player,
+                  [opponentShortestPath[0][0], opponentShortestPath[0][1] - 1],
+                  "v",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [
+                  [opponentShortestPath[0][0], opponentShortestPath[0][1] - 1],
+                  "v",
+                ];
+              }
+              break;
+            case "d":
+              if (
+                isWallLegal(
+                  player,
+                  opponentShortestPath[0],
+                  "h",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [opponentShortestPath[1], "h"];
+              } else if (
+                isWallLegal(
+                  player,
+                  [opponentShortestPath[0][0] - 1, opponentShortestPath[0][1]],
+                  "h",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [
+                  [opponentShortestPath[0][0] - 1, opponentShortestPath[0][1]],
+                  "h",
+                ];
+              }
+              break;
+            case "u":
+              if (
+                isWallLegal(
+                  player,
+                  opponentShortestPath[1],
+                  "h",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [opponentShortestPath[1], "h"];
+              } else if (
+                isWallLegal(
+                  player,
+                  [opponentShortestPath[1][0] - 1, opponentShortestPath[1][1]],
+                  "h",
+                  1,
+                  wallsRemaining,
+                  walls.vwalls,
+                  walls.hwalls,
+                  ownPosition,
+                  opponentPosition,
+                )
+              ) {
+                wallCoord = [
+                  [opponentShortestPath[1][0] - 1, opponentShortestPath[1][1]],
+                  "h",
+                ];
+              }
+              break;
+          }
+          if (wallCoord.length != 0) break;
         }
-        if (wallCoord.length != 0) break;
       }
       if (wallCoord.length == 0) {
         move = {
@@ -343,7 +455,7 @@ function computeMove(gameState) {
           value: ourShortestPath[1][0] + "" + ourShortestPath[1][1],
         };
       } else {
-        console.log(wallCoord);
+        wallsRemaining--;
         move = {
           action: "wall",
           value: [
