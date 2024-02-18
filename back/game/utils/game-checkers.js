@@ -104,7 +104,7 @@ function getPossibleMovesAndStrategicWalls(gameState, player) {
   return { possibleMoves, possibleWalls };
 }
 
-function getStrategicWalls(gameState, player) {
+function getPossibleWalls(gameState, player) {
   let possibleWalls = [];
 
   // Check if placing a vertical wall is possible.
@@ -157,6 +157,11 @@ function getStrategicWalls(gameState, player) {
     }
   }
 
+  return possibleWalls;
+}
+
+function getStrategicWalls(gameState, player) {
+  let possibleWalls = getPossibleWalls(gameState, player);
   const playerGoals = player === 1 ? p1_goals : p2_goals;
   const opponentGoals = player === 1 ? p2_goals : p1_goals;
   const gameStateCopy = cloneGameState(gameState);
@@ -170,7 +175,6 @@ function getStrategicWalls(gameState, player) {
     opponentGoals,
     gameStateCopy,
   );
-
   // Keep only walls around the opponent's current position and not too close to the goals or the player
   possibleWalls = possibleWalls.filter((wall) => {
     // Apply the wall temporarily to the game state
@@ -555,4 +559,6 @@ module.exports = {
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
   cloneGameState,
+  getPossibleMoves,
+  getPossibleWalls,
 };
