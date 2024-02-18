@@ -19,7 +19,7 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 - Token authentication system (JWT) 🍪
 - In-progress game listing 📋
 - Play locally with someone else 🎮
-- Play against an AI (currently only one level of difficulty: random) 🤖
+- Play against bots with different levels of difficulty 🤖
 - Leaving a game? No problem, it's in our database, waiting for you to join back! 📂
 - Possibility to logout if you intend to have multiple accounts and smurf 🤫
 

@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
 const AI0 = require("./random-ai.js");
-const AI1 = require("./mcts-ai.js");
+//const AI1 = require("./mcts-ai.js");
 const AI2 = require("./minimax-ai.js");
 const AIcaca = require("./ai2.js");
 const { getDB } = require("../../query-managers/db.js");

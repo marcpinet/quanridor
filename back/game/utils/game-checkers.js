@@ -96,9 +96,15 @@ function getPossibleMoves(gameState, pos) {
   return possibleMoves;
 }
 
-function getPossibleMovesAndWalls(gameState, player) {
+function getPossibleMovesAndStrategicWalls(gameState, player) {
   let pos = gameState.playerspositions[player - 1];
   let possibleMoves = getPossibleMoves(gameState, pos);
+  let possibleWalls = getStrategicWalls(gameState, player);
+
+  return { possibleMoves, possibleWalls };
+}
+
+function getPossibleWalls(gameState, player) {
   let possibleWalls = [];
 
   // Check if placing a vertical wall is possible.
@@ -151,23 +157,73 @@ function getPossibleMovesAndWalls(gameState, player) {
     }
   }
 
+  return possibleWalls;
+}
+
+function getStrategicWalls(gameState, player) {
+  let possibleWalls = getPossibleWalls(gameState, player);
+  const playerGoals = player === 1 ? p1_goals : p2_goals;
+  const opponentGoals = player === 1 ? p2_goals : p1_goals;
+  const gameStateCopy = cloneGameState(gameState);
+  const playerPath = getShortestPath(
+    gameState.playerspositions[player - 1],
+    playerGoals,
+    gameStateCopy,
+  );
+  const opponentPath = getShortestPath(
+    gameState.playerspositions[1 - (player - 1)],
+    opponentGoals,
+    gameStateCopy,
+  );
   // Keep only walls around the opponent's current position and not too close to the goals or the player
   possibleWalls = possibleWalls.filter((wall) => {
+    // Apply the wall temporarily to the game state
+    if (wall[2] === "v") {
+      gameStateCopy.vwalls.push([wall[0], wall[1]]);
+    } else {
+      gameStateCopy.hwalls.push([wall[0], wall[1]]);
+    }
+
+    // Calculate the new shortest paths for both players
+    const newPlayerPath = getShortestPath(
+      gameStateCopy.playerspositions[player - 1],
+      playerGoals,
+      gameStateCopy,
+    );
+    const newOpponentPath = getShortestPath(
+      gameStateCopy.playerspositions[1 - (player - 1)],
+      opponentGoals,
+      gameStateCopy,
+    );
+
+    // Remove the temporary wall
+    if (wall[2] === "v") {
+      gameStateCopy.vwalls.pop();
+    } else {
+      gameStateCopy.hwalls.pop();
+    }
+
+    // Keep the wall if it significantly lengthens the opponent's path without severely impacting the player's path
     return (
-      Math.abs(wall[0] - gameState.playerspositions[0][0]) < 3 &&
-      Math.abs(wall[1] - gameState.playerspositions[0][1]) < 3 &&
-      Math.abs(wall[0] - gameState.playerspositions[1][0]) < 3 &&
-      Math.abs(wall[1] - gameState.playerspositions[1][1]) < 3 &&
-      Math.abs(wall[0] - gameState.playerspositions[0][0]) +
-        Math.abs(wall[1] - gameState.playerspositions[0][1]) >=
-        2 &&
-      Math.abs(wall[0] - gameState.playerspositions[1][0]) +
-        Math.abs(wall[1] - gameState.playerspositions[1][1]) >=
-        2
+      newOpponentPath.length > opponentPath.length &&
+      newPlayerPath.length <= playerPath.length + 2
     );
   });
 
-  return { possibleMoves, possibleWalls };
+  return possibleWalls;
+}
+
+function cloneGameState(gameState) {
+  return {
+    playerspositions: JSON.parse(JSON.stringify(gameState.playerspositions)),
+    p1walls: gameState.p1walls,
+    p2walls: gameState.p2walls,
+    vwalls: JSON.parse(JSON.stringify(gameState.vwalls)),
+    hwalls: JSON.parse(JSON.stringify(gameState.hwalls)),
+    turn: gameState.turn,
+    winner: gameState.winner,
+    board_visibility: JSON.parse(JSON.stringify(gameState.board_visibility)),
+  };
 }
 
 function isLegal(
@@ -232,6 +288,7 @@ function isInclude(array, coord) {
 }
 
 function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
+  let temp;
   if (
     Math.abs(p1_coord[0] - coord[0]) == 1 &&
     p1_coord[1] == coord[1] &&
@@ -243,9 +300,15 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p1_coord,
       p2_coord,
     )
-  )
-    return [2 * p1_coord[0] - coord[0], coord[1]];
-  else if (
+  ) {
+    temp = p2_coord;
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p2_coord = temp;
+      return [2 * p1_coord[0] - coord[0], coord[1]];
+    }
+    p2_coord = temp;
+  } else if (
     Math.abs(p2_coord[0] - coord[0]) == 1 &&
     p2_coord[1] == coord[1] &&
     isLegal(
@@ -256,9 +319,15 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p1_coord,
       p2_coord,
     )
-  )
-    return [2 * p2_coord[0] - coord[0], coord[1]];
-  else if (
+  ) {
+    temp = p2_coord;
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p2_coord = temp;
+      return [2 * p2_coord[0] - coord[0], coord[1]];
+    }
+    p2_coord = temp;
+  } else if (
     p1_coord[0] == coord[0] &&
     Math.abs(p1_coord[1] - coord[1]) == 1 &&
     isLegal(
@@ -269,9 +338,15 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p1_coord,
       p2_coord,
     )
-  )
-    return [coord[0], 2 * p1_coord[1] - coord[1]];
-  else if (
+  ) {
+    temp = p1_coord;
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p1_coord = temp;
+      return [coord[0], 2 * p1_coord[1] - coord[1]];
+    }
+    p1_coord = temp;
+  } else if (
     p2_coord[0] == coord[0] &&
     Math.abs(p2_coord[1] - coord[1]) == 1 &&
     isLegal(
@@ -282,8 +357,15 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p1_coord,
       p2_coord,
     )
-  )
-    return [coord[0], 2 * p2_coord[1] - coord[1]];
+  ) {
+    temp = p1_coord;
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p1_coord = temp;
+      return [coord[0], 2 * p2_coord[1] - coord[1]];
+    }
+    p1_coord = temp;
+  }
   return [];
 }
 
@@ -474,6 +556,9 @@ module.exports = {
   canJump,
   isWallLegal,
   checkWin,
-  getPossibleMovesAndWalls,
+  getPossibleMovesAndStrategicWalls,
   getShortestPath,
+  cloneGameState,
+  getPossibleMoves,
+  getPossibleWalls,
 };
