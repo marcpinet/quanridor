@@ -1,8 +1,4 @@
 const {
-  isLegal,
-  canJump,
-  checkWin,
-  isWallLegal,
   getPossibleMovesAndStrategicWalls,
 } = require("../utils/game-checkers.js");
 

@@ -83,6 +83,8 @@ function getPossibleMoves(gameState, pos) {
     gameState.playerspositions[1],
     gameState.playerspositions[0],
     gameState.playerspositions[1],
+    gameState.vwalls,
+    gameState.hwalls,
   );
   if (jump_coord.length > 0) possibleMoves.push(jump_coord);
 
@@ -281,16 +283,23 @@ function isInclude(array, coord) {
   return false;
 }
 
-function canJump(coord, p1_coord, p2_coord) {
+function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
   let temp;
   if (
     Math.abs(p1_coord[0] - coord[0]) == 1 &&
     p1_coord[1] == coord[1] &&
-    isLegal(p1_coord, [2 * p1_coord[0] - coord[0], coord[1]])
+    isLegal(
+      p1_coord,
+      [2 * p1_coord[0] - coord[0], coord[1]],
+      v_walls,
+      h_walls,
+      p1_coord,
+      p2_coord,
+    )
   ) {
     temp = p2_coord;
     p2_coord = [9, 9];
-    if (isLegal(p1_coord, temp)) {
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
       p2_coord = temp;
       return [2 * p1_coord[0] - coord[0], coord[1]];
     }
@@ -298,11 +307,18 @@ function canJump(coord, p1_coord, p2_coord) {
   } else if (
     Math.abs(p2_coord[0] - coord[0]) == 1 &&
     p2_coord[1] == coord[1] &&
-    isLegal(p2_coord, [2 * p2_coord[0] - coord[0], coord[1]])
+    isLegal(
+      p2_coord,
+      [2 * p2_coord[0] - coord[0], coord[1]],
+      v_walls,
+      h_walls,
+      p1_coord,
+      p2_coord,
+    )
   ) {
     temp = p2_coord;
     p2_coord = [9, 9];
-    if (isLegal(p1_coord, temp)) {
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
       p2_coord = temp;
       return [2 * p2_coord[0] - coord[0], coord[1]];
     }
@@ -310,11 +326,18 @@ function canJump(coord, p1_coord, p2_coord) {
   } else if (
     p1_coord[0] == coord[0] &&
     Math.abs(p1_coord[1] - coord[1]) == 1 &&
-    isLegal(p1_coord, [coord[0], 2 * p1_coord[1] - coord[1]])
+    isLegal(
+      p1_coord,
+      [coord[0], 2 * p1_coord[1] - coord[1]],
+      v_walls,
+      h_walls,
+      p1_coord,
+      p2_coord,
+    )
   ) {
     temp = p1_coord;
     p1_coord = [9, 9];
-    if (isLegal(p2_coord, temp)) {
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
       p1_coord = temp;
       return [coord[0], 2 * p1_coord[1] - coord[1]];
     }
@@ -322,11 +345,18 @@ function canJump(coord, p1_coord, p2_coord) {
   } else if (
     p2_coord[0] == coord[0] &&
     Math.abs(p2_coord[1] - coord[1]) == 1 &&
-    isLegal(p2_coord, [coord[0], 2 * p2_coord[1] - coord[1]])
+    isLegal(
+      p2_coord,
+      [coord[0], 2 * p2_coord[1] - coord[1]],
+      v_walls,
+      h_walls,
+      p1_coord,
+      p2_coord,
+    )
   ) {
     temp = p1_coord;
     p1_coord = [9, 9];
-    if (isLegal(p2_coord, temp)) {
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
       p1_coord = temp;
       return [coord[0], 2 * p2_coord[1] - coord[1]];
     }
@@ -374,7 +404,7 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
         openSet.push(neighbor);
       }
     }
-    let jump_coord = canJump(current, p1_coord, p2_coord);
+    let jump_coord = canJump(current, p1_coord, p2_coord, v_walls, h_walls);
     if (
       jump_coord.length > 0 &&
       !isInclude(closedSet, jump_coord) &&
@@ -422,6 +452,8 @@ function getShortestPath(start, goals, gameState) {
       current,
       gameState.playerspositions[0],
       gameState.playerspositions[1],
+      gameState.vwalls,
+      gameState.hwalls,
     );
     if (jumpMove.length > 0) {
       possibleMoves.push(jumpMove);
@@ -482,15 +514,29 @@ function isWallLegal(
   if (current_direction == "v") {
     v_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(
+        p1_coord,
+        p1_goals,
+        p1_coord,
+        p2_coord,
+        v_walls,
+        h_walls,
+      ) &&
+      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
     );
     v_walls.pop();
   } else {
     h_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(
+        p1_coord,
+        p1_goals,
+        p1_coord,
+        p2_coord,
+        v_walls,
+        h_walls,
+      ) &&
+      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
     );
     h_walls.pop();
   }
