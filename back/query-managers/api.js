@@ -133,7 +133,7 @@ async function handleSignup(request, response) {
       let secret = await getJwtSecret();
 
       // Generate JWT
-      const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
+      const token = jwt.sign({ username }, secret, { expiresIn: "90d" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ token: token }));
@@ -180,7 +180,7 @@ async function handleLogin(request, response) {
       let secret = await getJwtSecret();
 
       // Generate JWT
-      const token = jwt.sign({ username }, secret, { expiresIn: "72h" });
+      const token = jwt.sign({ username }, secret, { expiresIn: "90d" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ token: token }));
