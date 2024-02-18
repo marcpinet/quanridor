@@ -265,7 +265,31 @@ function computeMove2(gameState) {
       value: shortestPath[1][0] + "" + shortestPath[1][1],
     };
   } else {
-    return computeMove(gameState);
+    const ourGameState = {
+      playerspositions: [opponentPosition, ownPosition],
+      p1walls: 10,
+      p2walls: 10,
+      hwalls: gameState.hwalls,
+      vwalls: gameState.vwalls,
+      board_visibility: [],
+    };
+    let moveToCast = computeMove(ourGameState);
+    if (moveToCast.length == 3) {
+      move = {
+        action: "wall",
+        value: [
+          moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+          moveToCast[2] == "h" ? 0 : 1,
+        ],
+      };
+    } else {
+      move = {
+        action: "move",
+        value: moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+      };
+    }
+    console.log(move);
+    return moveToCast;
   }
   console.log(move);
   if (move.action == "move") {
@@ -282,3 +306,105 @@ function computeMove2(gameState) {
 }
 
 module.exports = { computeMove, computeMove2 };
+
+let board = [];
+let ownPosition = [];
+let opponentPosition = [];
+let player;
+
+function convertWalls(ownWalls, opponentWalls) {
+  let vwalls;
+  let hwalls;
+  for (let wall of ownWalls.concat(opponentWalls)) {
+    if (wall[1] == 0) hwalls.push([wall[0][0], wall[0][1]]);
+    else vwalls.push([wall[0][0], wall[0][1]]);
+  }
+  return {
+    vwalls: vwalls,
+    hwalls: hwalls,
+  };
+}
+
+function retrievePosition(board, player) {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j] == player) {
+        return [i, j];
+      }
+    }
+  }
+  return [];
+}
+
+exports.setup = function (AIplay) {
+  return new Promise((resolve, reject) => {
+    player = AIplay;
+    ownPosition = AIplay == 1 ? "51" : "59";
+    resolve(ownPosition);
+  });
+};
+
+exports.nextMove = function (gameState) {
+  return new Promise((resolve, reject) => {
+    let move;
+    let walls = convertWalls(gameState.ownWalls, gameState.opponentWalls);
+    opponentPosition = retrievePosition(gameState.board, (player % 2) + 1);
+    ownPosition = retrievePosition(gameState.board, player);
+    if (opponentPosition.length == 0) {
+      let shortestPath = getShortestPath(
+        ownPosition,
+        player == 1 ? p2goals : p1goals,
+        {
+          playerspositions:
+            player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
+          hwalls: walls.hwalls,
+          vwalls: walls.vwalls,
+        },
+      );
+      move = {
+        action: "move",
+        value: shortestPath[1][0] + 1 + "" + (shortestPath[1][1] + 1),
+      };
+    } else {
+      const ourGameState = {
+        playerspositions:
+          player == 1
+            ? [ownPosition, opponentPosition]
+            : [opponentPosition, ownPosition],
+        p1walls: 10,
+        p2walls: 10,
+        hwalls: gameState.hwalls,
+        vwalls: gameState.vwalls,
+        board_visibility: [],
+      };
+      let moveToCast = computeMove(ourGameState);
+      if (moveToCast.length == 3) {
+        move = {
+          action: "wall",
+          value: [
+            moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+            moveToCast[2] == "h" ? 0 : 1,
+          ],
+        };
+      } else {
+        move = {
+          action: "move",
+          value: moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+        };
+      }
+    }
+    resolve(move);
+  });
+};
+
+exports.correction = function (rightMove) {
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
+};
+
+exports.updateBoard = function (gameState) {
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
+};
