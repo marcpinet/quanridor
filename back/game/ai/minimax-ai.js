@@ -217,6 +217,15 @@ function applyMove(gameState, move, player) {
 
 function computeMove(gameState) {
   let depth = 2;
+  let aiPlayer = 2;
+  let aiPath = getShortestPath(
+    gameState.playerspositions[1],
+    aiPlayer === 1 ? p1goals : p2goals,
+    gameState,
+  );
+  if (aiPath.length <= 2) {
+    return aiPath[aiPath.length - 1];
+  }
   let { value, move } = minimax(gameState, depth, -Infinity, +Infinity, true);
   console.log("AI played!", move);
   return move;
