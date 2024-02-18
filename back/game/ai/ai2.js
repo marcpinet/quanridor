@@ -110,9 +110,9 @@ const move = {
 */
 
 function computeDirection(firstCase, secondCase) {
-  if (firstCase[0] - secondCase[0] == 1) return "l";
-  else if (secondCase[0] - firstCase[0] == 1) return "r";
-  else if (firstCase[1] - secondCase[1] == 1) return "u";
+  if (firstCase[0] - secondCase[0] >= 1) return "l";
+  else if (secondCase[0] - firstCase[0] >= 1) return "r";
+  else if (firstCase[1] - secondCase[1] >= 1) return "u";
   else return "d";
 }
 
@@ -240,9 +240,8 @@ exports.updateBoard = function (gameState) {
   });
 };
 
-let wallsRemaining = 10;
-
 function computeMove(gameState) {
+  let move;
   let ownPosition = gameState.playerspositions[1];
   let opponentPosition =
     gameState.board_visibility[gameState.playerspositions[0][1]][
@@ -302,7 +301,7 @@ function computeMove(gameState) {
       };
     } else {
       let wallCoord = [];
-      if (wallsRemaining > 0) {
+      if (gameState.p2walls > 0) {
         for (let i = 0; i < opponentShortestPath.length - 1; i++) {
           let direction = computeDirection(
             opponentShortestPath[i],
@@ -316,7 +315,7 @@ function computeMove(gameState) {
                   opponentShortestPath[1],
                   "v",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -330,7 +329,7 @@ function computeMove(gameState) {
                   [opponentShortestPath[1][0], opponentShortestPath[1][1] - 1],
                   "v",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -350,21 +349,21 @@ function computeMove(gameState) {
                   opponentShortestPath[0],
                   "v",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
                   opponentPosition,
                 )
               ) {
-                wallCoord = [opponentShortestPath[1], "v"];
+                wallCoord = [opponentShortestPath[0], "v"];
               } else if (
                 isWallLegal(
                   player,
                   [opponentShortestPath[0][0], opponentShortestPath[0][1] - 1],
                   "v",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -384,21 +383,21 @@ function computeMove(gameState) {
                   opponentShortestPath[0],
                   "h",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
                   opponentPosition,
                 )
               ) {
-                wallCoord = [opponentShortestPath[1], "h"];
+                wallCoord = [opponentShortestPath[0], "h"];
               } else if (
                 isWallLegal(
                   player,
                   [opponentShortestPath[0][0] - 1, opponentShortestPath[0][1]],
                   "h",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -418,7 +417,7 @@ function computeMove(gameState) {
                   opponentShortestPath[1],
                   "h",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -432,7 +431,7 @@ function computeMove(gameState) {
                   [opponentShortestPath[1][0] - 1, opponentShortestPath[1][1]],
                   "h",
                   1,
-                  wallsRemaining,
+                  1,
                   walls.vwalls,
                   walls.hwalls,
                   ownPosition,
@@ -455,7 +454,6 @@ function computeMove(gameState) {
           value: ourShortestPath[1][0] + "" + ourShortestPath[1][1],
         };
       } else {
-        wallsRemaining--;
         move = {
           action: "wall",
           value: [
