@@ -277,7 +277,7 @@ function createSocket(server) {
         newCoord = AIcaca.computeMove(gameState);
 >>>>>>> df6adc7 (ia caca prout au pipi)
       } else if (gameState.difficulty === 2) {
-        newCoord = AI2.computeMove(gameState);
+        newCoord = AI2.computeMove2(gameState);
       } else {
         throw new Error("Invalid difficulty");
       }
