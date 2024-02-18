@@ -83,8 +83,6 @@ function getPossibleMoves(gameState, pos) {
     gameState.playerspositions[1],
     gameState.playerspositions[0],
     gameState.playerspositions[1],
-    gameState.vwalls,
-    gameState.hwalls,
   );
   if (jump_coord.length > 0) possibleMoves.push(jump_coord);
 
@@ -283,7 +281,7 @@ function isInclude(array, coord) {
   return false;
 }
 
-function canJump(coord) {
+function canJump(coord, p1_coord, p2_coord) {
   let temp;
   if (
     Math.abs(p1_coord[0] - coord[0]) == 1 &&
@@ -376,7 +374,7 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
         openSet.push(neighbor);
       }
     }
-    let jump_coord = canJump(current, p1_coord, p2_coord, v_walls, h_walls);
+    let jump_coord = canJump(current, p1_coord, p2_coord);
     if (
       jump_coord.length > 0 &&
       !isInclude(closedSet, jump_coord) &&
@@ -424,8 +422,6 @@ function getShortestPath(start, goals, gameState) {
       current,
       gameState.playerspositions[0],
       gameState.playerspositions[1],
-      gameState.vwalls,
-      gameState.hwalls,
     );
     if (jumpMove.length > 0) {
       possibleMoves.push(jumpMove);
@@ -451,7 +447,17 @@ function getShortestPath(start, goals, gameState) {
   return []; // Aucun chemin trouvé
 }
 
-function isWallLegal(player, coord) {
+function isWallLegal(
+  player,
+  coord,
+  current_direction,
+  p1_walls,
+  p2_walls,
+  v_walls,
+  h_walls,
+  p1_coord,
+  p2_coord,
+) {
   let isPossible;
   if ((player == 1 && p1_walls == 0) || (player == 2 && p2_walls == 0))
     return false;
