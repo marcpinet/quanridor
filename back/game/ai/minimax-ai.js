@@ -155,8 +155,8 @@ function evaluate(gameState, player) {
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
 
-  if (canWin(gameState, player)) return Infinity;
-  if (canWin(gameState, player === 1 ? 2 : 1)) return -Infinity;
+  if (canWin(gameState, player)) return 10000000000;
+  if (canWin(gameState, player === 1 ? 2 : 1)) return -10000000000;
 
   let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
   let opponentPath = getShortestPath(
