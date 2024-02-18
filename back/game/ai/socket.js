@@ -273,7 +273,7 @@ function createSocket(server) {
       } else if (gameState.difficulty === 1) {
         newCoord = AIcaca.computeMove(gameState);
       } else if (gameState.difficulty === 2) {
-        newCoord = AI2.computeMove(gameState);
+        newCoord = AI2.computeMove2(gameState);
       } else {
         throw new Error("Invalid difficulty");
       }

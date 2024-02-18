@@ -464,7 +464,6 @@ function computeMove(gameState) {
       }
     }
   }
-  console.log(move);
   if (move.action == "move") {
     return [parseInt(move.value[0]), parseInt(move.value[1])];
   } else if (move.action == "wall") {
