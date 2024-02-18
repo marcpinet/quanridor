@@ -1,8 +1,5 @@
 const {
-  isLegal,
-  canJump,
   checkWin,
-  isWallLegal,
   cloneGameState,
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
