@@ -67,14 +67,7 @@ function createUniqueKey(gameState) {
   });
 }
 
-function minimax(
-  gameState,
-  depth,
-  alpha,
-  beta,
-  maximizingPlayer,
-  depthPenalityForEvaluate,
-) {
+function minimax(gameState, depth, alpha, beta, maximizingPlayer) {
   let key = createUniqueKey(gameState);
 
   if (transpositionTable.get(key)) {
@@ -83,22 +76,9 @@ function minimax(
 
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
-
-  // Getting a default move for both players
-  const defaultMove1 = getPossibleMoves(gameState, maximizingPlayer ? 1 : 2)[0];
-  const defaultMove2 = getPossibleMoves(gameState, maximizingPlayer ? 2 : 1)[0];
-
-  // if no moves are possible, return a default wall
-  if (!defaultMove1) {
-    defaultMove1 = getPossibleWalls(gameState, maximizingPlayer ? 1 : 2)[0];
-  }
-  if (!defaultMove2) {
-    defaultMove2 = getPossibleWalls(gameState, maximizingPlayer ? 2 : 1)[0];
-  }
-
   let best = maximizingPlayer
-    ? { value: -Infinity, move: defaultMove2 }
-    : { value: Infinity, move: defaultMove1 };
+    ? { value: -Infinity, move: null }
+    : { value: Infinity, move: null };
 
   if (
     depth == 0 ||
@@ -106,11 +86,7 @@ function minimax(
     checkWin(2, { p1_coord: p1_coord, p2_coord: p2_coord })
   ) {
     return {
-      value: evaluate(
-        gameState,
-        maximizingPlayer ? 2 : 1,
-        depthPenalityForEvaluate,
-      ),
+      value: evaluate(gameState, maximizingPlayer ? 2 : 1),
       move: gameState.playerspositions[maximizingPlayer ? 1 : 0],
     };
   }
@@ -141,7 +117,6 @@ function minimax(
       alpha,
       beta,
       !maximizingPlayer,
-      depth + 1,
     );
 
     if (maximizingPlayer) {
@@ -176,18 +151,14 @@ function canWin(gameState, player) {
   return playerPath.length <= 2;
 }
 
-function evaluate(gameState, player, depth) {
+function evaluate(gameState, player) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
 
-  let baseScore = 100000; // Base score for winning
-  let depthPenalty = depth * 100; // Decrease score slightly for deeper wins
-
-  if (canWin(gameState, player)) return baseScore - depthPenalty;
-  if (canWin(gameState, player === 1 ? 2 : 1))
-    return -(baseScore - depthPenalty);
+  if (canWin(gameState, player)) return 10000000000;
+  if (canWin(gameState, player === 1 ? 2 : 1)) return -10000000000;
 
   let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
   let opponentPath = getShortestPath(
