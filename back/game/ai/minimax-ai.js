@@ -371,8 +371,8 @@ exports.nextMove = function (gameState) {
           player == 1
             ? [ownPosition, opponentPosition]
             : [opponentPosition, ownPosition],
-        p1walls: 10,
-        p2walls: 10,
+        p1walls: 10 - gameState.ownWalls.length,
+        p2walls: 10 - gameState.opponentWalls.length,
         hwalls: gameState.hwalls,
         vwalls: gameState.vwalls,
         board_visibility: [],
