@@ -80,8 +80,11 @@ function minimax(
   beta,
   maximizingPlayer,
   initialDepth = depth,
+  player = 2,
 ) {
   let key = createUniqueKey(gameState);
+  let currentPlayer = player;
+  let opponentPlayer = player === 1 ? 2 : 1;
 
   if (transpositionTable.get(key)) {
     return transpositionTable.get(key);
@@ -90,7 +93,10 @@ function minimax(
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
 
-  let defaultMove = determineDefaultMove(gameState, maximizingPlayer ? 2 : 1);
+  let defaultMove = determineDefaultMove(
+    gameState,
+    maximizingPlayer ? player : opponentPlayer,
+  );
   let best = maximizingPlayer
     ? { value: -Infinity, move: defaultMove }
     : { value: Infinity, move: defaultMove };
@@ -103,7 +109,7 @@ function minimax(
     return {
       value: evaluate(
         gameState,
-        maximizingPlayer ? 2 : 1,
+        maximizingPlayer ? player : opponentPlayer,
         initialDepth - depth,
       ),
       move: defaultMove,
@@ -112,7 +118,7 @@ function minimax(
 
   let { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
     gameState,
-    maximizingPlayer ? 2 : 1,
+    maximizingPlayer ? player : opponentPlayer,
   );
   possibleMoves = possibleMoves.concat(possibleWalls);
 
@@ -124,7 +130,11 @@ function minimax(
   }
 
   for (let someMove of possibleMoves) {
-    let chosenMove = applyMove(gameState, someMove, maximizingPlayer ? 2 : 1);
+    let chosenMove = applyMove(
+      gameState,
+      someMove,
+      maximizingPlayer ? player : opponentPlayer,
+    );
     if (chosenMove === null) {
       continue;
     }
@@ -135,6 +145,8 @@ function minimax(
       alpha,
       beta,
       !maximizingPlayer,
+      initialDepth,
+      opponentPlayer,
     );
 
     if (maximizingPlayer) {
@@ -230,7 +242,14 @@ function computeMove(gameState, player) {
   if (aiPath.length <= 2) {
     return aiPath[aiPath.length - 1];
   }
-  let { value, move } = minimax(gameState, depth, -Infinity, +Infinity, true);
+  let { value, move } = minimax(
+    gameState,
+    depth,
+    -Infinity,
+    +Infinity,
+    true,
+    player,
+  );
   console.log("AI played!", move);
   return move;
 }
@@ -302,9 +321,6 @@ function computeMove2(gameState) {
     (player % 2) + 1,
   );
   let testownPosition = retrievePosition(testGameState.board, player);
-  console.log(testwalls);
-  console.log(testopponentPosition);
-  console.log(testownPosition);
   let move;
   let ownPosition = gameState.playerspositions[1];
   let opponentPosition =
@@ -336,7 +352,6 @@ function computeMove2(gameState) {
       action: "move",
       value: shortestPath[1][0] + 1 + "" + (9 - shortestPath[1][1]),
     };
-    console.log(moveToCast);
   } else {
     const ourGameState = {
       playerspositions: [opponentPosition, ownPosition],
@@ -346,7 +361,7 @@ function computeMove2(gameState) {
       vwalls: gameState.vwalls,
       board_visibility: [],
     };
-    let moveToCast = computeMove(ourGameState);
+    let moveToCast = computeMove(ourGameState, player);
     if (moveToCast.length == 3) {
       move = {
         action: "wall",
