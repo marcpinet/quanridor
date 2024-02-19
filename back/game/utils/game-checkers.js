@@ -425,12 +425,24 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 
 function getShortestPath(start, goals, gameState) {
   // Initialisation
-  let openSet = new PriorityQueue((a, b) => a.distance < b.distance);
+  let openSet = new PriorityQueue((a, b) => a.fScore < b.fScore);
   let cameFrom = new Map();
   let gScore = new Map();
+  let fScore = new Map();
   let startKey = start.join(",");
   gScore.set(startKey, 0);
-  openSet.enqueue({ position: start, distance: 0 });
+  fScore.set(startKey, heuristic(start, goals));
+  openSet.enqueue({ position: start, fScore: heuristic(start, goals) });
+
+  // Fonction heuristique simple - distance de Manhattan comme exemple
+  function heuristic(position, goals) {
+    let minDist = Infinity;
+    goals.forEach((goal) => {
+      let d = Math.abs(position[0] - goal[0]) + Math.abs(position[1] - goal[1]);
+      if (d < minDist) minDist = d;
+    });
+    return minDist;
+  }
 
   // Fonction pour reconstruire le chemin une fois l'objectif atteint
   function reconstructPath(cameFrom, current) {
@@ -475,8 +487,12 @@ function getShortestPath(start, goals, gameState) {
       ) {
         cameFrom.set(neighborKey, current);
         gScore.set(neighborKey, tentativeGScore);
+        fScore.set(neighborKey, tentativeGScore + heuristic(neighbor, goals));
         if (!openSet.contains({ position: neighbor })) {
-          openSet.enqueue({ position: neighbor, distance: tentativeGScore });
+          openSet.enqueue({
+            position: neighbor,
+            fScore: tentativeGScore + heuristic(neighbor, goals),
+          });
         }
       }
     }
