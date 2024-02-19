@@ -129,7 +129,7 @@ function minimax(
 
   for (let someMove of possibleMoves) {
     let chosenMove = applyMove(gameState, someMove, maximizingPlayer ? 2 : 1);
-    if (!chosenMove) {
+    if (chosenMove === null) {
       continue;
     }
 
