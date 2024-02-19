@@ -53,8 +53,6 @@ function createUniqueKey(gameState) {
   let p2walls = gameState.p2walls;
   let vwalls = gameState.vwalls;
   let hwalls = gameState.hwalls;
-  let turn = gameState.turn;
-  let winner = gameState.winner;
   return JSON.stringify({
     p1_coord: p1_coord,
     p2_coord: p2_coord,
@@ -62,8 +60,6 @@ function createUniqueKey(gameState) {
     p2walls: p2walls,
     vwalls: vwalls,
     hwalls: hwalls,
-    turn: turn,
-    winner: winner,
   });
 }
 
