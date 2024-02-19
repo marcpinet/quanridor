@@ -307,7 +307,6 @@ function computeMove2(gameState) {
 
 module.exports = { computeMove, computeMove2 };
 
-let board = [];
 let ownPosition = [];
 let opponentPosition = [];
 let player;
@@ -315,9 +314,11 @@ let player;
 function convertWalls(ownWalls, opponentWalls) {
   let vwalls;
   let hwalls;
-  for (let wall of ownWalls.concat(opponentWalls)) {
-    if (wall[1] == 0) hwalls.push([wall[0][0], wall[0][1]]);
-    else vwalls.push([wall[0][0], wall[0][1]]);
+  let allWalls = ownWalls.concat(opponentWalls);
+  for (let wall of allWalls) {
+    if (wall[1] == 0)
+      hwalls.push([parseInt(wall[0][0]) - 1, 9 - parseInt(wall[0][1])]);
+    else vwalls.push([parseInt(wall[0][0]) - 1, 9 - parseInt(wall[0][1])]);
   }
   return {
     vwalls: vwalls,
@@ -329,7 +330,7 @@ function retrievePosition(board, player) {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       if (board[i][j] == player) {
-        return [i, j];
+        return [i, 8 - j];
       }
     }
   }
@@ -361,10 +362,16 @@ exports.nextMove = function (gameState) {
           vwalls: walls.vwalls,
         },
       );
-      move = {
-        action: "move",
-        value: shortestPath[1][0] + 1 + "" + (shortestPath[1][1] + 1),
-      };
+      if (shortestPath.length == 0) {
+        move = {
+          action: "idle",
+        };
+      } else {
+        move = {
+          action: "move",
+          value: shortestPath[1][0] + 1 + "" + (9 - shortestPath[1][1]),
+        };
+      }
     } else {
       const ourGameState = {
         playerspositions:
@@ -378,18 +385,22 @@ exports.nextMove = function (gameState) {
         board_visibility: [],
       };
       let moveToCast = computeMove(ourGameState);
-      if (moveToCast.length == 3) {
+      if (moveToCast == undefined) {
+        move = {
+          action: "idle",
+        };
+      } else if (moveToCast.length == 3) {
         move = {
           action: "wall",
           value: [
-            moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+            moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
             moveToCast[2] == "h" ? 0 : 1,
           ],
         };
       } else {
         move = {
           action: "move",
-          value: moveToCast[0] + 1 + "" + (moveToCast[1] + 1),
+          value: moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
         };
       }
     }
