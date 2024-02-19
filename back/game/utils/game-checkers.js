@@ -215,14 +215,16 @@ function getStrategicWalls(gameState, player) {
 
 function cloneGameState(gameState) {
   return {
-    playerspositions: JSON.parse(JSON.stringify(gameState.playerspositions)),
+    playerspositions: gameState.playerspositions.map((pos) => [...pos]),
     p1walls: gameState.p1walls,
     p2walls: gameState.p2walls,
-    vwalls: JSON.parse(JSON.stringify(gameState.vwalls)),
-    hwalls: JSON.parse(JSON.stringify(gameState.hwalls)),
+    vwalls: gameState.vwalls.map((wall) => [...wall]),
+    hwalls: gameState.hwalls.map((wall) => [...wall]),
     turn: gameState.turn,
     winner: gameState.winner,
-    board_visibility: JSON.parse(JSON.stringify(gameState.board_visibility)),
+    board_visibility: gameState.board_visibility.map((innerArray) => [
+      ...innerArray,
+    ]),
   };
 }
 
