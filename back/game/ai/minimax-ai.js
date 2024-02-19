@@ -53,8 +53,6 @@ function createUniqueKey(gameState) {
   let p2walls = gameState.p2walls;
   let vwalls = gameState.vwalls;
   let hwalls = gameState.hwalls;
-  let turn = gameState.turn;
-  let winner = gameState.winner;
   return JSON.stringify({
     p1_coord: p1_coord,
     p2_coord: p2_coord,
@@ -62,9 +60,17 @@ function createUniqueKey(gameState) {
     p2walls: p2walls,
     vwalls: vwalls,
     hwalls: hwalls,
-    turn: turn,
-    winner: winner,
   });
+}
+
+function determineDefaultMove(gameState, player) {
+  let possibleMoves = getPossibleMoves(gameState, player);
+  let possibleWalls = getPossibleWalls(gameState, player);
+  if (possibleMoves.length > 0)
+    return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+  if (possibleWalls.length > 0)
+    return possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
+  return gameState.playerspositions[player - 1];
 }
 
 function minimax(
@@ -83,9 +89,11 @@ function minimax(
 
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
+
+  let defaultMove = determineDefaultMove(gameState, maximizingPlayer ? 2 : 1);
   let best = maximizingPlayer
-    ? { value: -Infinity, move: null }
-    : { value: Infinity, move: null };
+    ? { value: -Infinity, move: defaultMove }
+    : { value: Infinity, move: defaultMove };
 
   if (
     depth == 0 ||
@@ -98,7 +106,7 @@ function minimax(
         maximizingPlayer ? 2 : 1,
         initialDepth - depth,
       ),
-      move: gameState.playerspositions[maximizingPlayer ? 1 : 0],
+      move: defaultMove,
     };
   }
 
@@ -106,19 +114,18 @@ function minimax(
     gameState,
     maximizingPlayer ? 2 : 1,
   );
-  // add walls to possible moves
   possibleMoves = possibleMoves.concat(possibleWalls);
 
   if (possibleMoves.length == 0) {
     return {
       value: -10000000,
-      move: gameState.playerspositions[1],
+      move: defaultMove,
     };
   }
 
   for (let someMove of possibleMoves) {
     let chosenMove = applyMove(gameState, someMove, maximizingPlayer ? 2 : 1);
-    if (!chosenMove) {
+    if (chosenMove === null) {
       continue;
     }
 
@@ -136,18 +143,15 @@ function minimax(
         best.move = someMove;
       }
       alpha = Math.max(alpha, value);
-      if (beta <= alpha) {
-        break;
-      }
     } else {
       if (value < best.value) {
         best.value = value;
         best.move = someMove;
       }
       beta = Math.min(beta, value);
-      if (beta <= alpha) {
-        break;
-      }
+    }
+    if (beta <= alpha) {
+      break;
     }
   }
 

@@ -215,14 +215,16 @@ function getStrategicWalls(gameState, player) {
 
 function cloneGameState(gameState) {
   return {
-    playerspositions: JSON.parse(JSON.stringify(gameState.playerspositions)),
+    playerspositions: gameState.playerspositions.map((pos) => [...pos]),
     p1walls: gameState.p1walls,
     p2walls: gameState.p2walls,
-    vwalls: JSON.parse(JSON.stringify(gameState.vwalls)),
-    hwalls: JSON.parse(JSON.stringify(gameState.hwalls)),
+    vwalls: gameState.vwalls.map((wall) => [...wall]),
+    hwalls: gameState.hwalls.map((wall) => [...wall]),
     turn: gameState.turn,
     winner: gameState.winner,
-    board_visibility: JSON.parse(JSON.stringify(gameState.board_visibility)),
+    board_visibility: gameState.board_visibility.map((innerArray) => [
+      ...innerArray,
+    ]),
   };
 }
 
@@ -288,84 +290,38 @@ function isInclude(array, coord) {
 }
 
 function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
-  let temp;
-  if (
-    Math.abs(p1_coord[0] - coord[0]) == 1 &&
-    p1_coord[1] == coord[1] &&
-    isLegal(
-      p1_coord,
-      [2 * p1_coord[0] - coord[0], coord[1]],
-      v_walls,
-      h_walls,
-      p1_coord,
-      p2_coord,
-    )
-  ) {
-    temp = p2_coord;
-    p2_coord = [9, 9];
-    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p2_coord = temp;
-      return [2 * p1_coord[0] - coord[0], coord[1]];
+  // Fonction pour calculer la cible du saut et vérifier si le saut est légal
+  function getJumpTarget(currentCoord, playerCoord, otherCoord) {
+    if (
+      Math.abs(playerCoord[0] - currentCoord[0]) === 1 &&
+      playerCoord[1] === currentCoord[1]
+    ) {
+      // Saut horizontal
+      const target = [2 * playerCoord[0] - currentCoord[0], playerCoord[1]];
+      if (isLegal(playerCoord, target, v_walls, h_walls, p1_coord, p2_coord)) {
+        return target;
+      }
+    } else if (
+      playerCoord[0] === currentCoord[0] &&
+      Math.abs(playerCoord[1] - currentCoord[1]) === 1
+    ) {
+      // Saut vertical
+      const target = [playerCoord[0], 2 * playerCoord[1] - currentCoord[1]];
+      if (isLegal(playerCoord, target, v_walls, h_walls, p1_coord, p2_coord)) {
+        return target;
+      }
     }
-    p2_coord = temp;
-  } else if (
-    Math.abs(p2_coord[0] - coord[0]) == 1 &&
-    p2_coord[1] == coord[1] &&
-    isLegal(
-      p2_coord,
-      [2 * p2_coord[0] - coord[0], coord[1]],
-      v_walls,
-      h_walls,
-      p1_coord,
-      p2_coord,
-    )
-  ) {
-    temp = p2_coord;
-    p2_coord = [9, 9];
-    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p2_coord = temp;
-      return [2 * p2_coord[0] - coord[0], coord[1]];
-    }
-    p2_coord = temp;
-  } else if (
-    p1_coord[0] == coord[0] &&
-    Math.abs(p1_coord[1] - coord[1]) == 1 &&
-    isLegal(
-      p1_coord,
-      [coord[0], 2 * p1_coord[1] - coord[1]],
-      v_walls,
-      h_walls,
-      p1_coord,
-      p2_coord,
-    )
-  ) {
-    temp = p1_coord;
-    p1_coord = [9, 9];
-    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p1_coord = temp;
-      return [coord[0], 2 * p1_coord[1] - coord[1]];
-    }
-    p1_coord = temp;
-  } else if (
-    p2_coord[0] == coord[0] &&
-    Math.abs(p2_coord[1] - coord[1]) == 1 &&
-    isLegal(
-      p2_coord,
-      [coord[0], 2 * p2_coord[1] - coord[1]],
-      v_walls,
-      h_walls,
-      p1_coord,
-      p2_coord,
-    )
-  ) {
-    temp = p1_coord;
-    p1_coord = [9, 9];
-    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p1_coord = temp;
-      return [coord[0], 2 * p2_coord[1] - coord[1]];
-    }
-    p1_coord = temp;
+    return null; // Retourne null si aucun saut légal n'est trouvé
   }
+
+  // Vérifier les sauts possibles pour les deux joueurs
+  let jumpTarget = getJumpTarget(coord, p1_coord, p2_coord);
+  if (jumpTarget) return jumpTarget;
+
+  jumpTarget = getJumpTarget(coord, p2_coord, p1_coord);
+  if (jumpTarget) return jumpTarget;
+
+  // Retourner un tableau vide si aucun saut n'est possible
   return [];
 }
 
@@ -423,12 +379,24 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 
 function getShortestPath(start, goals, gameState) {
   // Initialisation
-  let openSet = new PriorityQueue((a, b) => a.distance < b.distance);
+  let openSet = new PriorityQueue((a, b) => a.fScore < b.fScore);
   let cameFrom = new Map();
   let gScore = new Map();
+  let fScore = new Map();
   let startKey = start.join(",");
   gScore.set(startKey, 0);
-  openSet.enqueue({ position: start, distance: 0 });
+  fScore.set(startKey, heuristic(start, goals));
+  openSet.enqueue({ position: start, fScore: heuristic(start, goals) });
+
+  // Fonction heuristique simple - distance de Manhattan comme exemple
+  function heuristic(position, goals) {
+    let minDist = Infinity;
+    goals.forEach((goal) => {
+      let d = Math.abs(position[0] - goal[0]) + Math.abs(position[1] - goal[1]);
+      if (d < minDist) minDist = d;
+    });
+    return minDist;
+  }
 
   // Fonction pour reconstruire le chemin une fois l'objectif atteint
   function reconstructPath(cameFrom, current) {
@@ -473,8 +441,12 @@ function getShortestPath(start, goals, gameState) {
       ) {
         cameFrom.set(neighborKey, current);
         gScore.set(neighborKey, tentativeGScore);
+        fScore.set(neighborKey, tentativeGScore + heuristic(neighbor, goals));
         if (!openSet.contains({ position: neighbor })) {
-          openSet.enqueue({ position: neighbor, distance: tentativeGScore });
+          openSet.enqueue({
+            position: neighbor,
+            fScore: tentativeGScore + heuristic(neighbor, goals),
+          });
         }
       }
     }

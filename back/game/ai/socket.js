@@ -1,9 +1,8 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
 const AI0 = require("./random-ai.js");
-//const AI1 = require("./mcts-ai.js");
 const AI2 = require("./minimax-ai.js");
-const AIcaca = require("./ai2.js");
+const AI1 = require("./ai2.js");
 const { getDB } = require("../../query-managers/db.js");
 const { initializeGame } = require("../utils/game-initializer.js");
 const { verifyToken } = require("../../utils/jwt-utils.js");
@@ -271,7 +270,7 @@ function createSocket(server) {
       if (gameState.difficulty === 0) {
         newCoord = AI0.computeMove(gameState);
       } else if (gameState.difficulty === 1) {
-        newCoord = AIcaca.computeMove(gameState);
+        newCoord = AI1.computeMove(gameState);
       } else if (gameState.difficulty === 2) {
         newCoord = AI2.computeMove2(gameState);
       } else {
