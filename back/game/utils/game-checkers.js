@@ -106,6 +106,11 @@ function getPossibleMovesAndStrategicWalls(gameState, player) {
 
 function getPossibleWalls(gameState, player) {
   let possibleWalls = [];
+  let wallsLeft = player === 1 ? gameState.p1walls : gameState.p2walls;
+
+  if (wallsLeft === 0) {
+    return [];
+  }
 
   // Check if placing a vertical wall is possible.
   for (let i = 0; i < 8; i++) {
@@ -147,21 +152,16 @@ function getPossibleWalls(gameState, player) {
     }
   }
 
-  if (player === 1) {
-    if (gameState.p1walls === 0) {
-      possibleWalls = [];
-    }
-  } else {
-    if (gameState.p2walls === 0) {
-      possibleWalls = [];
-    }
-  }
-
   return possibleWalls;
 }
 
 function getStrategicWalls(gameState, player) {
   let possibleWalls = getPossibleWalls(gameState, player);
+
+  if (possibleWalls.length === 0) {
+    return [];
+  }
+
   const playerGoals = player === 1 ? p1_goals : p2_goals;
   const opponentGoals = player === 1 ? p2_goals : p1_goals;
   const gameStateCopy = cloneGameState(gameState);

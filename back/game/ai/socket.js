@@ -272,7 +272,15 @@ function createSocket(server) {
       } else if (gameState.difficulty === 1) {
         newCoord = AI1.computeMove(gameState);
       } else if (gameState.difficulty === 2) {
-        newCoord = AI2.computeMove2(gameState);
+        let startTime = performance.now();
+        try {
+          newCoord = AI2.computeMove2(gameState);
+        } catch (e) {
+          console.log(e);
+        }
+        let endTime = performance.now();
+        let elapsedTime = endTime - startTime;
+        console.log(`Le temps écoulé: ${elapsedTime} millisecondes`);
       } else {
         throw new Error("Invalid difficulty");
       }
