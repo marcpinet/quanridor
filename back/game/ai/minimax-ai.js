@@ -146,7 +146,7 @@ function minimax(
       beta,
       !maximizingPlayer,
       initialDepth,
-      opponentPlayer,
+      player,
     );
 
     if (maximizingPlayer) {
