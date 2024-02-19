@@ -349,7 +349,7 @@ exports.nextMove = function (gameState) {
     if (opponentPosition.length == 0) {
       let shortestPath = getShortestPath(
         ownPosition,
-        player == 1 ? p2goals : p1goals,
+        player == 1 ? p1goals : p2goals,
         {
           playerspositions:
             player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
