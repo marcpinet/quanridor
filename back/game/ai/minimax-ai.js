@@ -65,12 +65,12 @@ function createUniqueKey(gameState) {
 
 function determineDefaultMove(gameState, player) {
   let possibleMoves = getPossibleMoves(gameState, player);
-  let possibleWalls = getPossibleWalls(gameState, player);
   if (possibleMoves.length > 0)
     return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+  let possibleWalls = getPossibleWalls(gameState, player);
   if (possibleWalls.length > 0)
     return possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
-  return gameState.playerspositions[player - 1];
+  return gameState.playerspositions[player - 1]; // can be null
 }
 
 function minimax(
@@ -80,8 +80,11 @@ function minimax(
   beta,
   maximizingPlayer,
   initialDepth = depth,
+  player = 2,
 ) {
   let key = createUniqueKey(gameState);
+  let currentPlayer = player;
+  let opponentPlayer = player === 1 ? 2 : 1;
 
   if (transpositionTable.get(key)) {
     return transpositionTable.get(key);
@@ -90,7 +93,18 @@ function minimax(
   let p1_coord = gameState.playerspositions[0];
   let p2_coord = gameState.playerspositions[1];
 
-  let defaultMove = determineDefaultMove(gameState, maximizingPlayer ? 2 : 1);
+  let defaultMove = determineDefaultMove(
+    gameState,
+    maximizingPlayer ? player : opponentPlayer,
+  );
+
+  if (defaultMove === null) {
+    return {
+      value: -10000000,
+      move: defaultMove,
+    };
+  }
+
   let best = maximizingPlayer
     ? { value: -Infinity, move: defaultMove }
     : { value: Infinity, move: defaultMove };
@@ -103,7 +117,7 @@ function minimax(
     return {
       value: evaluate(
         gameState,
-        maximizingPlayer ? 2 : 1,
+        maximizingPlayer ? player : opponentPlayer,
         initialDepth - depth,
       ),
       move: defaultMove,
@@ -112,7 +126,7 @@ function minimax(
 
   let { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
     gameState,
-    maximizingPlayer ? 2 : 1,
+    maximizingPlayer ? player : opponentPlayer,
   );
   possibleMoves = possibleMoves.concat(possibleWalls);
 
@@ -124,7 +138,11 @@ function minimax(
   }
 
   for (let someMove of possibleMoves) {
-    let chosenMove = applyMove(gameState, someMove, maximizingPlayer ? 2 : 1);
+    let chosenMove = applyMove(
+      gameState,
+      someMove,
+      maximizingPlayer ? player : opponentPlayer,
+    );
     if (chosenMove === null) {
       continue;
     }
@@ -135,6 +153,8 @@ function minimax(
       alpha,
       beta,
       !maximizingPlayer,
+      initialDepth,
+      player,
     );
 
     if (maximizingPlayer) {
@@ -219,9 +239,9 @@ function applyMove(gameState, move, player) {
   return newGameState;
 }
 
-function computeMove(gameState) {
+function computeMove(gameState, player) {
   let depth = 2;
-  let aiPlayer = 2;
+  let aiPlayer = player;
   let aiPath = getShortestPath(
     gameState.playerspositions[1],
     aiPlayer === 1 ? p1goals : p2goals,
@@ -230,9 +250,203 @@ function computeMove(gameState) {
   if (aiPath.length <= 2) {
     return aiPath[aiPath.length - 1];
   }
-  let { value, move } = minimax(gameState, depth, -Infinity, +Infinity, true);
+  let { value, move } = minimax(
+    gameState,
+    depth,
+    -Infinity,
+    +Infinity,
+    true,
+    player,
+  );
+  let tmp = getPossibleMovesAndStrategicWalls(gameState, aiPlayer);
+  console.log(tmp);
+  wallsLeft = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
+  console.log("Walls left: ", wallsLeft);
   console.log("AI played!", move);
   return move;
 }
 
-module.exports = { computeMove };
+let ownPosition = [];
+let opponentPosition = [];
+let player;
+
+function convertWalls(ownWalls, opponentWalls) {
+  let vwalls = [];
+  let hwalls = [];
+  let allWalls = ownWalls.concat(opponentWalls);
+  for (let wall of allWalls) {
+    if (wall[1] == 0)
+      hwalls.push([parseInt(wall[0][0]) - 1, 9 - parseInt(wall[0][1])]);
+    else vwalls.push([parseInt(wall[0][0]) - 1, 9 - parseInt(wall[0][1])]);
+  }
+  return {
+    vwalls: vwalls,
+    hwalls: hwalls,
+  };
+}
+
+function retrievePosition(board, player) {
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j] == player) {
+        return [i, 8 - j];
+      }
+    }
+  }
+  return [];
+}
+
+function computeMove2(gameState) {
+  let player = 2;
+  let move;
+  let ownPosition = gameState.playerspositions[1];
+  let opponentPosition =
+    gameState.board_visibility[gameState.playerspositions[0][1]][
+      gameState.playerspositions[0][0]
+    ] <= 0
+      ? gameState.playerspositions[0]
+      : [];
+  let walls = {
+    vwalls: gameState.vwalls,
+    hwalls: gameState.hwalls,
+  };
+  if (opponentPosition.length == 0) {
+    let shortestPath = getShortestPath(
+      ownPosition,
+      player == 1 ? p1goals : p2goals,
+      {
+        playerspositions:
+          player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
+        hwalls: walls.hwalls,
+        vwalls: walls.vwalls,
+      },
+    );
+    move = {
+      action: "move",
+      value: shortestPath[1][0] + "" + shortestPath[1][1],
+    };
+  } else {
+    const ourGameState = {
+      playerspositions: [opponentPosition, ownPosition],
+      p1walls: gameState.p1walls,
+      p2walls: gameState.p2walls,
+      hwalls: gameState.hwalls,
+      vwalls: gameState.vwalls,
+      board_visibility: [],
+    };
+    let moveToCast = computeMove(ourGameState, player);
+    if (moveToCast.length == 3) {
+      move = {
+        action: "wall",
+        value: [
+          moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
+          moveToCast[2] == "h" ? 0 : 1,
+        ],
+      };
+    } else {
+      move = {
+        action: "move",
+        value: moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
+      };
+    }
+    console.log(move);
+    return moveToCast;
+  }
+  console.log(move);
+  if (move.action == "move") {
+    return [parseInt(move.value[0]), parseInt(move.value[1])];
+  } else if (move.action == "wall") {
+    return [
+      parseInt(move.value[0][0]),
+      parseInt(move.value[0][1]),
+      move.value[1] == 0 ? "h" : "v",
+    ];
+  } else {
+    return [];
+  }
+}
+
+module.exports = { computeMove, computeMove2 };
+
+exports.setup = function (AIplay) {
+  return new Promise((resolve, reject) => {
+    player = AIplay;
+    ownPosition = AIplay == 1 ? "51" : "59";
+    resolve(ownPosition);
+  });
+};
+
+exports.nextMove = function (gameState) {
+  return new Promise((resolve, reject) => {
+    let move;
+    let walls = convertWalls(gameState.ownWalls, gameState.opponentWalls);
+    opponentPosition = retrievePosition(gameState.board, (player % 2) + 1);
+    ownPosition = retrievePosition(gameState.board, player);
+    if (opponentPosition.length == 0) {
+      let shortestPath = getShortestPath(
+        ownPosition,
+        player == 1 ? p1goals : p2goals,
+        {
+          playerspositions:
+            player == 1 ? [ownPosition, [-1, -1]] : [[-1, -1], ownPosition],
+          hwalls: walls.hwalls,
+          vwalls: walls.vwalls,
+        },
+      );
+      if (shortestPath.length == 0) {
+        move = {
+          action: "idle",
+        };
+      } else {
+        move = {
+          action: "move",
+          value: shortestPath[1][0] + 1 + "" + (9 - shortestPath[1][1]),
+        };
+      }
+    } else {
+      const ourGameState = {
+        playerspositions:
+          player == 1
+            ? [ownPosition, opponentPosition]
+            : [opponentPosition, ownPosition],
+        p1walls: 10 - gameState.ownWalls.length,
+        p2walls: 10 - gameState.opponentWalls.length,
+        hwalls: walls.hwalls,
+        vwalls: walls.vwalls,
+        board_visibility: [],
+      };
+      let moveToCast = computeMove(ourGameState, player);
+      if (moveToCast == undefined) {
+        move = {
+          action: "idle",
+        };
+      } else if (moveToCast.length == 3) {
+        move = {
+          action: "wall",
+          value: [
+            moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
+            moveToCast[2] == "h" ? 0 : 1,
+          ],
+        };
+      } else {
+        move = {
+          action: "move",
+          value: moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
+        };
+      }
+    }
+    resolve(move);
+  });
+};
+
+exports.correction = function (rightMove) {
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
+};
+
+exports.updateBoard = function (gameState) {
+  return new Promise((resolve, reject) => {
+    resolve(true);
+  });
+};
