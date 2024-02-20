@@ -7,4 +7,4 @@ cd ~/ps8-24-quanridor/
 git pull origin main
 
 # Restart Docker containers
-docker compose down && docker compose up --build -d
+docker-compose down && docker-compose up --build -d
