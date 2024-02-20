@@ -7,7 +7,7 @@ const path = require("path");
 
 // We will limit the search of files in the front folder (../../front from here).
 // Note that fs methods consider the current folder to be the one where the app is run, that's why we don't need the "../.." before front.
-const baseFrontPath = "/front";
+const baseFrontPath = path.join(__dirname, "../../front");
 // If the user requests a directory, a file can be returned by default.
 const defaultFileIfFolder = "index.html";
 
@@ -34,41 +34,33 @@ const mimeTypes = {
 
 // Main method, exported at the end of the file. It's the one that will be called when a file is requested.
 function manageRequest(request, response) {
-  // First let's parse the URL, extract the path, and parse it into an easy-to-use object.
-  // We add the baseFrontPath at the beginning to limit the places to search for files.
-  const parsedUrl = url.parse(baseFrontPath + request.url);
-  let pathName = `.${parsedUrl.pathname}`;
-  let extension = path.parse(pathName).ext;
-  // Uncomment the line below if you want to check in the console what url.parse() and path.parse() create.
-  //console.log(parsedUrl, pathName, path.parse(pathName));
+  const parsedUrl = url.parse(request.url);
+  // Construire le chemin vers la ressource demandée
+  let pathName = path.join(baseFrontPath, parsedUrl.pathname);
 
-  // Let's check if the file exists.
-  fs.exists(pathName, async function (exist) {
-    if (!exist) {
+  fs.stat(pathName, function (err, stats) {
+    if (err) {
       send404(pathName, response);
       return;
     }
 
-    // If it is a directory, we will return the default file.
-    if (fs.statSync(pathName).isDirectory()) {
-      pathName += `/${defaultFileIfFolder}`;
-      extension = `.${defaultFileIfFolder.split(".")[1]}`;
+    if (stats.isDirectory()) {
+      // Si c'est un dossier, servir index.html de ce dossier
+      pathName = path.join(pathName, defaultFileIfFolder);
     }
 
-    // Let's read the file from the file system and send it to the user.
     fs.readFile(pathName, function (error, data) {
-      // The reading may fail if a folder was targeted but doesn't contain the default file.
       if (error) {
-        console.log(`Error getting the file: ${pathName}: ${error}`);
         send404(pathName, response);
-      } else {
-        // If the file is OK, let's set the MIME type and send it.
-        response.setHeader(
-          "Content-type",
-          mimeTypes[extension] || mimeTypes["default"],
-        );
-        response.end(data);
+        return;
       }
+
+      const extension = path.extname(pathName);
+      response.setHeader(
+        "Content-type",
+        mimeTypes[extension] || mimeTypes.default,
+      );
+      response.end(data);
     });
   });
 }
