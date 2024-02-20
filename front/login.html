@@ -13,11 +13,25 @@
     <svg id="back-arrow" onclick="window.location.href = 'index.html';"></svg>
     <div class="title" onclick="location.href='index.html'"></div>
     <div class="vertical-container">
-      <form id="loginForm" action="http://localhost:4200/api/login/" method="POST">
+      <form
+        id="loginForm"
+        action="http://localhost:4200/api/login/"
+        method="POST"
+      >
         <div class="bold-text">Username</div>
-        <input type="text" name="username" required placeholder="Enter username" />
+        <input
+          type="text"
+          name="username"
+          required
+          placeholder="Enter username"
+        />
         <div class="bold-text margin-top">Password</div>
-        <input type="password" name="password" required placeholder="Enter password" />
+        <input
+          type="password"
+          name="password"
+          required
+          placeholder="Enter password"
+        />
         <br />
         <br />
         <button class="medium-button margin-top" type="submit">Log in</button>
