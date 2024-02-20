@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to your project directory
-cd ~/quanridor/
+cd ~/ps8-24-quanridor/
 
 # Pull the latest changes
 git pull origin main

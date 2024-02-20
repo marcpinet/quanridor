@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     # You can add validation here to secure your endpoint
-    subprocess.call(['~/deploy.sh'])
+    subprocess.call(['~/ps8-24-quanridor/deploy.sh'])
     return 'Success', 200
 
 if __name__ == '__main__':
