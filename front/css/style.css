@@ -306,8 +306,11 @@ canvas {
 
 .friend-box,
 .profile-box {
-  background-color: #010525;
+  background-color: rgba(1,5,37,1);
+  border-color: #4650a8;
   border-radius: 38px;
+  border-style: solid;
+  border-width: 0px;
 }
 
 .bento-box {
@@ -505,6 +508,14 @@ canvas {
 
 #elo-score-lose {
   color: #EE4F3A;
+  filter: none;
+  text-shadow: none;
+  rotate: 5deg;
+}
+
+
+#elo-score-draw {
+  color: #BBBCFF;
   filter: none;
   text-shadow: none;
   rotate: 5deg;
