@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to retrieve games and update the UI
   async function retrieveGamesInProgress() {
     try {
+      const baseUrl = window.location.origin;
       const response = await fetch(
-        "http://localhost:4200/api/game?multiple=true&withStatus=1",
+        `${baseUrl}/api/game?multiple=true&withStatus=1`,
         {
           method: "GET",
           headers: {

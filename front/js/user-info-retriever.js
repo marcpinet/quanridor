@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("No token found in local storage.");
     return;
   }
-
-  fetch("http://localhost:4200/api/users", {
+  const baseUrl = window.location.origin;
+  fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

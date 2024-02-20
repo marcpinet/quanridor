@@ -103,7 +103,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.on("gameCreated", (game) => {
       gameId = game._id;
       initializeGame(game);
-      window.location.href = "http://localhost:8000/ai-game.html?id=" + gameId;
+      const baseUrl = window.location.origin;
+      window.location.href = `${baseUrl}:8000/ai-game.html?id=` + gameId;
 
       // Setting the game info display
       // Usernames
