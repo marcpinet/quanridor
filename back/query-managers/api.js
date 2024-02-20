@@ -372,4 +372,6 @@ async function startServer() {
   }
 }
 
+module.exports = { manageRequest };
+
 startServer();

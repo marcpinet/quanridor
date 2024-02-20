@@ -18,10 +18,10 @@ const server = http.createServer(function (request, response) {
   try {
     // If the URL starts by /api, then it's a REST request (you can change that if you want).
     if (filePath[1] === "api") {
-      apiQuery.manage(request, response);
+      apiQuery.manageRequest(request, response);
       // If it doesn't start by /api, then it's a request for a file.
     } else {
-      fileQuery.manage(request, response);
+      fileQuery.manageRequest(request, response);
     }
   } catch (error) {
     console.log(`error while processing ${request.url}: ${error}`);

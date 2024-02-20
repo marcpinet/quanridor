@@ -79,4 +79,4 @@ function send404(path, response) {
   response.end(`File ${path} not found!`);
 }
 
-exports.manage = manageRequest;
+module.exports = { manageRequest };
