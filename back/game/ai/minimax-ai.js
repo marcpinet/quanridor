@@ -266,32 +266,6 @@ function computeMove(gameState, player) {
   return move;
 }
 
-let board = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 0, 0, 0, 0, 0, 0, 0, 2],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-let testGameState = {
-  board: board,
-  ownWalls: [
-    ["19", 1],
-    ["27", 0],
-    ["45", 1],
-  ],
-  opponentWalls: [
-    ["65", 1],
-    ["23", 0],
-    ["42", 1],
-  ],
-};
-
 let ownPosition = [];
 let opponentPosition = [];
 let player;

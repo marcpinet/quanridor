@@ -386,6 +386,7 @@ function getPlayerNeighbour(coord) {
 }
 
 function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
+  let player = start == p1_coord ? 1 : 2;
   let openSet = [];
   let closedSet = [];
   let current;
@@ -410,7 +411,13 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
         openSet.push(neighbor);
       }
     }
-    let jump_coord = canJump(current, p1_coord, p2_coord, v_walls, h_walls);
+    let jump_coord = canJump(
+      current,
+      player == 1 ? current : p1_coord,
+      player == 1 ? p2_coord : current,
+      v_walls,
+      h_walls,
+    );
     if (
       jump_coord.length > 0 &&
       !isInclude(closedSet, jump_coord) &&
@@ -425,6 +432,7 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 
 function getShortestPath(start, goals, gameState) {
   // Initialisation
+  let player = start == gameState.playerspositions[0] ? 1 : 2;
   let openSet = new PriorityQueue((a, b) => a.fScore < b.fScore);
   let cameFrom = new Map();
   let gScore = new Map();
@@ -468,8 +476,8 @@ function getShortestPath(start, goals, gameState) {
     // Vérifiez les sauts pour chaque mouvement possible et ajoutez-les si légaux
     let jumpMove = canJump(
       current,
-      gameState.playerspositions[0],
-      gameState.playerspositions[1],
+      player == 1 ? current : gameState.playerspositions[0],
+      player == 1 ? gameState.playerspositions[1] : current,
       gameState.vwalls,
       gameState.hwalls,
     );

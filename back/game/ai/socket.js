@@ -274,7 +274,8 @@ function createSocket(server) {
       } else if (gameState.difficulty === 2) {
         let startTime = performance.now();
         try {
-          newCoord = AI2.computeMove2(gameState);
+          newCoord = AI2.computeMove(gameState, 2);
+          console.log(newCoord);
         } catch (e) {
           console.log(e);
         }
