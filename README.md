@@ -2,6 +2,10 @@
 
 ![quanridor](readme-assets/quanridor-title.png)
 
+## 🌐 Hosting
+
+You can access the project by visiting: [http://quanridor.ps8.academy/](http://quanridor.ps8.academy/)
+
 ## 📝 Description
 
 Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still _very_ limited).
