@@ -361,9 +361,10 @@ async function startServer() {
     const PORT = 4200;
 
     server.listen(PORT, () => {
-      const baseUrl = window.location.origin;
-      console.log(`Server listening on port ${PORT} at ${baseUrl}/`);
-      console.log(`Frontend accessible at ${baseUrl}/`);
+      console.log(
+        `Server listening on port ${PORT} at http://localhost:${PORT}`,
+      );
+      console.log(`Frontend accessible at http://localhost:8000`);
     });
   } catch (error) {
     console.error("Database connection failed", error);
