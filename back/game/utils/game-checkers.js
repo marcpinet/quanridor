@@ -547,12 +547,12 @@ function isWallLegal(
       aStarPathfinding(
         p1_coord,
         p1_goals,
-        p1_coord,
-        p2_coord,
+        [-1, -1],
+        [-1, -1],
         v_walls,
         h_walls,
       ) &&
-      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
+      aStarPathfinding(p2_coord, p2_goals, [-1, -1], [-1, -1], v_walls, h_walls)
     );
     v_walls.pop();
   } else {
@@ -561,12 +561,12 @@ function isWallLegal(
       aStarPathfinding(
         p1_coord,
         p1_goals,
-        p1_coord,
-        p2_coord,
+        [-1, -1],
+        [-1, -1],
         v_walls,
         h_walls,
       ) &&
-      aStarPathfinding(p2_coord, p2_goals, p1_coord, p2_coord, v_walls, h_walls)
+      aStarPathfinding(p2_coord, p2_goals, [-1, -1], [-1, -1], v_walls, h_walls)
     );
     h_walls.pop();
   }
