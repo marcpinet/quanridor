@@ -186,6 +186,15 @@ function canWin(gameState, player) {
   return playerPath.length <= 2;
 }
 
+function hasAtteignedGoal(playerPos, goals) {
+  for (let goal of goals) {
+    if (playerPos[0] === goal[0] && playerPos[1] === goal[1]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function evaluate(gameState, player, depthPenalty) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
@@ -202,6 +211,14 @@ function evaluate(gameState, player, depthPenalty) {
     opponentGoals,
     gameState,
   );
+
+  if (
+    playerPath.length === 0 &&
+    !hasAtteignedGoal(playerPosition, playerGoals)
+  ) {
+    // Force the player to get gloser to the opponent position
+    playerPath = getShortestPath(playerPosition, [opponentPosition], gameState);
+  }
 
   let score = 0;
 
@@ -258,6 +275,17 @@ function computeMove(gameState, player) {
     true,
     player,
   );
+
+  if (!move) {
+    let possibleMoves = getPossibleMoves(gameState, player);
+    if (possibleMoves.length > 0)
+      return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    let possibleWalls = getPossibleWalls(gameState, player);
+    if (possibleWalls.length > 0)
+      return possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
+    return gameState.playerspositions[player - 1];
+  }
+
   let tmp = getPossibleMovesAndStrategicWalls(gameState, aiPlayer);
   console.log(tmp);
   wallsLeft = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
