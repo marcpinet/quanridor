@@ -256,6 +256,18 @@ function applyMove(gameState, move, player) {
   return newGameState;
 }
 
+function areGoalsInsidePath(goals, path) {
+  const pathSet = new Set(path.map((point) => JSON.stringify(point)));
+
+  for (let goal of goals) {
+    if (pathSet.has(JSON.stringify(goal))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function computeMove(gameState, player) {
   let depth = 2;
   let aiPlayer = player;
@@ -264,9 +276,15 @@ function computeMove(gameState, player) {
     aiPlayer === 1 ? p1goals : p2goals,
     gameState,
   );
-  if (aiPath.length <= 2) {
+
+  if (
+    aiPath.length <= 2 &&
+    areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
+  ) {
+    console.log("AI can win!");
     return aiPath[aiPath.length - 1];
   }
+
   let { value, move } = minimax(
     gameState,
     depth,
