@@ -276,20 +276,24 @@ function computeMove(gameState, player) {
     player,
   );
 
-  if (!move) {
+  console.log("MiniMax chose: ", move);
+
+  if (move === null || move === undefined) {
+    console.log("No move found! Will try to find a default move...");
     let possibleMoves = getPossibleMoves(gameState, player);
-    if (possibleMoves.length > 0)
+    if (possibleMoves.length > 0) {
+      console.log("Found a default move!");
       return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
     let possibleWalls = getPossibleWalls(gameState, player);
-    if (possibleWalls.length > 0)
+    if (possibleWalls.length > 0) {
+      console.log("Found a default wall!");
       return possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
+    }
+    console.log("No default move found! Idling...");
     return gameState.playerspositions[player - 1];
   }
 
-  let tmp = getPossibleMovesAndStrategicWalls(gameState, aiPlayer);
-  console.log(tmp);
-  wallsLeft = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
-  console.log("Walls left: ", wallsLeft);
   console.log("AI played!", move);
   return move;
 }
@@ -377,10 +381,8 @@ function computeMove2(gameState) {
         value: moveToCast[0] + 1 + "" + (9 - moveToCast[1]),
       };
     }
-    console.log(move);
     return moveToCast;
   }
-  console.log(move);
   if (move.action == "move") {
     return [parseInt(move.value[0]), parseInt(move.value[1])];
   } else if (move.action == "wall") {

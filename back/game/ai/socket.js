@@ -275,7 +275,7 @@ function createSocket(server) {
         let startTime = performance.now();
         try {
           newCoord = AI2.computeMove(gameState, 2);
-          console.log(newCoord);
+          console.log("Socket computed: ", newCoord);
         } catch (e) {
           console.log(e);
         }
