@@ -8,6 +8,17 @@ const confirmWallButton = document.getElementById("confirm");
 const leaveButton = document.getElementById("leave");
 const winText = document.getElementById("win-text");
 
+const transparent = "rgba(1,5,37,0.25)";
+const colored = "rgba(1,5,37,1)";
+
+const leftProfileBox = document.getElementById("left-player");
+leftProfileBox.style.backgroundColor = colored;
+leftProfileBox.style.borderWidth = "10px";
+
+const rightProfileBox = document.getElementById("right-player");
+rightProfileBox.style.backgroundColor = transparent;
+rightProfileBox.style.borderWidth = "0px";
+
 canvas.width = 703;
 canvas.height = 703;
 
@@ -433,6 +444,10 @@ function clearAfterWin() {
   leaveButton.style.display = "none";
   clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
   clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+  rightProfileBox.style.borderWidth = "0px";
+  leftProfileBox.style.borderWidth = "0px";
+  rightProfileBox.style.backgroundColor = transparent;
+  leftProfileBox.style.backgroundColor = transparent;
 }
 
 let lastMovePlayer2 = false;
@@ -598,6 +613,12 @@ function isReady() {
   for (let element of anticheat) {
     element.style.display = "none";
   }
+
+  leftProfileBox.style.backgroundColor = tour % 2 == 0 ? colored : transparent;
+  leftProfileBox.style.borderWidth = tour % 2 == 0 ? "10px" : "0px";
+  rightProfileBox.style.backgroundColor = tour % 2 == 1 ? colored : transparent;
+  rightProfileBox.style.borderWidth = tour % 2 == 1 ? "10px" : "0px";
+
   drawBoard();
 }
 
