@@ -1,8 +1,8 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
 const AI0 = require("./random-ai.js");
-//const AI1 = require("./mcts-ai.js");
 const AI2 = require("./minimax-ai.js");
+const AI1 = require("./ai2.js");
 const { getDB } = require("../../query-managers/db.js");
 const { initializeGame } = require("../utils/game-initializer.js");
 const { verifyToken } = require("../../utils/jwt-utils.js");
@@ -270,9 +270,18 @@ function createSocket(server) {
       if (gameState.difficulty === 0) {
         newCoord = AI0.computeMove(gameState);
       } else if (gameState.difficulty === 1) {
-        //newCoord = AI1.computeMove(gameState);
+        newCoord = AI1.computeMove(gameState);
       } else if (gameState.difficulty === 2) {
-        newCoord = AI2.computeMove(gameState);
+        let startTime = performance.now();
+        try {
+          newCoord = AI2.computeMove(gameState, 2);
+          console.log("Socket computed: ", newCoord);
+        } catch (e) {
+          console.log(e);
+        }
+        let endTime = performance.now();
+        let elapsedTime = endTime - startTime;
+        console.log(`Le temps écoulé: ${elapsedTime} millisecondes`);
       } else {
         throw new Error("Invalid difficulty");
       }

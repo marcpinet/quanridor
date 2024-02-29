@@ -63,7 +63,9 @@ svg {
   width: 200px;
   height: 18vh;
   filter: none;
-  transition: width 0.3s ease, height 0.3s ease;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 #bot:hover {
@@ -71,7 +73,6 @@ svg {
   filter: none;
   width: 230px;
   height: 21vh;
-
 }
 
 .small-title {
@@ -326,7 +327,7 @@ canvas {
   transition:
     width 0.3s ease,
     height 0.3s ease;
-    background-color: 0.3s ease;
+  background-color: 0.3s ease;
 }
 
 .bento-box:hover {
@@ -390,7 +391,6 @@ canvas {
   transition:
     width 0.3s ease,
     height 0.3s ease;
-    
 }
 
 #home:hover {
@@ -478,7 +478,7 @@ canvas {
 #result-popup {
   z-index: 3;
   background-size: cover;
-  background-color: rgba(1,5,37,0.85);
+  background-color: rgba(1, 5, 37, 0.85);
   border: 15px solid rgba(126, 58, 238, 1);
   border-radius: 38px;
   padding: 20px;
@@ -498,16 +498,15 @@ canvas {
   font-weight: 700;
 }
 
-
 #elo-score-win {
-  color: #3AADEE;
+  color: #3aadee;
   filter: none;
   text-shadow: none;
   rotate: 5deg;
 }
 
 #elo-score-lose {
-  color: #EE4F3A;
+  color: #ee4f3a;
   filter: none;
   text-shadow: none;
   rotate: 5deg;
@@ -521,7 +520,7 @@ canvas {
   rotate: 5deg;
 }
 
-#win-text{
+#win-text {
   text-shadow: none;
   rotate: 5deg;
 }
@@ -532,7 +531,7 @@ canvas {
 }
 
 #easy {
-  color: #3AADEE;
+  color: #3aadee;
   filter: none;
   text-shadow: none;
   rotate: -5deg;
@@ -540,16 +539,15 @@ canvas {
 
 #medium {
   text-shadow: none;
-  color: #F3B9FF;
+  color: #f3b9ff;
   rotate: 0deg;
 }
 
 #hard {
-  color: #EE4F3A;
+  color: #ee4f3a;
   filter: none;
   text-shadow: none;
   rotate: 8deg;
-
 }
 
 .wall-bar-container {

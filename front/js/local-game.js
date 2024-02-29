@@ -180,21 +180,27 @@ function isWallLegal(player, coord) {
     )
       return false;
   }
+  let p1CoordTemp = p1_coord;
+  let p2CoordTemp = p2_coord;
+  p1_coord = [-1, -1];
+  p2_coord = [-1, -1];
   if (current_direction == "v") {
     v_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(p1CoordTemp, p1_goals) &&
+      aStarPathfinding(p2CoordTemp, p2_goals)
     );
     v_walls.pop();
   } else {
     h_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(p1CoordTemp, p1_goals) &&
+      aStarPathfinding(p2CoordTemp, p2_goals)
     );
     h_walls.pop();
   }
+  p1_coord = p1CoordTemp;
+  p2_coord = p2CoordTemp;
   return isPossible;
 }
 
@@ -470,7 +476,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(1);
     drawBoard();
     sleeping = true;
-    await sleep(1000);
+    await sleep(1);
     sleeping = false;
     if (checkWin(1)) {
       lastMovePlayer2 = true;
@@ -490,7 +496,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(2);
     drawBoard();
     sleeping = true;
-    await sleep(1000);
+    await sleep(1);
     sleeping = false;
     if (lastMovePlayer2) {
       playing = false;
@@ -703,7 +709,7 @@ async function confirmWall() {
     drawBoard();
     tour++;
     sleeping = true;
-    await sleep(1000);
+    await sleep(1);
     sleeping = false;
     getReady();
   }

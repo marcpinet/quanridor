@@ -1,3 +1,5 @@
+const baseUrl = window.location.origin;
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector("form");
   form.addEventListener("submit", function (event) {
@@ -11,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const data = { username, password };
 
     // Use fetch to send the request
-    fetch("http://localhost:4200/api/login", {
+    fetch(`${baseUrl}/api/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

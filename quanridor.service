@@ -1,0 +1,13 @@
+[Unit]
+Description=Quanridor
+After=multi-user.target
+
+[Service]
+Restart=always
+User=ec2-user
+Type=simple
+ExecStart=/home/ec2-user/ps8-24-quanridor/.env/bin/python /home/ec2-user/ps8-24-quanridor/webhook.py
+WorkingDirectory=/home/ec2-user/ps8-24-quanridor/
+
+[Install]
+WantedBy=multi-user.target

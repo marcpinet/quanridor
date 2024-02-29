@@ -362,14 +362,16 @@ async function startServer() {
 
     server.listen(PORT, () => {
       console.log(
-        `Server listening on port ${PORT} at http://localhost:${PORT}/`,
+        `Server listening on port ${PORT} at http://localhost:${PORT}`,
       );
-      console.log("Frontend accessible at http://localhost:8000/");
+      console.log(`Frontend accessible at http://localhost:8000`);
     });
   } catch (error) {
     console.error("Database connection failed", error);
     process.exit(1);
   }
 }
+
+module.exports = { manageRequest };
 
 startServer();

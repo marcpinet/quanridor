@@ -114,7 +114,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.on("gameCreated", (game) => {
       gameId = game._id;
       initializeGame(game);
-      window.location.href = "http://localhost:8000/ai-game.html?id=" + gameId;
+      const baseUrl = window.location.origin;
+      window.location.href = `${baseUrl}:8000/ai-game.html?id=` + gameId;
 
       // Setting the game info display
       // Usernames
@@ -252,21 +253,27 @@ function isWallLegal(player, coord) {
     )
       return false;
   }
+  let p1CoordTemp = p1_coord;
+  let p2CoordTemp = p2_coord;
+  p1_coord = [-1, -1];
+  p2_coord = [-1, -1];
   if (current_direction == "v") {
     v_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(p1CoordTemp, p1_goals) &&
+      aStarPathfinding(p2CoordTemp, p2_goals)
     );
     v_walls.pop();
   } else {
     h_walls.push(coord);
     isPossible = !!(
-      aStarPathfinding(p1_coord, p1_goals) &&
-      aStarPathfinding(p2_coord, p2_goals)
+      aStarPathfinding(p1CoordTemp, p1_goals) &&
+      aStarPathfinding(p2CoordTemp, p2_goals)
     );
     h_walls.pop();
   }
+  p1_coord = p1CoordTemp;
+  p2_coord = p2CoordTemp;
   return isPossible;
 }
 
