@@ -14,16 +14,14 @@ const smoke = document.getElementById("smoke");
 const confirmWallButton = document.getElementById("confirm");
 const leaveButton = document.getElementById("leave");
 
-const transparent = "rgba(1,5,37,0.25)";
-const colored = "rgba(1,5,37,1)";
+const transparent = "rgba(70, 80, 168, 0)";
+const colored = "rgba(70, 80, 168, 1)";
 
 const leftProfileBox = document.getElementById("left-player");
-leftProfileBox.style.backgroundColor = colored;
-leftProfileBox.style.borderWidth = "10px";
-
 const rightProfileBox = document.getElementById("right-player");
-rightProfileBox.style.backgroundColor = transparent;
-rightProfileBox.style.borderWidth = "0px";
+
+leftProfileBox.style.borderColor = colored;
+rightProfileBox.style.borderColor = transparent;
 
 canvas.width = 703;
 canvas.height = 703;
@@ -511,10 +509,8 @@ socket.on("win", (gameStateReturned) => {
 
   //const eloLost = document.getElementById("elo-score-lose");
   //let loser = gameStateReturned.winner == players[0] ? players[1] : players[0];
-  leftProfileBox.style.backgroundColor = transparent;
-  leftProfileBox.style.borderWidth = "0px";
-  rightProfileBox.style.backgroundColor = transparent;
-  rightProfileBox.style.borderWidth = "0px";
+  rightProfileBox.style.borderColor = transparent;
+  leftProfileBox.style.borderColor = transparent;
   eloLost.textContent = loser + ": -144";
   playing = false;
 });
@@ -542,12 +538,11 @@ socket.on("legalMove", (new_coord) => {
     gameState: getGameState(),
   });
 
-  rightProfileBox.style.backgroundColor = colored;
-  rightProfileBox.style.borderWidth = "10px";
-  leftProfileBox.style.backgroundColor = transparent;
-  leftProfileBox.style.borderWidth = "0px";
-
   tour++;
+
+  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+  drawBoard();
 });
 
 function getMouseCoordOnCanvas(event) {
@@ -710,6 +705,8 @@ socket.on("legalWall", () => {
     }
     tour++;
   }
+  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
   drawBoard();
   const dataToSend = { gameId: gameId, gameState: getGameState() };
   socket.emit("sendGameState", dataToSend);
@@ -809,11 +806,6 @@ export function getGameState() {
 socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
 
-  leftProfileBox.style.backgroundColor = colored;
-  leftProfileBox.style.borderWidth = "10px";
-  rightProfileBox.style.backgroundColor = transparent;
-  rightProfileBox.style.borderWidth = "0px";
-
   if (newCoord[2] !== undefined) {
     placeWall(newCoord, newCoord[2]);
     updateWallBar(p2_walls, tour);
@@ -823,7 +815,12 @@ socket.on("aiMove", (newCoord) => {
   } else {
     movePlayer(2, newCoord);
   }
+
   tour++;
+
+  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+
   updateFogOfWar(2);
   drawBoard();
 });

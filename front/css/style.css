@@ -308,10 +308,10 @@ canvas {
 .friend-box,
 .profile-box {
   background-color: rgba(1,5,37,1);
-  border-color: #4650a8;
+  border-color: rgba(70, 80, 168, 0);
   border-radius: 38px;
   border-style: solid;
-  border-width: 0px;
+  border-width: 10px;
 }
 
 .bento-box {
