@@ -207,6 +207,11 @@ class Node {
       if (concatenedMoves.length === 0) break;
 
       let move = getNextMoveToFollowShortestPath(state, currentPlayer);
+
+      if (move === undefined) {
+        break;
+      }
+
       state = applyMove(state, move, currentPlayer);
       currentPlayer = currentPlayer === 1 ? 2 : 1;
     }

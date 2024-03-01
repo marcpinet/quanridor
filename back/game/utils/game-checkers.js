@@ -104,10 +104,6 @@ function checkGameEnd(gameState) {
 }
 
 function getPossibleMovesAndStrategicWalls(gameState, player) {
-  if (checkGameEnd(gameState)) {
-    return { possibleMoves: [], possibleWalls: [] };
-  }
-
   let pos = gameState.playerspositions[player - 1];
   let possibleMoves = getPossibleMoves(gameState, pos);
   let possibleWalls = getStrategicWalls(gameState, player);

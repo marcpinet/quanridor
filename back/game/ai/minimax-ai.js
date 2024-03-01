@@ -296,7 +296,14 @@ function computeMove(gameState, player) {
 
   console.log("MiniMax chose: ", move);
 
-  if (move === null || move === undefined) {
+  if (
+    move === null ||
+    move === undefined ||
+    move.length === 0 ||
+    move[0] === null ||
+    isNaN(move[0]) ||
+    move[0] === undefined
+  ) {
     console.log("No move found! Will try to find a default move...");
     let possibleMoves = getPossibleMoves(gameState, player);
     if (possibleMoves.length > 0) {
