@@ -806,6 +806,18 @@ export function getGameState() {
 socket.on("aiMove", (newCoord) => {
   updateFogOfWarReverse(2);
 
+  if (
+    newCoord === null ||
+    newCoord === undefined ||
+    newCoord.length === 0 ||
+    newCoord[0] === undefined ||
+    newCoord[0] === null ||
+    newCoord[0] === NaN
+  ) {
+    console.log("AI has no move to play, keeping its current position...");
+    newCoord = p2_coord;
+  }
+
   if (newCoord[2] !== undefined) {
     placeWall(newCoord, newCoord[2]);
     updateWallBar(p2_walls, tour);

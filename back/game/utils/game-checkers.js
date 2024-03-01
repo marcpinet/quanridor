@@ -96,7 +96,18 @@ function getPossibleMoves(gameState, pos) {
   return possibleMoves;
 }
 
+function checkGameEnd(gameState) {
+  return (
+    gameState.playerspositions[0][1] === 0 ||
+    gameState.playerspositions[1][1] === 8
+  );
+}
+
 function getPossibleMovesAndStrategicWalls(gameState, player) {
+  if (checkGameEnd(gameState)) {
+    return { possibleMoves: [], possibleWalls: [] };
+  }
+
   let pos = gameState.playerspositions[player - 1];
   let possibleMoves = getPossibleMoves(gameState, pos);
   let possibleWalls = getStrategicWalls(gameState, player);
