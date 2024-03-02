@@ -812,7 +812,7 @@ socket.on("aiMove", (newCoord) => {
     newCoord.length === 0 ||
     newCoord[0] === undefined ||
     newCoord[0] === null ||
-    isNan(newCoord[0])
+    isNaN(newCoord[0])
   ) {
     console.log("AI has no move to play, keeping its current position...");
     newCoord = p2_coord;
