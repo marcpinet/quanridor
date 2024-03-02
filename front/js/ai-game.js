@@ -861,7 +861,10 @@ socket.on("illegal", () => {
 });
 
 window.addEventListener("onbeforeunload", function (event) {
+  event.preventDefault();
   socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+  window.location.href =
+    "ai-game.html?difficulty=" + difficulty + "&id=" + gameId;
 });
 
 window.addEventListener("unload", function (event) {
