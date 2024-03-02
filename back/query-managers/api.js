@@ -10,6 +10,8 @@ const apiPath = "/api";
 
 const saltRounds = 10;
 
+const DEFAULT_ELO = 800;
+
 // ------------------------------ CORE HANDLING ------------------------------
 
 function addCors(
@@ -127,7 +129,12 @@ async function handleSignup(request, response) {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Créer l'utilisateur avec le mot de passe haché
-      await users.insertOne({ username, password: hashedPassword });
+      await users.insertOne({
+        username,
+        password: hashedPassword,
+        elo: DEFAULT_ELO,
+        admin: false,
+      });
 
       // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
       let secret = await getJwtSecret();
