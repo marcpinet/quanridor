@@ -296,8 +296,10 @@ function isInclude(array, coord) {
   return false;
 }
 
-function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
+function canJump(coord, p1coord, p2coord, v_walls, h_walls) {
   let temp;
+  let p1_coord = [p1coord[0], p1coord[1]];
+  let p2_coord = [p2coord[0], p2coord[1]];
   if (
     Math.abs(p1_coord[0] - coord[0]) == 1 &&
     p1_coord[1] == coord[1] &&
@@ -310,13 +312,11 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p2_coord,
     )
   ) {
-    temp = p2_coord;
+    temp = [p2_coord[0], p2_coord[1]];
     p2_coord = [9, 9];
     if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p2_coord = temp;
       return [2 * p1_coord[0] - coord[0], coord[1]];
     }
-    p2_coord = temp;
   } else if (
     Math.abs(p2_coord[0] - coord[0]) == 1 &&
     p2_coord[1] == coord[1] &&
@@ -329,13 +329,12 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p2_coord,
     )
   ) {
-    temp = p2_coord;
+    temp = [p2_coord[0], p2_coord[1]];
     p2_coord = [9, 9];
     if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p2_coord = temp;
+      p2_coord = [temp[0], temp[1]];
       return [2 * p2_coord[0] - coord[0], coord[1]];
     }
-    p2_coord = temp;
   } else if (
     p1_coord[0] == coord[0] &&
     Math.abs(p1_coord[1] - coord[1]) == 1 &&
@@ -348,13 +347,12 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p2_coord,
     )
   ) {
-    temp = p1_coord;
+    temp = [p1_coord[0], p1_coord[1]];
     p1_coord = [9, 9];
     if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p1_coord = temp;
+      p1_coord = [temp[0], temp[1]];
       return [coord[0], 2 * p1_coord[1] - coord[1]];
     }
-    p1_coord = temp;
   } else if (
     p2_coord[0] == coord[0] &&
     Math.abs(p2_coord[1] - coord[1]) == 1 &&
@@ -367,13 +365,11 @@ function canJump(coord, p1_coord, p2_coord, v_walls, h_walls) {
       p2_coord,
     )
   ) {
-    temp = p1_coord;
+    temp = [p1_coord[0], p1_coord[1]];
     p1_coord = [9, 9];
     if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
-      p1_coord = temp;
       return [coord[0], 2 * p2_coord[1] - coord[1]];
     }
-    p1_coord = temp;
   }
   return [];
 }
@@ -437,27 +433,14 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
   return false;
 }
 
+// BFS
 function getShortestPath(start, goals, gameState) {
-  // Initialisation
-  let player = start == gameState.playerspositions[0] ? 1 : 2;
-  let openSet = new PriorityQueue((a, b) => a.fScore < b.fScore);
-  let cameFrom = new Map();
-  let gScore = new Map();
-  let fScore = new Map();
+  let queue = []; // Utiliser une file d'attente pour gérer les nœuds à explorer
+  let visited = new Set(); // Garde une trace des positions déjà visitées
+  let cameFrom = new Map(); // Trace le chemin parcouru
   let startKey = start.join(",");
-  gScore.set(startKey, 0);
-  fScore.set(startKey, heuristic(start, goals));
-  openSet.enqueue({ position: start, fScore: heuristic(start, goals) });
-
-  // Fonction heuristique simple - distance de Manhattan comme exemple
-  function heuristic(position, goals) {
-    let minDist = Infinity;
-    goals.forEach((goal) => {
-      let d = Math.abs(position[0] - goal[0]) + Math.abs(position[1] - goal[1]);
-      if (d < minDist) minDist = d;
-    });
-    return minDist;
-  }
+  visited.add(startKey);
+  queue.push(start);
 
   // Fonction pour reconstruire le chemin une fois l'objectif atteint
   function reconstructPath(cameFrom, current) {
@@ -469,8 +452,8 @@ function getShortestPath(start, goals, gameState) {
     return totalPath;
   }
 
-  while (!openSet.isEmpty()) {
-    let current = openSet.dequeue().position;
+  while (queue.length > 0) {
+    let current = queue.shift();
 
     // Vérifier si le but est atteint
     for (let goal of goals) {
@@ -480,35 +463,13 @@ function getShortestPath(start, goals, gameState) {
     }
 
     let possibleMoves = getPossibleMoves(gameState, current);
-    // Vérifiez les sauts pour chaque mouvement possible et ajoutez-les si légaux
-    let jumpMove = canJump(
-      current,
-      player == 1 ? current : gameState.playerspositions[0],
-      player == 1 ? gameState.playerspositions[1] : current,
-      gameState.vwalls,
-      gameState.hwalls,
-    );
-    if (jumpMove.length > 0) {
-      possibleMoves.push(jumpMove);
-    }
 
     for (let neighbor of possibleMoves) {
-      let tentativeGScore = gScore.get(current.join(",")) + 1; // Coût supposé de 1 pour se déplacer entre voisins
       let neighborKey = neighbor.join(",");
-
-      if (
-        !gScore.has(neighborKey) ||
-        tentativeGScore < gScore.get(neighborKey)
-      ) {
+      if (!visited.has(neighborKey)) {
+        visited.add(neighborKey);
         cameFrom.set(neighborKey, current);
-        gScore.set(neighborKey, tentativeGScore);
-        fScore.set(neighborKey, tentativeGScore + heuristic(neighbor, goals));
-        if (!openSet.contains({ position: neighbor })) {
-          openSet.enqueue({
-            position: neighbor,
-            fScore: tentativeGScore + heuristic(neighbor, goals),
-          });
-        }
+        queue.push(neighbor);
       }
     }
   }
