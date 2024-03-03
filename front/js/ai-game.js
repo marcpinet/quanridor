@@ -56,7 +56,7 @@ const canvasTop = canvasRect.top + 9;
 let tour = 0;
 let p1_coord = [4, 8];
 let p2_coord = [4, 0];
-let playing = true;
+let playing = false;
 let select1 = false;
 let select2 = false;
 let p1_walls = 10;
@@ -65,6 +65,7 @@ let v_walls = [];
 let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
+let isPlayer1Placed = false;
 let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
@@ -103,6 +104,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
 
       initializeGame(game);
+      isPlayer1Placed = true;
+      drawBoard();
+      canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+      playing = true;
     });
   } else {
     socket.emit("createGameAI", {
@@ -155,8 +160,8 @@ let board_visibility = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 2, 1, 1, 1, 1],
-  [1, 1, 1, 2, 2, 2, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 let p1_goals = [
@@ -546,10 +551,20 @@ socket.on("legalMove", (new_coord) => {
 });
 
 function getMouseCoordOnCanvas(event) {
-  if (!playing) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
+  if (!isPlayer1Placed) {
+    p1_coord = [new_coord[0], 8];
+    isPlayer1Placed = true;
+    updateFogOfWar(1);
+    playing = true;
+    drawBoard();
+    canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+    socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+    return;
+  }
+  if (!playing) return;
   let jump_coord = canJump(tour % 2 == 0 ? p1_coord : p2_coord);
   if (!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]) {
     displayPossibleMoves(1);
@@ -763,6 +778,7 @@ function aStarPathfinding(start, goals) {
 }
 
 function drawPlayer(x, y, color) {
+  if (!isPlayer1Placed) return;
   if (color === "none") {
     clearPlayer(x, y);
   } else {
@@ -891,3 +907,21 @@ function initWallBar(value, p) {
 document.getElementById("replay").addEventListener("click", () => {
   window.location.href = "ai-game.html?difficulty=" + difficulty;
 });
+
+canvas.addEventListener("mousemove", handleMouseOverCanvas);
+
+function handleMouseOverCanvas(event) {
+  let x = event.clientX - canvas.getBoundingClientRect().left;
+  let y = event.clientY - canvas.getBoundingClientRect().top;
+  let hoverCoord = getCaseFromCoord(x, y);
+  if (!isPlayer1Placed) hoverCoord = [hoverCoord[0], 8];
+  drawBoard();
+  drawRoundedRect(
+    (hoverCoord[0] + 1) * 10 + hoverCoord[0] * 67,
+    (hoverCoord[1] + 1) * 10 + hoverCoord[1] * 67,
+    67,
+    67,
+    20,
+    "#888888",
+  );
+}
