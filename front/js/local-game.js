@@ -51,7 +51,7 @@ const canvasTop = canvasRect.top + 9;
 let tour = 0;
 let p1_coord = [4, 8];
 let p2_coord = [4, 0];
-let playing = true;
+let playing = false;
 let select1 = false;
 let select2 = false;
 let p1_walls = 10;
@@ -61,6 +61,8 @@ let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
 let sleeping = false;
+let isPlayer1Placed = false;
+let isPlayer2Placed = false;
 
 function initializeGame(gameState) {
   // TODO : when multiplayer is implemented, indice will have to be better handled (see https://i.imgur.com/uZXRibi.png)
@@ -75,15 +77,15 @@ function initializeGame(gameState) {
 }
 
 let board_visibility = [
-  [-1, -1, -1, -2, -2, -2, -1, -1, -1],
-  [-1, -1, -1, -1, -2, -1, -1, -1, -1],
+  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1],
   [0, 0, 0, 0, 0, 0, 0, 0, 0],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 2, 1, 1, 1, 1],
-  [1, 1, 1, 2, 2, 2, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
 let p1_goals = [
@@ -335,6 +337,7 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
+  console.log(board_visibility);
   context.clearRect(0, 0, canvas.width, canvas.height);
   let gradient = context.createLinearGradient(0, 0, 0, canvas.height);
 
@@ -449,10 +452,27 @@ function clearAfterWin() {
 let lastMovePlayer2 = false;
 
 async function getMouseCoordOnCanvas(event) {
-  if (sleeping || !playing) return;
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
+  if (!isPlayer1Placed) {
+    p1_coord = [new_coord[0], 8];
+    isPlayer1Placed = true;
+    updateFogOfWar(1);
+    tour++;
+    getReady();
+    return;
+  } else if (!isPlayer2Placed) {
+    p2_coord = [new_coord[0], 0];
+    isPlayer2Placed = true;
+    updateFogOfWar(2);
+    tour = 0;
+    getReady();
+    canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+    playing = true;
+    return;
+  }
+  if (sleeping || !playing) return;
   let jump_coord = canJump(tour % 2 == 0 ? p1_coord : p2_coord);
   if (!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]) {
     displayPossibleMoves(1);
@@ -472,7 +492,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(1);
     drawBoard();
     sleeping = true;
-    await sleep(1);
+    await sleep(1000);
     sleeping = false;
     if (checkWin(1)) {
       lastMovePlayer2 = true;
@@ -492,7 +512,7 @@ async function getMouseCoordOnCanvas(event) {
     updateFogOfWar(2);
     drawBoard();
     sleeping = true;
-    await sleep(1);
+    await sleep(1000);
     sleeping = false;
     if (lastMovePlayer2) {
       playing = false;
@@ -703,7 +723,7 @@ async function confirmWall() {
     drawBoard();
     tour++;
     sleeping = true;
-    await sleep(1);
+    await sleep(1000);
     sleeping = false;
     getReady();
   }
@@ -752,6 +772,7 @@ function aStarPathfinding(start, goals) {
 }
 
 function drawPlayer(x, y, color) {
+  if (!isPlayer1Placed || !isPlayer2Placed) return;
   if (color === "none") {
     clearPlayer(x, y);
   } else {
@@ -771,8 +792,6 @@ function clearPlayer(x, y) {
   // Remplir le joueur avec la couleur environnante
   drawPlayer(x, y, rgbaColor);
 }
-
-canvas.addEventListener("click", getMouseCoordOnCanvas);
 
 ready.addEventListener("click", isReady);
 
@@ -801,3 +820,24 @@ function makeSquareTransparent(squareId) {
   var square = document.getElementById(squareId);
   square.classList.add("transparent");
 }
+
+canvas.addEventListener("mousemove", handleMouseOverCanvas);
+
+function handleMouseOverCanvas(event) {
+  let x = event.clientX - canvas.getBoundingClientRect().left;
+  let y = event.clientY - canvas.getBoundingClientRect().top;
+  let hoverCoord = getCaseFromCoord(x, y);
+  if (!isPlayer1Placed) hoverCoord = [hoverCoord[0], 8];
+  else hoverCoord = [hoverCoord[0], 0];
+  drawBoard();
+  drawRoundedRect(
+    (hoverCoord[0] + 1) * 10 + hoverCoord[0] * 67,
+    (hoverCoord[1] + 1) * 10 + hoverCoord[1] * 67,
+    67,
+    67,
+    20,
+    "#888888",
+  );
+}
+
+canvas.addEventListener("click", getMouseCoordOnCanvas);
