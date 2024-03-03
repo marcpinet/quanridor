@@ -267,24 +267,23 @@ function createSocket(server) {
       const gameId = data.gameId;
       const gameState = data.gameState;
       let newCoord;
+      let startTime = performance.now();
       if (gameState.difficulty === 0) {
         newCoord = AI0.computeMove(gameState);
       } else if (gameState.difficulty === 1) {
         newCoord = AI1.computeMove(gameState, 2);
       } else if (gameState.difficulty === 2) {
-        let startTime = performance.now();
         try {
           newCoord = AI2.computeMove(gameState, 2);
-          console.log("Socket computed: ", newCoord);
         } catch (e) {
           console.log(e);
         }
-        let endTime = performance.now();
-        let elapsedTime = endTime - startTime;
-        console.log(`Le temps écoulé: ${elapsedTime} millisecondes`);
       } else {
         throw new Error("Invalid difficulty");
       }
+      let endTime = performance.now();
+      let elapsedTime = endTime - startTime;
+      console.log(`Le temps écoulé: ${Math.round(elapsedTime)} millisecondes`);
       gameState.playerspositions[1] = newCoord;
       const db = getDB();
       const games = db.collection("games");

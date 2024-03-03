@@ -222,12 +222,11 @@ function evaluate(gameState, player, depthPenalty) {
 
   let score = 0;
 
-  // Adjust score based on path length difference
-  score += (opponentPath.length - playerPath.length) * 10;
-
-  // Prioritize endgame scenarios
-  if (playerPath.length <= 2) score += 1000; // Near victory
-  if (opponentPath.length <= 2) score -= 1000; // Opponent near victory
+  // Adjust score based on path length difference ONLY IF the player still has walls
+  const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
+  if (playerWalls > 0) score += (opponentPath.length - playerPath.length) * 10;
+  // If he has no walls, he just needs to get to the goal as fast as possible
+  else return -playerPath.length * 10;
 
   // Adjust for remaining walls - incentivize saving walls for critical moments
   let wallsDifference = gameState.p1walls - gameState.p2walls;
@@ -269,6 +268,8 @@ function areGoalsInsidePath(goals, path) {
 }
 
 function computeMove(gameState, player) {
+  const aiWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
+
   let depth = 2;
   let aiPlayer = player;
   let aiPath = getShortestPath(
@@ -323,6 +324,7 @@ function computeMove(gameState, player) {
   return move;
 }
 
+/*
 let ownPosition = [];
 let opponentPosition = [];
 let player;
@@ -421,8 +423,6 @@ function computeMove2(gameState) {
   }
 }
 
-module.exports = { computeMove, computeMove2 };
-
 exports.setup = function (AIplay) {
   return new Promise((resolve, reject) => {
     player = AIplay;
@@ -504,4 +504,10 @@ exports.updateBoard = function (gameState) {
   return new Promise((resolve, reject) => {
     resolve(true);
   });
+};
+
+*/
+module.exports = {
+  computeMove,
+  //computeMove2
 };

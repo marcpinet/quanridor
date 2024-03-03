@@ -251,8 +251,8 @@ function isWallLegal(player, coord) {
     )
       return false;
   }
-  let p1CoordTemp = p1_coord;
-  let p2CoordTemp = p2_coord;
+  let p1CoordTemp = [p1_coord[0], p1_coord[1]];
+  let p2CoordTemp = [p2_coord[0], p2_coord[1]];
   p1_coord = [-1, -1];
   p2_coord = [-1, -1];
   if (current_direction == "v") {
@@ -282,49 +282,49 @@ function canJump(coord) {
     p1_coord[1] == coord[1] &&
     isLegal(p1_coord, [2 * p1_coord[0] - coord[0], coord[1]])
   ) {
-    temp = p2_coord;
+    temp = [p2_coord[0], p2_coord[1]];
     p2_coord = [9, 9];
     if (isLegal(p1_coord, temp)) {
-      p2_coord = temp;
+      p2_coord = [temp[0], temp[1]];
       return [2 * p1_coord[0] - coord[0], coord[1]];
     }
-    p2_coord = temp;
+    p2_coord = [temp[0], temp[1]];
   } else if (
     Math.abs(p2_coord[0] - coord[0]) == 1 &&
     p2_coord[1] == coord[1] &&
     isLegal(p2_coord, [2 * p2_coord[0] - coord[0], coord[1]])
   ) {
-    temp = p2_coord;
+    temp = [p2_coord[0], p2_coord[1]];
     p2_coord = [9, 9];
     if (isLegal(p1_coord, temp)) {
-      p2_coord = temp;
+      p2_coord = [temp[0], temp[1]];
       return [2 * p2_coord[0] - coord[0], coord[1]];
     }
-    p2_coord = temp;
+    p2_coord = [temp[0], temp[1]];
   } else if (
     p1_coord[0] == coord[0] &&
     Math.abs(p1_coord[1] - coord[1]) == 1 &&
     isLegal(p1_coord, [coord[0], 2 * p1_coord[1] - coord[1]])
   ) {
-    temp = p1_coord;
+    temp = [p1_coord[0], p1_coord[1]];
     p1_coord = [9, 9];
     if (isLegal(p2_coord, temp)) {
-      p1_coord = temp;
+      p1_coord = [temp[0], temp[1]];
       return [coord[0], 2 * p1_coord[1] - coord[1]];
     }
-    p1_coord = temp;
+    p1_coord = [temp[0], temp[1]];
   } else if (
     p2_coord[0] == coord[0] &&
     Math.abs(p2_coord[1] - coord[1]) == 1 &&
     isLegal(p2_coord, [coord[0], 2 * p2_coord[1] - coord[1]])
   ) {
-    temp = p1_coord;
+    temp = [p1_coord[0], p1_coord[1]];
     p1_coord = [9, 9];
     if (isLegal(p2_coord, temp)) {
-      p1_coord = temp;
+      p1_coord = [temp[0], temp[1]];
       return [coord[0], 2 * p2_coord[1] - coord[1]];
     }
-    p1_coord = temp;
+    p1_coord = [temp[0], temp[1]];
   }
   return [];
 }
@@ -839,7 +839,7 @@ socket.on("aiMove", (newCoord) => {
 
 socket.on("aiLastMove", (newCoord) => {
   updateFogOfWarReverse(2);
-  if (newCoord[2] !== undefined) {
+  if (newCoord.length === 3) {
     placeWall(newCoord, newCoord[2]);
     updateWallBar(p2_walls, tour);
     p2_walls--;
