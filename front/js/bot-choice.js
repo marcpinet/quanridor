@@ -32,5 +32,5 @@ AI2.addEventListener("click", () => {
 
 socket.on("gameCreated", (game) => {
   window.location.href =
-    "ai-game.html?difficulty=" + difficulty + "id=" + game._id;
+    "ai-game.html?difficulty=" + difficulty + "&id=" + game._id;
 });
