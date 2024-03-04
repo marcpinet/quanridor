@@ -13,10 +13,10 @@ function decide(possibleMoves, possibleWalls) {
   }
 }
 
-function computeMove(gameState) {
+function computeMove(gameState, player) {
   let { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
     gameState,
-    2,
+    player,
   );
   return decide(possibleMoves, possibleWalls);
 }

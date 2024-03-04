@@ -5,6 +5,7 @@ const {
   getShortestPath,
   getPossibleMoves,
   getPossibleWalls,
+  applyMove,
 } = require("../utils/game-checkers.js");
 
 let p1goals = [
@@ -30,26 +31,6 @@ let p2goals = [
   [7, 8],
   [8, 8],
 ];
-
-function applyMove(gameState, move, player) {
-  const newGameState = cloneGameState(gameState);
-  if (move.length == 3) {
-    let wallsnum = player === 1 ? newGameState.p1walls : newGameState.p2walls;
-    if (wallsnum <= 0) {
-      return null;
-    }
-    if (move[2] == "v") {
-      newGameState.vwalls.push(move);
-    } else {
-      newGameState.hwalls.push(move);
-    }
-    player === 1 ? newGameState.p1walls-- : newGameState.p2walls--;
-  } else {
-    newGameState.playerspositions[player - 1] = move;
-  }
-  newGameState.turn++;
-  return newGameState;
-}
 
 function selectRandom(array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -156,7 +137,6 @@ function filterMoves(moves, gameState, player) {
 
 class Node {
   constructor(parent, move, gameState, player) {
-    console.log("Node created");
     this.parent = parent;
     this.move = move;
     this.gameState = gameState;

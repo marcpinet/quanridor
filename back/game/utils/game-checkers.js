@@ -545,6 +545,26 @@ function checkWin(player, { p1_coord, p2_coord }) {
   return (player == 1 && p1_coord[1] == 0) || (player == 2 && p2_coord[1] == 8);
 }
 
+function applyMove(gameState, move, player) {
+  const newGameState = cloneGameState(gameState);
+  if (move.length == 3) {
+    let wallsnum = player === 1 ? newGameState.p1walls : newGameState.p2walls;
+    if (wallsnum <= 0) {
+      return null;
+    }
+    if (move[2] == "v") {
+      newGameState.vwalls.push(move);
+    } else {
+      newGameState.hwalls.push(move);
+    }
+    player === 1 ? newGameState.p1walls-- : newGameState.p2walls--;
+  } else {
+    newGameState.playerspositions[player - 1] = move;
+  }
+  newGameState.turn++;
+  return newGameState;
+}
+
 module.exports = {
   isLegal,
   canJump,
@@ -555,4 +575,5 @@ module.exports = {
   cloneGameState,
   getPossibleMoves,
   getPossibleWalls,
+  applyMove,
 };
