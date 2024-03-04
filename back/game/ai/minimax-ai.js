@@ -1,11 +1,13 @@
 const {
+  hasAtteignedGoal,
   checkWin,
-  cloneGameState,
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
   getPossibleMoves,
   getPossibleWalls,
   applyMove,
+  areGoalsInsidePath,
+  canWin,
 } = require("../utils/game-checkers.js");
 
 class TranspositionTable {
@@ -180,22 +182,6 @@ function minimax(
   return best;
 }
 
-function canWin(gameState, player) {
-  const playerGoals = player === 1 ? p1goals : p2goals;
-  const playerPosition = gameState.playerspositions[player - 1];
-  let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
-  return playerPath.length <= 2;
-}
-
-function hasAtteignedGoal(playerPos, goals) {
-  for (let goal of goals) {
-    if (playerPos[0] === goal[0] && playerPos[1] === goal[1]) {
-      return true;
-    }
-  }
-  return false;
-}
-
 function evaluate(gameState, player, depthPenalty) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
@@ -206,11 +192,17 @@ function evaluate(gameState, player, depthPenalty) {
   if (canWin(gameState, player === 1 ? 2 : 1))
     return -10000000000 + depthPenalty;
 
-  let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
+  let playerPath = getShortestPath(
+    playerPosition,
+    playerGoals,
+    gameState,
+    player,
+  );
   let opponentPath = getShortestPath(
     opponentPosition,
     opponentGoals,
     gameState,
+    player === 1 ? 2 : 1,
   );
 
   if (
@@ -218,7 +210,12 @@ function evaluate(gameState, player, depthPenalty) {
     !hasAtteignedGoal(playerPosition, playerGoals)
   ) {
     // Force the player to get gloser to the opponent position
-    playerPath = getShortestPath(playerPosition, [opponentPosition], gameState);
+    playerPath = getShortestPath(
+      playerPosition,
+      [opponentPosition],
+      gameState,
+      player,
+    );
   }
 
   let score = 0;
@@ -236,18 +233,6 @@ function evaluate(gameState, player, depthPenalty) {
   return score;
 }
 
-function areGoalsInsidePath(goals, path) {
-  const pathSet = new Set(path.map((point) => JSON.stringify(point)));
-
-  for (let goal of goals) {
-    if (pathSet.has(JSON.stringify(goal))) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 function computeMove(gameState, player) {
   let depth = 2;
   let aiPlayer = player;
@@ -255,12 +240,14 @@ function computeMove(gameState, player) {
     gameState.playerspositions[aiPlayer - 1],
     aiPlayer === 1 ? p1goals : p2goals,
     gameState,
+    aiPlayer,
   );
 
   if (
     aiPath.length <= 2 &&
     areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
   ) {
+    console.log("Minimax can win!");
     return aiPath[aiPath.length - 1];
   }
 
@@ -282,14 +269,20 @@ function computeMove(gameState, player) {
     isNaN(move[0]) ||
     move[0] === undefined
   ) {
+    console.log(
+      "Minimax returned null or undefined move, checking for default...",
+    );
     let possibleMoves = getPossibleMoves(gameState, player);
     if (possibleMoves.length > 0) {
+      console.log("Minimax found a default move.");
       return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     }
     let possibleWalls = getPossibleWalls(gameState, player);
     if (possibleWalls.length > 0) {
+      console.log("Minimax found a default wall.");
       return possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
     }
+    console.log("Minimax found no moves, returning idling position.");
     return gameState.playerspositions[player - 1];
   }
 
@@ -363,6 +356,7 @@ exports.nextMove = function (gameState) {
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
         },
+        player,
       );
       if (shortestPath.length == 0) {
         move = {

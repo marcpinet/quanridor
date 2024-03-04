@@ -1,8 +1,8 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
 const AI0 = require("./random-ai.js");
-const AI2 = require("./minimax-ai.js");
 const AI1 = require("./mcts.js");
+const AI2 = require("./minimax-ai.js");
 const { getDB } = require("../../query-managers/db.js");
 const { initializeGame } = require("../utils/game-initializer.js");
 const { verifyToken } = require("../../utils/jwt-utils.js");
@@ -11,6 +11,8 @@ const {
   canJump,
   checkWin,
   isWallLegal,
+  canWin,
+  getNextMoveToFollowShortestPath,
 } = require("../utils/game-checkers.js");
 
 function createSocket(server) {
@@ -148,9 +150,16 @@ function createSocket(server) {
         })
       ) {
         const gameId = data.gameId;
-        const gameState = data.gameState;
-        let newCoord = AI0.computeMove(gameState);
+
+        // @arol90 c'est quoi cette merde
+        // const gameState = data.gameState;
+        // let newCoord = AI0.computeMove(gameState);
+        // gameState.playerspositions[1] = newCoord;
+
+        // Tiens voilà mieux
+        let newCoord = getNextMoveToFollowShortestPath(gameState, 2);
         gameState.playerspositions[1] = newCoord;
+
         const db = getDB();
         const games = db.collection("games");
 
@@ -274,17 +283,14 @@ function createSocket(server) {
       } else if (gameState.difficulty === 1) {
         newCoord = AI1.computeMove(gameState, 2);
       } else if (gameState.difficulty === 2) {
-        try {
-          newCoord = AI2.computeMove(gameState, 2);
-        } catch (e) {
-          console.log(e);
-        }
+        newCoord = AI2.computeMove(gameState, 2);
       } else {
         throw new Error("Invalid difficulty");
       }
       let endTime = performance.now();
       let elapsedTime = endTime - startTime;
-      console.log(`Le temps écoulé: ${Math.round(elapsedTime)} millisecondes`);
+      console.log("AI played", newCoord);
+      console.log(`Time elapsed: ${Math.round(elapsedTime)} millisecondes`);
       gameState.playerspositions[1] = newCoord;
       const db = getDB();
       const games = db.collection("games");

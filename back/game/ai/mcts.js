@@ -3,9 +3,10 @@ const {
   cloneGameState,
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
-  getPossibleMoves,
-  getPossibleWalls,
   applyMove,
+  getNextMoveToFollowShortestPath,
+  canWin,
+  areGoalsInsidePath,
 } = require("../utils/game-checkers.js");
 
 let p1goals = [
@@ -34,16 +35,6 @@ let p2goals = [
 
 function selectRandom(array) {
   return array[Math.floor(Math.random() * array.length)];
-}
-
-function getNextMoveToFollowShortestPath(gameState, player) {
-  const playerPosition = gameState.playerspositions[player - 1];
-  const playerGoals = player === 1 ? p1goals : p2goals;
-  const shortestPath = getShortestPath(playerPosition, playerGoals, gameState);
-  if (shortestPath.length < 1) {
-    return playerPosition;
-  }
-  return shortestPath[1];
 }
 
 function heuristicSelect(moves, gameState, player) {
@@ -216,13 +207,27 @@ class Node {
 }
 
 function computeMove(gameState, player) {
+  let aiPlayer = player;
+  let aiPath = getShortestPath(
+    gameState.playerspositions[aiPlayer - 1],
+    aiPlayer === 1 ? p1goals : p2goals,
+    gameState,
+  );
+
   if (
-    checkWin(gameState, player) ||
-    checkWin(gameState, player === 1 ? 2 : 1)
+    aiPath.length <= 2 &&
+    areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
   ) {
-    let path = getShortestPath(gameState, player);
-    if (path.length > 1) return path[1];
-    return gameState.playerspositions[player - 1];
+    console.log("MCTS can win!");
+    return aiPath[aiPath.length - 1];
+  }
+
+  let aiWalls = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
+  if (aiWalls === 0) {
+    console.log(
+      "MCTS has no wall left and will just follow the shortest path.",
+    );
+    return aiPath[1];
   }
 
   let root = new Node(null, null, gameState, player);
