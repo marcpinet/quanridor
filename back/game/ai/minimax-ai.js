@@ -249,7 +249,7 @@ function areGoalsInsidePath(goals, path) {
 }
 
 function computeMove(gameState, player) {
-  let depth = player % 2 === 0 ? 2 : 3;
+  let depth = 2;
   let aiPlayer = player;
   let aiPath = getShortestPath(
     gameState.playerspositions[aiPlayer - 1],
