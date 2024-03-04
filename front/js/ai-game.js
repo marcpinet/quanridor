@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.emit("gameId", {
       gameId: gameId,
       token: localStorage.getItem("token"),
+      difficulty: difficulty,
     });
     socket.on("retrieveGame", (game) => {
       console.log(game.playerspositions);
