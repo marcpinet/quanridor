@@ -1,5 +1,3 @@
-const PriorityQueue = require("./priorityqueue");
-
 let p1goals = [
   [0, 0],
   [1, 0],
@@ -23,40 +21,79 @@ let p2goals = [
   [8, 8],
 ];
 
-function getPossibleMoves(gameState, pos) {
+function getPossibleMoves(gameState, pos, player) {
   let possibleMoves = [];
-  let p1_coord = gameState.playerspositions[0];
-  let p2_coord = gameState.playerspositions[1];
+  let tmp = gameState.playerspositions[player - 1];
+  gameState.playerspositions[player - 1] = pos;
 
-  for (let coord of getPlayerNeighbour(pos)) {
-    if (
-      isLegal(
-        pos,
-        coord,
-        gameState.vwalls,
-        gameState.hwalls,
-        gameState.playerspositions[0],
-        gameState.playerspositions[1],
-      )
-    ) {
-      possibleMoves.push(coord);
-    }
-  }
+  // Check if moving down is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0], pos[1] + 1],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0], pos[1] + 1]);
 
+  // Check if moving left is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0] - 1, pos[1]],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0] - 1, pos[1]]);
+
+  // Check if moving right is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0] + 1, pos[1]],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0] + 1, pos[1]]);
+
+  // Check if moving up is possible.
+  if (
+    isLegal(
+      pos,
+      [pos[0], pos[1] - 1],
+      gameState.vwalls,
+      gameState.hwalls,
+      gameState.playerspositions[0],
+      gameState.playerspositions[1],
+    )
+  )
+    possibleMoves.push([pos[0], pos[1] - 1]);
+
+  // Check if jumping is possible.
   let jump_coord = canJump(
     pos,
-    p1_coord,
-    p2_coord,
+    gameState.playerspositions[0],
+    gameState.playerspositions[1],
     gameState.vwalls,
     gameState.hwalls,
   );
+  if (jump_coord.length > 0) possibleMoves.push(jump_coord);
 
-  if (jump_coord.length > 0) {
-    possibleMoves.push(jump_coord);
-  }
+  // Remove current position from possible moves
   possibleMoves = possibleMoves.filter((move) => {
     return move[0] !== pos[0] || move[1] !== pos[1];
   });
+
+  gameState.playerspositions[player - 1] = tmp;
 
   return possibleMoves;
 }
@@ -70,7 +107,7 @@ function checkGameEnd(gameState) {
 
 function getPossibleMovesAndStrategicWalls(gameState, player) {
   let pos = gameState.playerspositions[player - 1];
-  let possibleMoves = getPossibleMoves(gameState, pos);
+  let possibleMoves = getPossibleMoves(gameState, pos, player);
   let possibleWalls = getStrategicWalls(gameState, player);
 
   return { possibleMoves, possibleWalls };
@@ -141,11 +178,13 @@ function getStrategicWalls(gameState, player) {
     gameState.playerspositions[player - 1],
     playerGoals,
     gameStateCopy,
+    player,
   );
   const opponentPath = getShortestPath(
     gameState.playerspositions[1 - (player - 1)],
     opponentGoals,
     gameStateCopy,
+    player === 1 ? 2 : 1,
   );
   // Keep only walls around the opponent's current position and not too close to the goals or the player
   possibleWalls = possibleWalls.filter((wall) => {
@@ -161,11 +200,13 @@ function getStrategicWalls(gameState, player) {
       gameStateCopy.playerspositions[player - 1],
       playerGoals,
       gameStateCopy,
+      player,
     );
     const newOpponentPath = getShortestPath(
       gameStateCopy.playerspositions[1 - (player - 1)],
       opponentGoals,
       gameStateCopy,
+      player === 1 ? 2 : 1,
     );
 
     // Remove the temporary wall
@@ -186,7 +227,7 @@ function getStrategicWalls(gameState, player) {
 }
 
 function cloneGameState(gameState) {
-  return {
+  let copy = {
     playerspositions: gameState.playerspositions.map((pos) => [...pos]),
     p1walls: gameState.p1walls,
     p2walls: gameState.p2walls,
@@ -194,10 +235,15 @@ function cloneGameState(gameState) {
     hwalls: gameState.hwalls.map((wall) => [...wall]),
     turn: gameState.turn,
     winner: gameState.winner,
-    board_visibility: gameState.board_visibility.map((innerArray) => [
-      ...innerArray,
-    ]),
   };
+
+  if (gameState.board_visibility) {
+    copy.board_visibility = gameState.board_visibility.map((innerArray) => [
+      ...innerArray,
+    ]);
+  }
+
+  return copy;
 }
 
 function isLegal(
@@ -342,7 +388,12 @@ function canJump(coord, p1coord, p2coord, v_walls, h_walls) {
 function canWin(gameState, player) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const playerPosition = gameState.playerspositions[player - 1];
-  let playerPath = getShortestPath(playerPosition, playerGoals, gameState);
+  let playerPath = getShortestPath(
+    playerPosition,
+    playerGoals,
+    gameState,
+    player,
+  );
   return playerPath.length <= 2;
 }
 
@@ -406,7 +457,7 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 }
 
 // BFS
-function getShortestPath(start, goals, gameState) {
+function getShortestPath(start, goals, gameState, player) {
   let queue = []; // Utiliser une file d'attente pour gérer les nœuds à explorer
   let visited = new Set(); // Garde une trace des positions déjà visitées
   let cameFrom = new Map(); // Trace le chemin parcouru
@@ -434,7 +485,7 @@ function getShortestPath(start, goals, gameState) {
       }
     }
 
-    let possibleMoves = getPossibleMoves(gameState, current);
+    let possibleMoves = getPossibleMoves(gameState, current, player);
 
     for (let neighbor of possibleMoves) {
       let neighborKey = neighbor.join(",");

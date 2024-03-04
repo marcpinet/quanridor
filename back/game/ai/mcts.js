@@ -48,11 +48,13 @@ function heuristicSelect(moves, gameState, player) {
     playerPosition,
     playerGoals,
     gameState,
+    player,
   ).length;
   const opponentPathLength = getShortestPath(
     opponentPosition,
     opponentGoals,
     gameState,
+    player === 1 ? 2 : 1,
   ).length;
 
   // Filter moves based on the opponent's proximity to the goal compared to the player.
@@ -75,11 +77,13 @@ function heuristicSelect(moves, gameState, player) {
       newState.playerspositions[player - 1],
       playerGoals,
       newState,
+      player,
     ).length;
     const newOpponentPathLength = getShortestPath(
       newState.playerspositions[player === 1 ? 1 : 0],
       opponentGoals,
       newState,
+      player === 1 ? 2 : 1,
     ).length;
 
     // Define the scores based on path lengths.
@@ -98,32 +102,6 @@ function heuristicSelect(moves, gameState, player) {
 
   // Fallback to random selection if no heuristic-based move is found among the filtered moves.
   return bestMove || getNextMoveToFollowShortestPath(gameState, player);
-}
-
-function filterMoves(moves, gameState, player) {
-  // Filter moves based on the opponent's proximity to the goal compared to the player.
-  const playerGoals = player === 1 ? p1goals : p2goals;
-  const opponentGoals = player === 1 ? p2goals : p1goals;
-  const playerPosition = gameState.playerspositions[player - 1];
-  const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
-
-  const playerPathLength = getShortestPath(
-    playerPosition,
-    playerGoals,
-    gameState,
-  ).length;
-  const opponentPathLength = getShortestPath(
-    opponentPosition,
-    opponentGoals,
-    gameState,
-  ).length;
-
-  if (playerPathLength <= opponentPathLength) {
-    // If the player is not further from the goal than the opponent, remove wall moves.
-    return moves.filter((move) => move.length !== 3); // Assuming wall moves are represented by arrays of length 3.
-  }
-
-  return moves;
 }
 
 class Node {
@@ -212,6 +190,7 @@ function computeMove(gameState, player) {
     gameState.playerspositions[aiPlayer - 1],
     aiPlayer === 1 ? p1goals : p2goals,
     gameState,
+    aiPlayer,
   );
 
   if (

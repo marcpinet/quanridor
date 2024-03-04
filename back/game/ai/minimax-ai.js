@@ -68,7 +68,11 @@ function createUniqueKey(gameState, player) {
 }
 
 function determineDefaultMove(gameState, player) {
-  let possibleMoves = getPossibleMoves(gameState, player);
+  let possibleMoves = getPossibleMoves(
+    gameState,
+    gameState.playerspositions[player - 1],
+    player,
+  );
   if (possibleMoves.length > 0)
     return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
   let possibleWalls = getPossibleWalls(gameState, player);
@@ -272,7 +276,11 @@ function computeMove(gameState, player) {
     console.log(
       "Minimax returned null or undefined move, checking for default...",
     );
-    let possibleMoves = getPossibleMoves(gameState, player);
+    let possibleMoves = getPossibleMoves(
+      gameState,
+      gameState.playerspositions[player - 1],
+      player,
+    );
     if (possibleMoves.length > 0) {
       console.log("Minimax found a default move.");
       return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
