@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       token: localStorage.getItem("token"),
     });
     socket.on("retrieveGame", (game) => {
+      console.log(game.playerspositions);
       // Check if game has ended
       if (game.status === 2) {
         alert(
@@ -102,12 +103,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
       player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
-
       initializeGame(game);
-      isPlayer1Placed = true;
-      drawBoard();
-      canvas.removeEventListener("mousemove", handleMouseOverCanvas);
-      playing = true;
+      if (p1_coord[0] != -1) {
+        isPlayer1Placed = true;
+        drawBoard();
+        canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+        playing = true;
+      }
     });
   } else {
     socket.emit("createGameAI", {

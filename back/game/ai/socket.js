@@ -58,6 +58,7 @@ function createSocket(server) {
         _id: new ObjectId(result.insertedId),
       });
 
+      console.log(game.playerspositions);
       // Get users elo
       const userElo = user.elo;
       const aiElo = 450 + 450 * data.difficulty;

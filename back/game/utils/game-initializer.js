@@ -5,7 +5,7 @@ function initializeGame() {
     author: null,
     players: [null, null],
     playerspositions: [
-      [4, 8],
+      [-1, -1],
       [4, 0],
     ],
     status: 0,
