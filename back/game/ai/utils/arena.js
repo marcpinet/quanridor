@@ -1,6 +1,6 @@
-const AI0 = require("../random-ai.js");
-const AI1 = require("../mcts.js");
-const AI2 = require("../minimax-ai.js");
+const Random = require("../random-ai.js");
+const Minimax = require("../minimax-ai.js");
+const MCTS = require("../mcts.js");
 
 const { initializeGame } = require("../../utils/game-initializer.js");
 const { applyMove, checkWin } = require("../../utils/game-checkers.js");
@@ -18,11 +18,11 @@ function simulateGameBetween2AI() {
     let move;
     let startTime = performance.now();
     if (game.turn % 2 === 0) {
-      move = AI2.computeMove(game, 1);
+      move = Minimax.computeMove(game, 1);
       console.log("Player1 played", move);
       game = applyMove(game, move, 1);
     } else {
-      move = AI0.computeMove(game, 2);
+      move = MCTS.computeMove(game, 2);
       console.log("Player2 played", move);
       game = applyMove(game, move, 2);
     }

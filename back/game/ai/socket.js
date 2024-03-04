@@ -1,8 +1,8 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
-const AI0 = require("./random-ai.js");
-const AI1 = require("./mcts.js");
-const AI2 = require("./minimax-ai.js");
+const Random = require("./random-ai.js");
+const Minimax = require("./minimax-ai.js");
+const MCTS = require("./mcts.js");
 const { getDB } = require("../../query-managers/db.js");
 const { initializeGame } = require("../utils/game-initializer.js");
 const { verifyToken } = require("../../utils/jwt-utils.js");
@@ -153,7 +153,7 @@ function createSocket(server) {
 
         // @arol90 c'est quoi cette merde
         // const gameState = data.gameState;
-        // let newCoord = AI0.computeMove(gameState);
+        // let newCoord = Random.computeMove(gameState);
         // gameState.playerspositions[1] = newCoord;
 
         // Tiens voilà mieux
@@ -279,11 +279,11 @@ function createSocket(server) {
       let newCoord;
       let startTime = performance.now();
       if (gameState.difficulty === 0) {
-        newCoord = AI0.computeMove(gameState);
+        newCoord = Random.computeMove(gameState);
       } else if (gameState.difficulty === 1) {
-        newCoord = AI1.computeMove(gameState, 2);
+        newCoord = Minimax.computeMove(gameState, 2);
       } else if (gameState.difficulty === 2) {
-        newCoord = AI2.computeMove(gameState, 2);
+        newCoord = MCTS.computeMove(gameState, 2);
       } else {
         throw new Error("Invalid difficulty");
       }
