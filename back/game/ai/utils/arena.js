@@ -8,6 +8,10 @@ const { applyMove, checkWin } = require("../../utils/game-checkers.js");
 function simulateGameBetween2AI() {
   let game = initializeGame();
 
+  // Tu clc arthur mdr
+  game.playerspositions[0] = [4, 8];
+  game.playerspositions[1] = [4, 0];
+
   console.log("Game started");
 
   while (true) {
@@ -15,11 +19,11 @@ function simulateGameBetween2AI() {
     let startTime = performance.now();
     if (game.turn % 2 === 0) {
       move = AI2.computeMove(game, 1);
-      console.log("AI1 played", move);
+      console.log("Player1 played", move);
       game = applyMove(game, move, 1);
     } else {
-      move = AI2.computeMove(game, 2);
-      console.log("AI2 played", move);
+      move = AI0.computeMove(game, 2);
+      console.log("Player2 played", move);
       game = applyMove(game, move, 2);
     }
     let endTime = performance.now();
@@ -31,7 +35,7 @@ function simulateGameBetween2AI() {
         p2_coord: game.playerspositions[1],
       })
     ) {
-      console.log("AI1 won");
+      console.log("Player1 won");
       break;
     } else if (
       checkWin(2, {
@@ -39,7 +43,7 @@ function simulateGameBetween2AI() {
         p2_coord: game.playerspositions[1],
       })
     ) {
-      console.log("AI2 won");
+      console.log("Player2 won");
       break;
     }
   }

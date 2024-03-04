@@ -296,6 +296,8 @@ function computeMove(gameState, player) {
   return move;
 }
 
+/*
+
 let ownPosition = [];
 let opponentPosition = [];
 let player;
@@ -419,5 +421,7 @@ exports.updateBoard = function (gameState) {
     resolve(true);
   });
 };
+
+*/
 
 module.exports = { computeMove };
