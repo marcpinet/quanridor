@@ -256,9 +256,15 @@ function computeMove(gameState, player) {
   }
 
   let aiWalls = getPossibleWalls(gameState, aiPlayer);
+  let aiMoves = getPossibleMoves(
+    gameState,
+    gameState.playerspositions[aiPlayer - 1],
+    aiPlayer,
+  );
   if (aiWalls.length === 0) {
     console.log("Minimax has no walls, following path...");
     if (aiPath.length > 1) return aiPath[1];
+    else if (aiMoves.length > 0) return aiMoves[0];
     else return gameState.playerspositions[aiPlayer - 1];
   }
 
