@@ -50,21 +50,14 @@ let p2goals = [
 ];
 
 function createUniqueKey(gameState, player) {
-  let p1_coord = gameState.playerspositions[0];
-  let p2_coord = gameState.playerspositions[1];
+  let p1_coord = gameState.playerspositions[0].join("");
+  let p2_coord = gameState.playerspositions[1].join("");
   let p1walls = gameState.p1walls;
   let p2walls = gameState.p2walls;
-  let vwalls = gameState.vwalls;
-  let hwalls = gameState.hwalls;
-  return JSON.stringify({
-    p1_coord: p1_coord,
-    p2_coord: p2_coord,
-    p1walls: p1walls,
-    p2walls: p2walls,
-    vwalls: vwalls,
-    hwalls: hwalls,
-    player: player,
-  });
+  let vwallsCount = gameState.vwalls.length;
+  let hwallsCount = gameState.hwalls.length;
+
+  return `${p1_coord}${p2_coord}${p1walls}${p2walls}${vwallsCount}${hwallsCount}${player}`;
 }
 
 function determineDefaultMove(gameState, player) {
@@ -377,7 +370,6 @@ exports.nextMove = function (gameState) {
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
         },
-        player,
       );
       if (shortestPath.length == 0) {
         move = {

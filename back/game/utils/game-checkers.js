@@ -600,7 +600,12 @@ function hasAtteignedGoal(playerPos, goals) {
 function getNextMoveToFollowShortestPath(gameState, player) {
   const playerPosition = gameState.playerspositions[player - 1];
   const playerGoals = player === 1 ? p1goals : p2goals;
-  const shortestPath = getShortestPath(playerPosition, playerGoals, gameState);
+  const shortestPath = getShortestPath(
+    playerPosition,
+    playerGoals,
+    gameState,
+    player,
+  );
   if (shortestPath.length < 1) {
     return playerPosition;
   }
