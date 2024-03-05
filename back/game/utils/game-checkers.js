@@ -69,44 +69,12 @@ function getPossibleMoves(gameState, pos, player) {
   return possibleMoves;
 }
 
-function checkGameEnd(gameState) {
-  return (
-    gameState.playerspositions[0][1] === 0 ||
-    gameState.playerspositions[1][1] === 8
-  );
-}
-
 function getPossibleMovesAndStrategicWalls(gameState, player) {
   let pos = gameState.playerspositions[player - 1];
   let possibleMoves = getPossibleMoves(gameState, pos, player);
   let possibleWalls = getStrategicWalls(gameState, player);
 
   return { possibleMoves, possibleWalls };
-}
-
-function getAllWallsNoMatterIfPossible(gameState, player) {
-  let possibleWalls = [];
-  let wallsLeft = player === 1 ? gameState.p1walls : gameState.p2walls;
-
-  if (wallsLeft === 0) {
-    return [];
-  }
-
-  // Check if placing a vertical wall is possible.
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      possibleWalls.push([i, j, "v"]);
-    }
-  }
-
-  // Check if placing a horizontal wall is possible.
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      possibleWalls.push([i, j, "h"]);
-    }
-  }
-
-  return possibleWalls;
 }
 
 function getPossibleWalls(gameState, player) {
@@ -161,7 +129,7 @@ function getPossibleWalls(gameState, player) {
 }
 
 function getStrategicWalls(gameState, player) {
-  let possibleWalls = getAllWallsNoMatterIfPossible(gameState, player);
+  let possibleWalls = getPossibleWalls(gameState, player);
 
   if (possibleWalls.length === 0) {
     return [];
@@ -216,21 +184,6 @@ function getStrategicWalls(gameState, player) {
     return (
       newOpponentPath.length > opponentPath.length &&
       newPlayerPath.length <= playerPath.length + 2
-    );
-  });
-
-  // Only keep legal walls
-  possibleWalls = possibleWalls.filter((wall) => {
-    return isWallLegal(
-      player,
-      [wall[0], wall[1]],
-      wall[2],
-      gameState.p1walls,
-      gameState.p2walls,
-      gameState.vwalls,
-      gameState.hwalls,
-      gameState.playerspositions[0],
-      gameState.playerspositions[1],
     );
   });
 
