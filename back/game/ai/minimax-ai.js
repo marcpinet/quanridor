@@ -362,6 +362,7 @@ exports.nextMove = function (gameState) {
           hwalls: walls.hwalls,
           vwalls: walls.vwalls,
         },
+        player,
       );
       if (shortestPath.length == 0) {
         move = {
