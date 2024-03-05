@@ -185,22 +185,14 @@ function evaluate(gameState, player, depthPenalty) {
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
 
-  if (canWin(gameState, player)) return 10000000000 - depthPenalty;
-  if (canWin(gameState, player === 1 ? 2 : 1))
-    return -10000000000 + depthPenalty;
-
-  let playerPath = getShortestPath(
-    playerPosition,
-    playerGoals,
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  if (canWinPlayer) return 10000000000 - depthPenalty;
+  let opponent = player === 1 ? 2 : 1;
+  let { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
-    player,
+    opponent,
   );
-  let opponentPath = getShortestPath(
-    opponentPosition,
-    opponentGoals,
-    gameState,
-    player === 1 ? 2 : 1,
-  );
+  if (canWinOpponent) return -10000000000 + depthPenalty;
 
   if (
     playerPath.length === 0 &&

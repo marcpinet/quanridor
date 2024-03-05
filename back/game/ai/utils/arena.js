@@ -22,7 +22,7 @@ function simulateGameBetween2AI() {
       console.log("Player1 played", move);
       game = applyMove(game, move, 1);
     } else {
-      move = MCTS.computeMove(game, 2);
+      move = Minimax.computeMove(game, 2);
       console.log("Player2 played", move);
       game = applyMove(game, move, 2);
     }
