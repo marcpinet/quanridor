@@ -21,6 +21,8 @@ let p2goals = [
   [8, 8],
 ];
 
+const pathCache = new Map();
+
 function getPossibleMoves(gameState, pos, player) {
   let possibleMoves = [];
   let tmp = gameState.playerspositions[player - 1];
@@ -422,11 +424,17 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
 
 // BFS
 function getShortestPath(start, goals, gameState, player) {
+  const startKey = `${start.join(",")}|${goals.map((goal) => goal.join(",")).join(",")}|${gameState.vwalls.map((wall) => wall.join(",")).join(",")}|${gameState.hwalls.map((wall) => wall.join(",")).join(",")}|${player}`;
+
+  if (pathCache.has(startKey)) {
+    return pathCache.get(startKey);
+  }
+
   let queue = []; // Utiliser une file d'attente pour gérer les nœuds à explorer
   let visited = new Set(); // Garde une trace des positions déjà visitées
   let cameFrom = new Map(); // Trace le chemin parcouru
-  let startKey = start.join(",");
-  visited.add(startKey);
+  let startKey2 = start.join(",");
+  visited.add(startKey2);
   queue.push(start);
 
   // Fonction pour reconstruire le chemin une fois l'objectif atteint
@@ -436,6 +444,7 @@ function getShortestPath(start, goals, gameState, player) {
       current = cameFrom.get(current.join(","));
       totalPath.unshift(current);
     }
+    pathCache.set(startKey, totalPath);
     return totalPath;
   }
 
