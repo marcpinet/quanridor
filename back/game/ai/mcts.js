@@ -210,7 +210,7 @@ function computeMove(gameState, player) {
   }
 
   let root = new Node(null, null, gameState, player);
-  let iterations = 10; // Default value for the number of iterations, can be changed to increase the AI's strength (similar to depth in minimax).
+  let iterations = 50; // Default value for the number of iterations, can be changed to increase the AI's strength (similar to depth in minimax).
 
   for (let i = 0; i < iterations; i++) {
     let node = root;

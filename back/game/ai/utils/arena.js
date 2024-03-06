@@ -22,7 +22,7 @@ function simulateGameBetween2AI() {
     let move;
     let startTime = performance.now();
     if (game.turn % 2 === 0) {
-      move = Minimax.computeMove(game, 1);
+      move = MCTS.computeMove(game, 1);
       console.log("Player1 played", move);
       game = applyMove(game, move, 1);
       totalTimeP1 += performance.now() - startTime;
