@@ -92,7 +92,7 @@ function getPossibleWalls(gameState, player) {
     for (let j = 0; j < 8; j++) {
       if (
         isWallLegal(
-          2,
+          player,
           [i, j],
           "v",
           gameState.p1walls,
@@ -112,7 +112,7 @@ function getPossibleWalls(gameState, player) {
     for (let j = 0; j < 8; j++) {
       if (
         isWallLegal(
-          2,
+          player,
           [i, j],
           "h",
           gameState.p1walls,
