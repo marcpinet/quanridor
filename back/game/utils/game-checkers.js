@@ -139,47 +139,46 @@ function getStrategicWalls(gameState, player) {
 
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
-  const gameStateCopy = cloneGameState(gameState);
   const playerPath = getShortestPath(
     gameState.playerspositions[player - 1],
     playerGoals,
-    gameStateCopy,
+    gameState,
     player,
   );
   const opponentPath = getShortestPath(
     gameState.playerspositions[1 - (player - 1)],
     opponentGoals,
-    gameStateCopy,
+    gameState,
     player === 1 ? 2 : 1,
   );
   // Keep only walls around the opponent's current position and not too close to the goals or the player
   possibleWalls = possibleWalls.filter((wall) => {
     // Apply the wall temporarily to the game state
     if (wall[2] === "v") {
-      gameStateCopy.vwalls.push([wall[0], wall[1]]);
+      gameState.vwalls.push([wall[0], wall[1]]);
     } else {
-      gameStateCopy.hwalls.push([wall[0], wall[1]]);
+      gameState.hwalls.push([wall[0], wall[1]]);
     }
 
     // Calculate the new shortest paths for both players
     const newPlayerPath = getShortestPath(
-      gameStateCopy.playerspositions[player - 1],
+      gameState.playerspositions[player - 1],
       playerGoals,
-      gameStateCopy,
+      gameState,
       player,
     );
     const newOpponentPath = getShortestPath(
-      gameStateCopy.playerspositions[1 - (player - 1)],
+      gameState.playerspositions[1 - (player - 1)],
       opponentGoals,
-      gameStateCopy,
+      gameState,
       player === 1 ? 2 : 1,
     );
 
     // Remove the temporary wall
     if (wall[2] === "v") {
-      gameStateCopy.vwalls.pop();
+      gameState.vwalls.pop();
     } else {
-      gameStateCopy.hwalls.pop();
+      gameState.hwalls.pop();
     }
 
     // Keep the wall if it significantly lengthens the opponent's path without severely impacting the player's path
