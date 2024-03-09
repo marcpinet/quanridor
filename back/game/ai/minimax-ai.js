@@ -193,7 +193,6 @@ function evaluate(gameState, player, depthPenalty) {
   );
 
   if (canWinPlayer && !canWinOpponent) return 10000000000 - depthPenalty;
-  else if (canWinPlayer && canWinOpponent) return 5000000000 - depthPenalty;
   if (canWinOpponent) return -10000000000 + depthPenalty;
   if (
     playerPath.length === 0 &&
