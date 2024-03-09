@@ -184,16 +184,16 @@ function evaluate(gameState, player, depthPenalty) {
   const opponentGoals = player === 1 ? p2goals : p1goals;
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
+  const opponent = player === 1 ? 2 : 1;
 
   let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
-  if (canWinPlayer) return 10000000000 - depthPenalty;
-  let opponent = player === 1 ? 2 : 1;
   let { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
     opponent,
   );
-  if (canWinOpponent) return -10000000000 + depthPenalty;
 
+  if (canWinOpponent) return -10000000000 + depthPenalty;
+  if (canWinPlayer) return 10000000000 - depthPenalty;
   if (
     playerPath.length === 0 &&
     !hasAtteignedGoal(playerPosition, playerGoals)
@@ -225,14 +225,22 @@ function evaluate(gameState, player, depthPenalty) {
 function computeMove(gameState, player) {
   let depth = 2;
   let aiPlayer = player;
+  let opponent = player === 1 ? 2 : 1;
   let aiPath = getShortestPath(
     gameState.playerspositions[aiPlayer - 1],
     aiPlayer === 1 ? p1goals : p2goals,
     gameState,
     aiPlayer,
   );
+  let opponentPath = getShortestPath(
+    gameState.playerspositions[opponent - 1],
+    opponent === 1 ? p1goals : p2goals,
+    gameState,
+    opponent,
+  );
 
   if (
+    opponentPath.length > 2 &&
     aiPath.length <= 2 &&
     areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
   ) {
