@@ -192,8 +192,9 @@ function evaluate(gameState, player, depthPenalty) {
     opponent,
   );
 
+  if (canWinPlayer && !canWinOpponent) return 10000000000 - depthPenalty;
+  else if (canWinPlayer && canWinOpponent) return 5000000000 - depthPenalty;
   if (canWinOpponent) return -10000000000 + depthPenalty;
-  if (canWinPlayer) return 10000000000 - depthPenalty;
   if (
     playerPath.length === 0 &&
     !hasAtteignedGoal(playerPosition, playerGoals)
@@ -388,8 +389,8 @@ exports.nextMove = function (gameState) {
           player == 1
             ? [ownPosition, opponentPosition]
             : [opponentPosition, ownPosition],
-        p1walls: 10 - gameState.ownWalls.length,
-        p2walls: 10 - gameState.opponentWalls.length,
+        p1walls: 10 - (player == 1 ? gameState.ownWalls.length : gameState.opponentWalls.length),
+        p2walls: 10 - (player == 2 ? gameState.ownWalls.length : gameState.opponentWalls.length),
         hwalls: walls.hwalls,
         vwalls: walls.vwalls,
         board_visibility: [],
