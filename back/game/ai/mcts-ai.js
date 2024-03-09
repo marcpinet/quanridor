@@ -186,14 +186,22 @@ class Node {
 
 function computeMove(gameState, player) {
   let aiPlayer = player;
+  let opponent = player === 1 ? 2 : 1;
   let aiPath = getShortestPath(
     gameState.playerspositions[aiPlayer - 1],
     aiPlayer === 1 ? p1goals : p2goals,
     gameState,
     aiPlayer,
   );
+  let opponentPath = getShortestPath(
+    gameState.playerspositions[opponent - 1],
+    opponent === 1 ? p1goals : p2goals,
+    gameState,
+    opponent,
+  );
 
   if (
+    opponentPath.length > 2 &&
     aiPath.length <= 2 &&
     areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
   ) {
