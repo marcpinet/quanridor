@@ -10,22 +10,6 @@ const {
   canWin,
 } = require("../utils/game-checkers.js");
 
-class TranspositionTable {
-  constructor() {
-    this.table = {};
-  }
-
-  set(key, { value, move }) {
-    this.table[key] = { value, move };
-  }
-
-  get(key) {
-    return this.table[key];
-  }
-}
-
-let transpositionTable = new TranspositionTable();
-
 let p1goals = [
   [0, 0],
   [1, 0],
@@ -48,6 +32,22 @@ let p2goals = [
   [7, 8],
   [8, 8],
 ];
+
+class TranspositionTable {
+  constructor() {
+    this.table = {};
+  }
+
+  set(key, { value, move }) {
+    this.table[key] = { value, move };
+  }
+
+  get(key) {
+    return this.table[key];
+  }
+}
+
+let transpositionTable = new TranspositionTable();
 
 function createUniqueKey(gameState, player) {
   let p1_coord = gameState.playerspositions[0].join("");
