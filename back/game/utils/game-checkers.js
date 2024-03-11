@@ -559,4 +559,5 @@ module.exports = {
   hasAtteignedGoal,
   getNextMoveToFollowShortestPath,
   areGoalsInsidePath,
+  getPlayerNeighbour,
 };

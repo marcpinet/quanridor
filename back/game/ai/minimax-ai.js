@@ -1,5 +1,5 @@
 const {
-  hasAtteignedGoal,
+  getPlayerNeighbour,
   checkWin,
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
@@ -177,11 +177,11 @@ function evaluate(gameState, player, depthPenalty) {
     opponent,
   );
 
-  if (canWinPlayer && !canWinOpponent) {
-    return 10000000000 - depthPenalty * 100;
+  if (canWinPlayer) {
+    return 1000000 - depthPenalty;
   }
   if (canWinOpponent) {
-    return -10000000000 + depthPenalty * 100;
+    return -1000000 + depthPenalty;
   }
 
   let score = 0;
@@ -189,13 +189,28 @@ function evaluate(gameState, player, depthPenalty) {
   // Distance to the goal
   const playerDistanceToGoal = playerPath.length;
   const opponentDistanceToGoal = opponentPath.length;
-  score += (opponentDistanceToGoal - playerDistanceToGoal) * 10;
+  score += (opponentDistanceToGoal - playerDistanceToGoal) * 100;
+
+  // Favoriser les positions proches de la ligne d'arrivée
+  const playerVerticalDistance = Math.min(...playerPath.map(([x, y]) => y));
+  const opponentVerticalDistance = Math.min(
+    ...opponentPath.map(([x, y]) => 8 - y),
+  );
+  score += (opponentVerticalDistance - playerVerticalDistance) * 50;
 
   // Wall placement
   const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
   const opponentWalls = player === 1 ? gameState.p2walls : gameState.p1walls;
   const wallsDifference = playerWalls - opponentWalls;
-  score += wallsDifference * 5;
+  score += wallsDifference * 30;
+
+  // Pénaliser le gaspillage de murs
+  const playerWallsPlaced = 10 - playerWalls;
+  const opponentWallsPlaced = 10 - opponentWalls;
+  const excessWalls = playerWallsPlaced - opponentWallsPlaced;
+  if (excessWalls > 2) {
+    score -= excessWalls * 50;
+  }
 
   // Mobility
   const playerMoves = getPossibleMoves(
@@ -208,15 +223,34 @@ function evaluate(gameState, player, depthPenalty) {
     opponentPosition,
     opponent,
   ).length;
-  score += (playerMoves - opponentMoves) * 3;
+  score += (playerMoves - opponentMoves) * 20;
+
+  // Bloquer l'adversaire
+  if (opponentDistanceToGoal <= 3) {
+    score -= (4 - opponentDistanceToGoal) * 200;
+  }
+
+  // Favoriser le placement de murs près de l'adversaire
+  const opponentNeighbors = getPlayerNeighbour(opponentPosition);
+  const wallsNearOpponent = opponentNeighbors.filter(
+    ([x, y]) =>
+      gameState.vwalls.some(
+        ([wx, wy]) => wx === x && (wy === y || wy === y - 1),
+      ) ||
+      gameState.hwalls.some(
+        ([wx, wy]) => wy === y && (wx === x || wx === x - 1),
+      ),
+  ).length;
+  score += wallsNearOpponent * 50;
 
   // Parity
   if (player === 2) {
-    score += 2;
+    score += 10;
   }
 
   return score;
 }
+
 function computeMove(gameState, player, depth = 2) {
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
@@ -235,28 +269,14 @@ function computeMove(gameState, player, depth = 2) {
     opponent,
   );
 
-  if (
-    opponentPath.length > 2 &&
-    aiPath.length <= 2 &&
-    areGoalsInsidePath(aiGoals, aiPath)
-  ) {
-    return aiPath[aiPath.length - 1];
+  if (aiPath.length <= 4 || opponentPath.length <= 4) {
+    depth = 4;
   }
 
-  const aiWalls = getPossibleWalls(gameState, aiPlayer);
-  const aiMoves = getPossibleMoves(
-    gameState,
-    gameState.playerspositions[aiPlayer - 1],
-    aiPlayer,
-  );
-  if (aiWalls.length === 0) {
-    if (aiPath.length > 1) {
-      return aiPath[1];
-    } else if (aiMoves.length > 0) {
-      return aiMoves[0];
-    } else {
-      return gameState.playerspositions[aiPlayer - 1];
-    }
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+
+  if (canWinPlayer) {
+    return playerPath[1];
   }
 
   const { move } = minimax(
@@ -268,6 +288,19 @@ function computeMove(gameState, player, depth = 2) {
     depth,
     player,
   );
+
+  if (move.length === 3) {
+    const gameStateAfterWall = applyMove(gameState, move, player);
+    const opponentPathAfterWall = getShortestPath(
+      gameStateAfterWall.playerspositions[opponent - 1],
+      opponentGoals,
+      gameStateAfterWall,
+      opponent,
+    );
+    if (opponentPathAfterWall.length > opponentPath.length + 2) {
+      return move;
+    }
+  }
 
   if (
     !move ||

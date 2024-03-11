@@ -195,34 +195,15 @@ function computeMove(
   const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
   const opponentGoals = opponent === 1 ? p1goals : p2goals;
 
-  const aiPath = getShortestPath(
-    gameState.playerspositions[aiPlayer - 1],
-    aiGoals,
-    gameState,
-    aiPlayer,
-  );
-  const opponentPath = getShortestPath(
-    gameState.playerspositions[opponent - 1],
-    opponentGoals,
-    gameState,
-    opponent,
-  );
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
 
-  if (
-    opponentPath.length > 2 &&
-    aiPath.length <= 2 &&
-    areGoalsInsidePath(aiGoals, aiPath)
-  ) {
-    return aiPath[aiPath.length - 1];
-  }
-
-  const aiWalls = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
-  if (aiWalls === 0) {
-    return aiPath[1];
+  if (canWinPlayer) {
+    return playerPath[1];
   }
 
   const root = new Node(null, null, gameState, player);
   let bestMove = null;
+  let bestWinRatio = -Infinity;
 
   for (let i = 0; i < iterations; i++) {
     if (Date.now() - startTime > timeLimit) {
@@ -245,23 +226,54 @@ function computeMove(
       node = node.addChild(move, state, player);
     }
 
+    // Expansion
+    if (node.untriedMoves.length > 0) {
+      const move = heuristicSelect(node.untriedMoves, state, player);
+      state = applyMove(state, move, player);
+      node = node.addChild(move, state, player);
+    }
+
     // Simulation
-    let outcome = 0;
-    if (transpositionTable.has(JSON.stringify(state))) {
-      outcome = transpositionTable.get(JSON.stringify(state));
-    } else {
-      outcome = node.simulate(player);
-      transpositionTable.set(JSON.stringify(state), outcome);
+    let simulationDepth = 0;
+    while (true) {
+      const { possibleMoves, possibleWalls } =
+        getPossibleMovesAndStrategicWalls(state, player);
+      const concatenatedMoves = possibleMoves.concat(possibleWalls);
+
+      if (concatenatedMoves.length === 0) break;
+
+      const move = heuristicSelect(concatenatedMoves, state, player);
+      state = applyMove(state, move, player);
+      player = player === 1 ? 2 : 1;
+
+      if (checkWin(state, aiPlayer)) {
+        outcome = 1;
+        break;
+      }
+      if (checkWin(state, opponent)) {
+        outcome = -1;
+        break;
+      }
+      if (simulationDepth >= 10) {
+        outcome = 0;
+        break;
+      }
+
+      simulationDepth++;
     }
 
     // Backpropagation
     while (node !== null) {
-      node.update(outcome, player);
+      node.update(outcome);
       node = node.parent;
     }
 
     // Update best move
-    bestMove = root.bestChild(0).move;
+    const winRatio = root.wins / root.visits;
+    if (winRatio > bestWinRatio) {
+      bestMove = root.bestChild().move;
+      bestWinRatio = winRatio;
+    }
   }
 
   return bestMove;
