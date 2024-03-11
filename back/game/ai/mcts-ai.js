@@ -55,15 +55,10 @@ function heuristicSelect(moves, gameState, player) {
     player === 1 ? 2 : 1,
   ).length;
 
-  let filteredMoves = moves;
-  if (playerPathLength <= opponentPathLength) {
-    filteredMoves = moves.filter((move) => move.length !== 3);
-  }
-
   let bestMove = null;
   let highestScore = -Infinity;
 
-  for (let move of filteredMoves) {
+  for (let move of moves) {
     const newState = applyMove(gameState, move, player);
     if (!newState) continue;
 
@@ -83,7 +78,12 @@ function heuristicSelect(moves, gameState, player) {
     const pathShorteningScore = playerPathLength - newPlayerPathLength;
     const opponentHindranceScore = newOpponentPathLength - opponentPathLength;
 
-    const score = pathShorteningScore * 2.0 + opponentHindranceScore * 1.5;
+    // Augmenter le poids du score d'entrave de l'adversaire s'il est proche de la ligne d'arrivée
+    const opponentHindranceWeight = opponentPathLength <= 3 ? 3.0 : 1.5;
+
+    const score =
+      pathShorteningScore * 2.0 +
+      opponentHindranceScore * opponentHindranceWeight;
 
     if (score > highestScore) {
       highestScore = score;
@@ -181,8 +181,15 @@ class Node {
   }
 }
 
-function computeMove(gameState, player, iterations = 70, timeLimit = 4000) {
+function computeMove(
+  gameState,
+  player,
+  iterations = 1000,
+  timeLimit = 500,
+  explorationParam = Math.sqrt(2),
+) {
   const startTime = Date.now();
+  const transpositionTable = new Map();
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
   const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
@@ -227,8 +234,8 @@ function computeMove(gameState, player, iterations = 70, timeLimit = 4000) {
 
     // Selection
     while (node.untriedMoves.length === 0 && node.children.length > 0) {
-      node = node.selectChild();
-      applyMove(state, node.move);
+      node = node.selectChild(explorationParam);
+      state = applyMove(state, node.move, player);
     }
 
     // Expansion
@@ -239,7 +246,13 @@ function computeMove(gameState, player, iterations = 70, timeLimit = 4000) {
     }
 
     // Simulation
-    const outcome = node.simulate(player);
+    let outcome = 0;
+    if (transpositionTable.has(JSON.stringify(state))) {
+      outcome = transpositionTable.get(JSON.stringify(state));
+    } else {
+      outcome = node.simulate(player);
+      transpositionTable.set(JSON.stringify(state), outcome);
+    }
 
     // Backpropagation
     while (node !== null) {
@@ -248,7 +261,7 @@ function computeMove(gameState, player, iterations = 70, timeLimit = 4000) {
     }
 
     // Update best move
-    bestMove = root.bestChild().move;
+    bestMove = root.bestChild(0).move;
   }
 
   return bestMove;
