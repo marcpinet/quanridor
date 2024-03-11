@@ -191,56 +191,49 @@ function isLegal(
   p1_coord,
   p2_coord,
 ) {
-  const [x, y] = new_coord;
+  let x = new_coord[0];
+  let y = new_coord[1];
   if (x < 0 || x > 8 || y < 0 || y > 8) return false;
   if (
-    (x === p1_coord[0] && y === p1_coord[1]) ||
-    (x === p2_coord[0] && y === p2_coord[1])
+    (x == p1_coord[0] && y == p1_coord[1]) ||
+    (x == p2_coord[0] && y == p2_coord[1])
   )
     return false;
   if (Math.abs(x - current_coord[0]) > 1 || Math.abs(y - current_coord[1]) > 1)
     return false;
   if (
-    Math.abs(x - current_coord[0]) === 1 &&
-    Math.abs(y - current_coord[1]) === 1
+    Math.abs(x - current_coord[0]) == 1 &&
+    Math.abs(y - current_coord[1]) == 1
   )
     return false;
-  if (
-    v_walls.some(
-      (wall) =>
-        wall[0] === current_coord[0] &&
-        (wall[1] === current_coord[1] || wall[1] === current_coord[1] - 1) &&
-        x - current_coord[0] === 1,
+  for (let wall of v_walls) {
+    if (
+      wall[0] == current_coord[0] &&
+      (wall[1] == current_coord[1] || wall[1] == current_coord[1] - 1) &&
+      x - current_coord[0] == 1
     )
-  )
-    return false;
-  if (
-    v_walls.some(
-      (wall) =>
-        wall[0] === current_coord[0] - 1 &&
-        (wall[1] === current_coord[1] || wall[1] === current_coord[1] - 1) &&
-        current_coord[0] - x === 1,
+      return false;
+    if (
+      wall[0] == current_coord[0] - 1 &&
+      (wall[1] == current_coord[1] || wall[1] == current_coord[1] - 1) &&
+      current_coord[0] - x == 1
     )
-  )
-    return false;
-  if (
-    h_walls.some(
-      (wall) =>
-        wall[1] === current_coord[1] &&
-        (wall[0] === current_coord[0] || wall[0] === current_coord[0] - 1) &&
-        y - current_coord[1] === 1,
+      return false;
+  }
+  for (let wall of h_walls) {
+    if (
+      wall[1] == current_coord[1] &&
+      (wall[0] == current_coord[0] || wall[0] == current_coord[0] - 1) &&
+      y - current_coord[1] == 1
     )
-  )
-    return false;
-  if (
-    h_walls.some(
-      (wall) =>
-        wall[1] === current_coord[1] - 1 &&
-        (wall[0] === current_coord[0] || wall[0] === current_coord[0] - 1) &&
-        current_coord[1] - y === 1,
+      return false;
+    if (
+      wall[1] == current_coord[1] - 1 &&
+      (wall[0] == current_coord[0] || wall[0] == current_coord[0] - 1) &&
+      current_coord[1] - y == 1
     )
-  )
-    return false;
+      return false;
+  }
   return true;
 }
 
@@ -251,27 +244,29 @@ function isInclude(array, coord) {
 }
 
 function canJump(coord, p1coord, p2coord, v_walls, h_walls) {
-  const p1_coord = [p1coord[0], p1coord[1]];
-  const p2_coord = [p2coord[0], p2coord[1]];
-
+  let temp;
+  let p1_coord = [p1coord[0], p1coord[1]];
+  let p2_coord = [p2coord[0], p2coord[1]];
   if (
-    Math.abs(p1_coord[0] - coord[0]) === 1 &&
-    p1_coord[1] === coord[1] &&
+    Math.abs(p1_coord[0] - coord[0]) == 1 &&
+    p1_coord[1] == coord[1] &&
     isLegal(
       p1_coord,
       [2 * p1_coord[0] - coord[0], coord[1]],
       v_walls,
       h_walls,
       p1_coord,
-      [9, 9],
+      p2_coord,
     )
   ) {
-    if (isLegal(p1_coord, p2_coord, v_walls, h_walls, p1_coord, [9, 9])) {
+    temp = [p2_coord[0], p2_coord[1]];
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
       return [2 * p1_coord[0] - coord[0], coord[1]];
     }
   } else if (
-    Math.abs(p2_coord[0] - coord[0]) === 1 &&
-    p2_coord[1] === coord[1] &&
+    Math.abs(p2_coord[0] - coord[0]) == 1 &&
+    p2_coord[1] == coord[1] &&
     isLegal(
       p2_coord,
       [2 * p2_coord[0] - coord[0], coord[1]],
@@ -281,37 +276,48 @@ function canJump(coord, p1coord, p2coord, v_walls, h_walls) {
       p2_coord,
     )
   ) {
-    if (isLegal(p1_coord, p2_coord, v_walls, h_walls, p1_coord, [9, 9])) {
+    temp = [p2_coord[0], p2_coord[1]];
+    p2_coord = [9, 9];
+    if (isLegal(p1_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p2_coord = [temp[0], temp[1]];
       return [2 * p2_coord[0] - coord[0], coord[1]];
     }
   } else if (
-    p1_coord[0] === coord[0] &&
-    Math.abs(p1_coord[1] - coord[1]) === 1 &&
+    p1_coord[0] == coord[0] &&
+    Math.abs(p1_coord[1] - coord[1]) == 1 &&
     isLegal(
       p1_coord,
       [coord[0], 2 * p1_coord[1] - coord[1]],
       v_walls,
       h_walls,
-      [9, 9],
+      p1_coord,
       p2_coord,
     )
   ) {
-    return [coord[0], 2 * p1_coord[1] - coord[1]];
+    temp = [p1_coord[0], p1_coord[1]];
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      p1_coord = [temp[0], temp[1]];
+      return [coord[0], 2 * p1_coord[1] - coord[1]];
+    }
   } else if (
-    p2_coord[0] === coord[0] &&
-    Math.abs(p2_coord[1] - coord[1]) === 1 &&
+    p2_coord[0] == coord[0] &&
+    Math.abs(p2_coord[1] - coord[1]) == 1 &&
     isLegal(
       p2_coord,
       [coord[0], 2 * p2_coord[1] - coord[1]],
       v_walls,
       h_walls,
-      [9, 9],
+      p1_coord,
       p2_coord,
     )
   ) {
-    return [coord[0], 2 * p2_coord[1] - coord[1]];
+    temp = [p1_coord[0], p1_coord[1]];
+    p1_coord = [9, 9];
+    if (isLegal(p2_coord, temp, v_walls, h_walls, p1_coord, p2_coord)) {
+      return [coord[0], 2 * p2_coord[1] - coord[1]];
+    }
   }
-
   return [];
 }
 
