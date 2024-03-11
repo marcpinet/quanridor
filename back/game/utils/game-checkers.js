@@ -504,7 +504,16 @@ function applyMove(gameState, move, player) {
 
   if (move.length === 3) {
     const wallsnum = player === 1 ? newGameState.p1walls : newGameState.p2walls;
-    if (wallsnum <= 0) return null;
+    if (wallsnum <= 0) {
+      console.error(
+        "Player",
+        player,
+        "tried to play",
+        move,
+        "but has no walls left",
+      );
+      return null;
+    }
 
     if (move[2] === "v") {
       newGameState.vwalls.push(move);

@@ -254,6 +254,7 @@ function evaluate(gameState, player, depthPenalty) {
 function computeMove(gameState, player, depth = 2) {
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
+  const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
   const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
   const opponentGoals = opponent === 1 ? p1goals : p2goals;
   const aiPath = getShortestPath(
@@ -274,8 +275,10 @@ function computeMove(gameState, player, depth = 2) {
   }
 
   let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  let { canWin: canWinOpponent } = canWin(gameState, opponent);
 
-  if (canWinPlayer) {
+  if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
+    console.log("Minimax follows path", playerPath);
     return playerPath[1];
   }
 

@@ -189,21 +189,24 @@ function computeMove(
   explorationParam = Math.sqrt(2),
 ) {
   const startTime = Date.now();
-  const transpositionTable = new Map();
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
-  const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
-  const opponentGoals = opponent === 1 ? p1goals : p2goals;
+  const playerWalls = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
+  const playerPosition = gameState.playerspositions[aiPlayer - 1];
+  const opponentPosition = gameState.playerspositions[opponent - 1];
 
-  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, aiPlayer);
+  let { canWin: canWinOpponent } = canWin(gameState, opponent);
 
-  if (canWinPlayer) {
+  if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
+    console.log("MCTS follows path", playerPath);
     return playerPath[1];
   }
 
   const root = new Node(null, null, gameState, player);
   let bestMove = null;
   let bestWinRatio = -Infinity;
+  let outcome = 0;
 
   for (let i = 0; i < iterations; i++) {
     if (Date.now() - startTime > timeLimit) {
@@ -213,17 +216,17 @@ function computeMove(
     let node = root;
     let state = cloneGameState(gameState);
 
+    if (state === null) {
+      break;
+    }
+
     // Selection
     while (node.untriedMoves.length === 0 && node.children.length > 0) {
       node = node.selectChild(explorationParam);
       state = applyMove(state, node.move, player);
-    }
-
-    // Expansion
-    if (node.untriedMoves.length > 0) {
-      const move = heuristicSelect(node.untriedMoves, state, player);
-      state = applyMove(state, move, player);
-      node = node.addChild(move, state, player);
+      if (state === null) {
+        break;
+      }
     }
 
     // Expansion
@@ -238,19 +241,40 @@ function computeMove(
     while (true) {
       const { possibleMoves, possibleWalls } =
         getPossibleMovesAndStrategicWalls(state, player);
-      const concatenatedMoves = possibleMoves.concat(possibleWalls);
+
+      // Vérifier si le joueur a encore des murs disponibles
+      const wallsLeft = player === 1 ? state.p1walls : state.p2walls;
+      const filteredWalls = wallsLeft > 0 ? possibleWalls : [];
+
+      const concatenatedMoves = possibleMoves.concat(filteredWalls);
 
       if (concatenatedMoves.length === 0) break;
 
       const move = heuristicSelect(concatenatedMoves, state, player);
-      state = applyMove(state, move, player);
+      const newState = applyMove(state, move, player);
+
+      if (newState === null) {
+        continue;
+      }
+
+      state = newState;
       player = player === 1 ? 2 : 1;
 
-      if (checkWin(state, aiPlayer)) {
+      if (
+        checkWin(state, {
+          p1_coord: playerPosition,
+          p2_coord: opponentPosition,
+        })
+      ) {
         outcome = 1;
         break;
       }
-      if (checkWin(state, opponent)) {
+      if (
+        checkWin(state, {
+          p1_coord: opponentPosition,
+          p2_coord: playerPosition,
+        })
+      ) {
         outcome = -1;
         break;
       }
