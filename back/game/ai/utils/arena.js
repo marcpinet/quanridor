@@ -5,10 +5,12 @@ const MCTS = require("../mcts-ai.js");
 const { initializeGame } = require("../../utils/game-initializer.js");
 const { applyMove, checkWin } = require("../../utils/game-checkers.js");
 
-function simulateGameBetween2AI() {
-  let game = initializeGame();
+let game = initializeGame();
 
-  // Tu clc arthur mdr
+function simulateGameBetween2AI() {
+  const playsAsPlayer1 = 1;
+  const playsAsPlayer2 = 2;
+
   game.playerspositions[0] = [4, 8];
   game.playerspositions[1] = [4, 0];
 
@@ -22,12 +24,12 @@ function simulateGameBetween2AI() {
     let move;
     let startTime = performance.now();
     if (game.turn % 2 === 0) {
-      move = Minimax.computeMove(game, 1);
+      move = Minimax.computeMove(game, playsAsPlayer1, 2);
       console.log("Player1 played", move);
       game = applyMove(game, move, 1);
       totalTimeP1 += performance.now() - startTime;
     } else {
-      move = MCTS.computeMove(game, 2);
+      move = MCTS.computeMove(game, playsAsPlayer2, 70);
       console.log("Player2 played", move);
       game = applyMove(game, move, 2);
       totalTimeP2 += performance.now() - startTime;
@@ -42,6 +44,9 @@ function simulateGameBetween2AI() {
         p2_coord: game.playerspositions[1],
       })
     ) {
+      console.log("\n");
+      console.log(game);
+      console.log("\n");
       console.log("Player1 won");
       break;
     } else if (
@@ -50,10 +55,14 @@ function simulateGameBetween2AI() {
         p2_coord: game.playerspositions[1],
       })
     ) {
+      console.log("\n");
+      console.log(game);
+      console.log("\n");
       console.log("Player2 won");
       break;
     }
   }
+
   console.log("Total time: ", Math.round(totalTime), "ms");
   console.log("Total time P1: ", Math.round(totalTimeP1), "ms");
   console.log("Total time P2: ", Math.round(totalTimeP2), "ms");
@@ -67,6 +76,7 @@ function simulateGameBetween2AI() {
     Math.round(totalTimeP2 / (game.turn / 2)),
     "ms",
   );
+  console.log("Turns: ", game.turn);
 }
 
 simulateGameBetween2AI();

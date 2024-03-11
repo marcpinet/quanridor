@@ -178,10 +178,10 @@ function evaluate(gameState, player, depthPenalty) {
   );
 
   if (canWinPlayer && !canWinOpponent) {
-    return Infinity - depthPenalty;
+    return 10000000000 - depthPenalty * 100;
   }
   if (canWinOpponent) {
-    return -Infinity + depthPenalty;
+    return -10000000000 + depthPenalty * 100;
   }
 
   let score = 0;
@@ -217,9 +217,7 @@ function evaluate(gameState, player, depthPenalty) {
 
   return score;
 }
-
-function computeMove(gameState, player) {
-  const depth = 2;
+function computeMove(gameState, player, depth = 2) {
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
   const aiGoals = aiPlayer === 1 ? p1goals : p2goals;

@@ -9,7 +9,7 @@ const {
   areGoalsInsidePath,
 } = require("../utils/game-checkers.js");
 
-let p1goals = [
+const p1goals = [
   [0, 0],
   [1, 0],
   [2, 0],
@@ -20,8 +20,7 @@ let p1goals = [
   [7, 0],
   [8, 0],
 ];
-
-let p2goals = [
+const p2goals = [
   [0, 8],
   [1, 8],
   [2, 8],
@@ -43,7 +42,6 @@ function heuristicSelect(moves, gameState, player) {
   const playerPosition = gameState.playerspositions[player - 1];
   const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
 
-  // Get the current shortest path to the goal for both players.
   const playerPathLength = getShortestPath(
     playerPosition,
     playerGoals,
@@ -57,22 +55,18 @@ function heuristicSelect(moves, gameState, player) {
     player === 1 ? 2 : 1,
   ).length;
 
-  // Filter moves based on the opponent's proximity to the goal compared to the player.
   let filteredMoves = moves;
   if (playerPathLength <= opponentPathLength) {
-    // If the player is not further from the goal than the opponent, remove wall moves.
-    filteredMoves = moves.filter((move) => move.length !== 3); // Assuming wall moves are represented by arrays of length 3.
+    filteredMoves = moves.filter((move) => move.length !== 3);
   }
 
   let bestMove = null;
   let highestScore = -Infinity;
 
   for (let move of filteredMoves) {
-    // Apply the move to simulate the gameState after the move.
     const newState = applyMove(gameState, move, player);
-    if (!newState) continue; // Skip invalid moves.
+    if (!newState) continue;
 
-    // Calculate the new path lengths after the move.
     const newPlayerPathLength = getShortestPath(
       newState.playerspositions[player - 1],
       playerGoals,
@@ -86,21 +80,17 @@ function heuristicSelect(moves, gameState, player) {
       player === 1 ? 2 : 1,
     ).length;
 
-    // Define the scores based on path lengths.
-    const pathShorteningScore = playerPathLength - newPlayerPathLength; // Positive if the path is shortened.
-    const opponentHindranceScore = newOpponentPathLength - opponentPathLength; // Positive if the opponent's path is lengthened.
+    const pathShorteningScore = playerPathLength - newPlayerPathLength;
+    const opponentHindranceScore = newOpponentPathLength - opponentPathLength;
 
-    // Weight components according to their importance.
     const score = pathShorteningScore * 2.0 + opponentHindranceScore * 1.5;
 
-    // Update bestMove if the current move has a higher score.
     if (score > highestScore) {
       highestScore = score;
       bestMove = move;
     }
   }
 
-  // Fallback to random selection if no heuristic-based move is found among the filtered moves.
   return bestMove || getNextMoveToFollowShortestPath(gameState, player);
 }
 
@@ -118,23 +108,25 @@ class Node {
     );
   }
 
-  selectChild() {
-    let selected = null;
-    let bestValue = -Infinity;
+  selectChild(explorationParam = Math.sqrt(2)) {
+    let selectedChild = null;
+    let bestUCTValue = -Infinity;
+
     for (let child of this.children) {
-      let uctValue =
+      const uctValue =
         child.wins / child.visits +
-        Math.sqrt((2 * Math.log(this.visits)) / child.visits);
-      if (uctValue > bestValue) {
-        selected = child;
-        bestValue = uctValue;
+        explorationParam * Math.sqrt(Math.log(this.visits) / child.visits);
+      if (uctValue > bestUCTValue) {
+        selectedChild = child;
+        bestUCTValue = uctValue;
       }
     }
-    return selected;
+
+    return selectedChild;
   }
 
   addChild(move, gameState, player) {
-    let child = new Node(this, move, gameState, player);
+    const child = new Node(this, move, gameState, player);
     this.untriedMoves = this.untriedMoves.filter((m) => m !== move);
     this.children.push(child);
     return child;
@@ -148,32 +140,37 @@ class Node {
   simulate(player) {
     let state = cloneGameState(this.gameState);
     let currentPlayer = player;
+
     while (true) {
-      let moves = getPossibleMovesAndStrategicWalls(state, currentPlayer);
+      const { possibleMoves, possibleWalls } =
+        getPossibleMovesAndStrategicWalls(state, currentPlayer);
+      const concatenatedMoves = possibleMoves.concat(possibleWalls);
 
-      let concatenedMoves = moves.possibleMoves.concat(moves.possibleWalls);
+      if (concatenatedMoves.length === 0) break;
 
-      if (concatenedMoves.length === 0) break;
-
-      let move = getNextMoveToFollowShortestPath(state, currentPlayer);
-
-      if (move === undefined) {
-        break;
-      }
+      const move = getNextMoveToFollowShortestPath(state, currentPlayer);
+      if (move === undefined) break;
 
       state = applyMove(state, move, currentPlayer);
       currentPlayer = currentPlayer === 1 ? 2 : 1;
+
+      if (checkWin(state, player)) return 1;
+      if (checkWin(state, player === 1 ? 2 : 1)) return -1;
+      if (state.turn >= 200) return 0;
     }
-    let result = checkWin(state, player) ? 1 : -1;
-    return result;
+
+    return 0;
   }
 
-  bestChild() {
+  bestChild(exploitationParam = 0) {
     let bestScore = -Infinity;
     let bestChild = null;
 
     for (let child of this.children) {
-      let score = child.wins / child.visits;
+      const score =
+        child.wins / child.visits +
+        exploitationParam *
+          Math.sqrt((2 * Math.log(this.visits)) / child.visits);
       if (score > bestScore) {
         bestScore = score;
         bestChild = child;
@@ -184,18 +181,22 @@ class Node {
   }
 }
 
-function computeMove(gameState, player) {
-  let aiPlayer = player;
-  let opponent = player === 1 ? 2 : 1;
-  let aiPath = getShortestPath(
+function computeMove(gameState, player, iterations = 70, timeLimit = 4000) {
+  const startTime = Date.now();
+  const aiPlayer = player;
+  const opponent = player === 1 ? 2 : 1;
+  const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
+  const opponentGoals = opponent === 1 ? p1goals : p2goals;
+
+  const aiPath = getShortestPath(
     gameState.playerspositions[aiPlayer - 1],
-    aiPlayer === 1 ? p1goals : p2goals,
+    aiGoals,
     gameState,
     aiPlayer,
   );
-  let opponentPath = getShortestPath(
+  const opponentPath = getShortestPath(
     gameState.playerspositions[opponent - 1],
-    opponent === 1 ? p1goals : p2goals,
+    opponentGoals,
     gameState,
     opponent,
   );
@@ -203,24 +204,24 @@ function computeMove(gameState, player) {
   if (
     opponentPath.length > 2 &&
     aiPath.length <= 2 &&
-    areGoalsInsidePath(aiPlayer === 1 ? p1goals : p2goals, aiPath)
+    areGoalsInsidePath(aiGoals, aiPath)
   ) {
-    console.log("MCTS can win!");
     return aiPath[aiPath.length - 1];
   }
 
-  let aiWalls = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
+  const aiWalls = aiPlayer === 1 ? gameState.p1walls : gameState.p2walls;
   if (aiWalls === 0) {
-    console.log(
-      "MCTS has no wall left and will just follow the shortest path.",
-    );
     return aiPath[1];
   }
 
-  let root = new Node(null, null, gameState, player);
-  let iterations = 50; // Default value for the number of iterations, can be changed to increase the AI's strength (similar to depth in minimax).
+  const root = new Node(null, null, gameState, player);
+  let bestMove = null;
 
   for (let i = 0; i < iterations; i++) {
+    if (Date.now() - startTime > timeLimit) {
+      break;
+    }
+
     let node = root;
     let state = cloneGameState(gameState);
 
@@ -232,22 +233,25 @@ function computeMove(gameState, player) {
 
     // Expansion
     if (node.untriedMoves.length > 0) {
-      let move = heuristicSelect(node.untriedMoves, state, player);
+      const move = heuristicSelect(node.untriedMoves, state, player);
       state = applyMove(state, move, player);
       node = node.addChild(move, state, player);
     }
 
     // Simulation
-    let outcome = node.simulate(player);
+    const outcome = node.simulate(player);
 
     // Backpropagation
     while (node !== null) {
       node.update(outcome, player);
       node = node.parent;
     }
+
+    // Update best move
+    bestMove = root.bestChild().move;
   }
 
-  return root.bestChild().move;
+  return bestMove;
 }
 
 module.exports = { computeMove };
