@@ -346,31 +346,35 @@ function getPlayerNeighbour(coord) {
 }
 
 function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
-  const player = start === p1_coord ? 1 : 2;
-  const openSet = [start];
-  const closedSet = [];
+  let player = start == p1_coord ? 1 : 2;
+  let openSet = [];
+  let closedSet = [];
+  let current;
+  openSet.push(start);
 
   while (openSet.length > 0) {
-    const current = openSet.pop();
+    current = openSet.pop();
 
     if (isInclude(goals, current)) return true;
     closedSet.push(current);
 
-    const neighbors = getPlayerNeighbour(current);
+    let neighbors = getPlayerNeighbour(current);
 
-    for (const neighbor of neighbors) {
+    for (let neighbor of neighbors) {
       if (
         isInclude(closedSet, neighbor) ||
         !isLegal(current, neighbor, v_walls, h_walls, p1_coord, p2_coord)
       )
         continue;
-      if (!isInclude(openSet, neighbor)) openSet.push(neighbor);
-    }
 
-    const jump_coord = canJump(
+      if (!isInclude(openSet, neighbor)) {
+        openSet.push(neighbor);
+      }
+    }
+    let jump_coord = canJump(
       current,
-      player === 1 ? current : p1_coord,
-      player === 1 ? p2_coord : current,
+      player == 1 ? current : p1_coord,
+      player == 1 ? p2_coord : current,
       v_walls,
       h_walls,
     );
@@ -378,8 +382,9 @@ function aStarPathfinding(start, goals, p1_coord, p2_coord, v_walls, h_walls) {
       jump_coord.length > 0 &&
       !isInclude(closedSet, jump_coord) &&
       !isInclude(openSet, jump_coord)
-    )
+    ) {
       openSet.push(jump_coord);
+    }
   }
 
   return false;
@@ -392,12 +397,16 @@ function getShortestPath(start, goals, gameState, player) {
     return pathCache.get(startKey);
   }
 
-  const queue = [start];
-  const visited = new Set([start.join(",")]);
-  const cameFrom = new Map();
+  let queue = []; // Utiliser une file d'attente pour gérer les nœuds à explorer
+  let visited = new Set(); // Garde une trace des positions déjà visitées
+  let cameFrom = new Map(); // Trace le chemin parcouru
+  let startKey2 = start.join(",");
+  visited.add(startKey2);
+  queue.push(start);
 
-  function reconstructPath(current) {
-    const totalPath = [current];
+  // Fonction pour reconstruire le chemin une fois l'objectif atteint
+  function reconstructPath(cameFrom, current) {
+    let totalPath = [current];
     while (cameFrom.has(current.join(","))) {
       current = cameFrom.get(current.join(","));
       totalPath.unshift(current);
@@ -407,18 +416,19 @@ function getShortestPath(start, goals, gameState, player) {
   }
 
   while (queue.length > 0) {
-    const current = queue.shift();
+    let current = queue.shift();
 
-    if (
-      goals.some((goal) => current[0] === goal[0] && current[1] === goal[1])
-    ) {
-      return reconstructPath(current);
+    // Vérifier si le but est atteint
+    for (let goal of goals) {
+      if (current[0] === goal[0] && current[1] === goal[1]) {
+        return reconstructPath(cameFrom, current);
+      }
     }
 
-    const possibleMoves = getPossibleMoves(gameState, current, player);
+    let possibleMoves = getPossibleMoves(gameState, current, player);
 
-    for (const neighbor of possibleMoves) {
-      const neighborKey = neighbor.join(",");
+    for (let neighbor of possibleMoves) {
+      let neighborKey = neighbor.join(",");
       if (!visited.has(neighborKey)) {
         visited.add(neighborKey);
         cameFrom.set(neighborKey, current);
@@ -427,7 +437,7 @@ function getShortestPath(start, goals, gameState, player) {
     }
   }
 
-  return [];
+  return []; // Aucun chemin trouvé
 }
 
 function isWallLegal(
