@@ -11,7 +11,6 @@ const {
   canJump,
   checkWin,
   isWallLegal,
-  canWin,
   getNextMoveToFollowShortestPath,
 } = require("../utils/game-checkers.js");
 
@@ -143,12 +142,7 @@ function createSocket(server) {
       const gameId = data.gameId;
       const gameState = data.gameState;
       // Check if someone won
-      if (
-        checkWin(1, {
-          p1_coord: gameState.playerspositions[0],
-          p2_coord: gameState.playerspositions[1],
-        })
-      ) {
+      if (checkWin(gameState, 1)) {
         const gameId = data.gameId;
 
         // @arol90 c'est quoi cette merde
@@ -196,12 +190,7 @@ function createSocket(server) {
           { $set: gameState },
         );
 
-        if (
-          checkWin(2, {
-            p1_coord: gameState.playerspositions[0],
-            p2_coord: newCoord,
-          })
-        ) {
+        if (checkWin(gameState, 2)) {
           const games = db.collection("games");
           let res2 = await games.updateOne(
             { _id: new ObjectId(gameId) },
@@ -229,12 +218,7 @@ function createSocket(server) {
           const game = await games.findOne({ _id: new ObjectId(gameId) });
           socket.emit("win", game);
         }
-      } else if (
-        checkWin(2, {
-          p1_coord: gameState.playerspositions[0],
-          p2_coord: gameState.playerspositions[1],
-        })
-      ) {
+      } else if (checkWin(gameState, 2)) {
         const db = getDB();
         const games = db.collection("games");
         const users = db.collection("users");

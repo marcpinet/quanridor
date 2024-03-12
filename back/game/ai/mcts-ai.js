@@ -32,10 +32,6 @@ const p2goals = [
   [8, 8],
 ];
 
-function selectRandom(array) {
-  return array[Math.floor(Math.random() * array.length)];
-}
-
 function heuristicSelect(moves, gameState, player) {
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
@@ -79,10 +75,13 @@ function heuristicSelect(moves, gameState, player) {
     const opponentHindranceScore = newOpponentPathLength - opponentPathLength;
 
     const opponentHindranceWeight = opponentPathLength <= 3 ? 3.0 : 1.5;
+    const wallsRemainingWeight =
+      (player === 1 ? newState.p1walls : newState.p2walls) / 10;
 
     const score =
       pathShorteningScore * 2.0 +
-      opponentHindranceScore * opponentHindranceWeight;
+      opponentHindranceScore * opponentHindranceWeight +
+      wallsRemainingWeight;
 
     if (score > highestScore) {
       highestScore = score;
@@ -105,7 +104,7 @@ class Node {
       gameState,
       player,
     );
-    this.untriedMoves = possibleMoves.concat(possibleWalls);
+    this.untriedMoves = new Set(possibleMoves.concat(possibleWalls));
   }
 
   selectChild(explorationParam = Math.sqrt(2)) {
@@ -127,7 +126,7 @@ class Node {
 
   addChild(move, gameState, player) {
     const child = new Node(this, move, gameState, player);
-    this.untriedMoves = this.untriedMoves.filter((m) => m !== move);
+    this.untriedMoves.delete(move);
     this.children.push(child);
     return child;
   }
@@ -137,7 +136,9 @@ class Node {
     this.wins += outcome;
   }
 
-  simulate(player) {
+  simulate(player, depth = 0, maxDepth = 50) {
+    if (depth >= maxDepth) return 0;
+
     let state = cloneGameState(this.gameState);
     let currentPlayer = player;
 
@@ -148,7 +149,7 @@ class Node {
 
       if (concatenatedMoves.length === 0) break;
 
-      const move = selectRandom(concatenatedMoves);
+      const move = heuristicSelect(concatenatedMoves, state, currentPlayer);
       if (move === undefined) break;
 
       state = applyMove(state, move, currentPlayer);
@@ -157,6 +158,9 @@ class Node {
       if (checkWin(state, player)) return 1;
       if (checkWin(state, player === 1 ? 2 : 1)) return -1;
       if (state.turn >= 200) return 0;
+
+      depth++;
+      if (depth >= maxDepth) return 0;
     }
 
     return 0;
@@ -166,8 +170,7 @@ class Node {
 function computeMove(
   gameState,
   player,
-  iterations = 1000,
-  timeLimit = 500,
+  timeLimit = 1000,
   explorationParam = Math.sqrt(2),
 ) {
   const startTime = Date.now();
@@ -184,7 +187,6 @@ function computeMove(
     canWinOpponent &&
     areGoalsInsidePath(opponentPath, player === 1 ? p2goals : p1goals)
   ) {
-    // Place wall to block opponent's winning path
     const opponentNextMove = opponentPath[1];
     const wallMoves = getPossibleMovesAndStrategicWalls(
       gameState,
@@ -205,23 +207,23 @@ function computeMove(
   let bestMove = null;
   let bestWinRatio = -Infinity;
 
-  for (let i = 0; i < iterations; i++) {
-    if (Date.now() - startTime > timeLimit) {
-      break;
-    }
-
+  while (Date.now() - startTime < timeLimit) {
     let node = root;
     let state = cloneGameState(gameState);
 
     // Selection
-    while (node.untriedMoves.length === 0 && node.children.length > 0) {
+    while (node.untriedMoves.size === 0 && node.children.length > 0) {
       node = node.selectChild(explorationParam);
       state = applyMove(state, node.move, player);
     }
 
     // Expansion
-    if (node.untriedMoves.length > 0) {
-      const move = heuristicSelect(node.untriedMoves, state, player);
+    if (node.untriedMoves.size > 0) {
+      const move = heuristicSelect(
+        Array.from(node.untriedMoves),
+        state,
+        player,
+      );
       state = applyMove(state, move, player);
       node = node.addChild(move, state, player);
     }

@@ -106,11 +106,7 @@ function minimax(
     ? { value: -Infinity, move: defaultMove }
     : { value: Infinity, move: defaultMove };
 
-  if (
-    depth === 0 ||
-    checkWin(1, { p1_coord, p2_coord }) ||
-    checkWin(2, { p1_coord, p2_coord })
-  ) {
+  if (depth === 0 || checkWin(gameState, 1) || checkWin(gameState, 2)) {
     const value = evaluate(
       gameState,
       maximizingPlayer ? player : opponentPlayer,
@@ -259,20 +255,31 @@ function computeMove(gameState, player, depth = 2) {
   const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
   const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
-  const aiGoals = aiPlayer === 1 ? p1goals : p2goals;
   const opponentGoals = opponent === 1 ? p1goals : p2goals;
-  const aiPath = getShortestPath(
-    gameState.playerspositions[aiPlayer - 1],
-    aiGoals,
-    gameState,
-    aiPlayer,
-  );
-  const opponentPath = getShortestPath(
-    gameState.playerspositions[opponent - 1],
-    opponentGoals,
+  let { canWin: canWinPlayer, path: aiPath } = canWin(gameState, player);
+  let { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
     opponent,
   );
+
+  if (aiPath.length > 2) {
+    if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
+      console.log("Minimax follows path", aiPath);
+      return aiPath[1];
+    }
+  } else {
+    return selectRandom(
+      getPossibleMoves(
+        gameState,
+        gameState.playerspositions[aiPlayer - 1],
+        aiPlayer,
+      ),
+    );
+  }
+
+  if (aiPath.length <= 4 || opponentPath.length <= 4) {
+    depth = 4;
+  }
 
   if (aiPath.length <= 4 || opponentPath.length <= 4) {
     depth = 4;

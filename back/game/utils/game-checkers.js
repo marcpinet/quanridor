@@ -330,7 +330,7 @@ function canWin(gameState, player) {
     gameState,
     player,
   );
-  return { canWin: playerPath.length <= 2, path: playerPath };
+  return { canWin: playerPath.length === 2, path: playerPath };
 }
 
 function getPlayerNeighbour(coord) {
@@ -493,7 +493,9 @@ function isWallLegal(
   return isPossible;
 }
 
-function checkWin(player, { p1_coord, p2_coord }) {
+function checkWin(gameState, player) {
+  const p1_coord = gameState.playerspositions[0];
+  const p2_coord = gameState.playerspositions[1];
   return (
     (player === 1 && p1_coord[1] === 0) || (player === 2 && p2_coord[1] === 8)
   );
@@ -501,7 +503,6 @@ function checkWin(player, { p1_coord, p2_coord }) {
 
 function applyMove(gameState, move, player) {
   const newGameState = cloneGameState(gameState);
-
   if (move.length === 3) {
     const wallsnum = player === 1 ? newGameState.p1walls : newGameState.p2walls;
     if (wallsnum <= 0) {
