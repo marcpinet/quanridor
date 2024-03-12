@@ -278,18 +278,6 @@ function computeMove(gameState, player, depth = 2) {
     depth = 4;
   }
 
-  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
-  let { canWin: canWinOpponent } = canWin(gameState, opponent);
-
-  //if(playerPath.length > 2) {
-  //  if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
-  //    console.log("Minimax follows path", playerPath);
-  //    return playerPath[1];
-  //  }
-  //} else {
-  //  return selectRandom(getPossibleMoves(gameState, gameState.playerspositions[aiPlayer - 1], aiPlayer));
-  //}
-
   const { move } = minimax(
     gameState,
     depth,

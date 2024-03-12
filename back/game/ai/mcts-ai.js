@@ -78,7 +78,6 @@ function heuristicSelect(moves, gameState, player) {
     const pathShorteningScore = playerPathLength - newPlayerPathLength;
     const opponentHindranceScore = newOpponentPathLength - opponentPathLength;
 
-    // Augmenter le poids du score d'entrave de l'adversaire s'il est proche de la ligne d'arrivée
     const opponentHindranceWeight = opponentPathLength <= 3 ? 3.0 : 1.5;
 
     const score =
@@ -102,10 +101,11 @@ class Node {
     this.children = [];
     this.wins = 0;
     this.visits = 0;
-    this.untriedMoves = getPossibleMovesAndStrategicWalls(gameState, player);
-    this.untriedMoves = this.untriedMoves.possibleMoves.concat(
-      this.untriedMoves.possibleWalls,
+    const { possibleMoves, possibleWalls } = getPossibleMovesAndStrategicWalls(
+      gameState,
+      player,
     );
+    this.untriedMoves = possibleMoves.concat(possibleWalls);
   }
 
   selectChild(explorationParam = Math.sqrt(2)) {
@@ -148,7 +148,7 @@ class Node {
 
       if (concatenatedMoves.length === 0) break;
 
-      const move = heuristicSelect(concatenatedMoves, state, currentPlayer);
+      const move = selectRandom(concatenatedMoves);
       if (move === undefined) break;
 
       state = applyMove(state, move, currentPlayer);
@@ -161,24 +161,6 @@ class Node {
 
     return 0;
   }
-
-  bestChild(exploitationParam = 0) {
-    let bestScore = -Infinity;
-    let bestChild = null;
-
-    for (let child of this.children) {
-      const score =
-        child.wins / child.visits +
-        exploitationParam *
-          Math.sqrt((2 * Math.log(this.visits)) / child.visits);
-      if (score > bestScore) {
-        bestScore = score;
-        bestChild = child;
-      }
-    }
-
-    return bestChild;
-  }
 }
 
 function computeMove(
@@ -190,10 +172,33 @@ function computeMove(
 ) {
   const startTime = Date.now();
 
-  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  const { canWin: canWinOpponent, path: opponentPath } = canWin(
+    gameState,
+    player === 1 ? 2 : 1,
+  );
 
   if (canWinPlayer) {
     return playerPath[1];
+  } else if (
+    canWinOpponent &&
+    areGoalsInsidePath(opponentPath, player === 1 ? p2goals : p1goals)
+  ) {
+    // Place wall to block opponent's winning path
+    const opponentNextMove = opponentPath[1];
+    const wallMoves = getPossibleMovesAndStrategicWalls(
+      gameState,
+      player,
+    ).possibleWalls;
+    for (let wallMove of wallMoves) {
+      const newState = applyMove(gameState, wallMove, player);
+      if (!newState) continue;
+      const { canWin: canStillWinOpponent } = canWin(
+        newState,
+        player === 1 ? 2 : 1,
+      );
+      if (!canStillWinOpponent) return wallMove;
+    }
   }
 
   const root = new Node(null, null, gameState, player);
@@ -221,13 +226,6 @@ function computeMove(
       node = node.addChild(move, state, player);
     }
 
-    // Expansion
-    if (node.untriedMoves.length > 0) {
-      const move = heuristicSelect(node.untriedMoves, state, player);
-      state = applyMove(state, move, player);
-      node = node.addChild(move, state, player);
-    }
-
     // Simulation
     const outcome = node.simulate(player);
 
@@ -240,7 +238,7 @@ function computeMove(
     // Update best move
     const winRatio = root.wins / root.visits;
     if (winRatio > bestWinRatio) {
-      bestMove = root.bestChild().move;
+      bestMove = root.selectChild(0).move;
       bestWinRatio = winRatio;
     }
   }
