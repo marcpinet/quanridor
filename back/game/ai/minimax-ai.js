@@ -57,6 +57,10 @@ function createUniqueKey(gameState, player) {
   return `${p1x}${p1y}${p2x}${p2y}${p1walls}${p2walls}${vwallsSum}${hwallsSum}${player}`;
 }
 
+function selectRandom(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 function determineDefaultMove(gameState, player) {
   const possibleMoves = getPossibleMoves(
     gameState,
@@ -277,10 +281,14 @@ function computeMove(gameState, player, depth = 2) {
   let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   let { canWin: canWinOpponent } = canWin(gameState, opponent);
 
-  if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
-    console.log("Minimax follows path", playerPath);
-    return playerPath[1];
-  }
+  //if(playerPath.length > 2) {
+  //  if ((canWinPlayer && !canWinOpponent) || playerWalls === 0) {
+  //    console.log("Minimax follows path", playerPath);
+  //    return playerPath[1];
+  //  }
+  //} else {
+  //  return selectRandom(getPossibleMoves(gameState, gameState.playerspositions[aiPlayer - 1], aiPlayer));
+  //}
 
   const { move } = minimax(
     gameState,
