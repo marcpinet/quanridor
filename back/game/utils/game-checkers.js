@@ -554,18 +554,21 @@ function areGoalsInsidePath(goals, path) {
   return goals.some((goal) => pathSet.has(JSON.stringify(goal)));
 }
 
-function getManhattanDistance(coord1, coord2) {
-  return Math.abs(coord1[0] - coord2[0]) + Math.abs(coord1[1] - coord2[1]);
-}
-
-function getPawnDistance(coord1, coord2) {
-  return Math.sqrt(
-    Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2),
+function getManhattanDistance(pos, goals) {
+  return Math.min(
+    ...goals.map(
+      (goal) => Math.abs(pos[0] - goal[0]) + Math.abs(pos[1] - goal[1]),
+    ),
   );
 }
 
-function isOnGoalSide(player, coord) {
-  return player === 1 ? coord[1] < 4 : coord[1] > 4;
+function getPawnDistance(p1pos, p2pos, state) {
+  return getShortestPath(p1pos, [p2pos], state, 1).length - 1;
+}
+
+function isOnGoalSide(pos, state) {
+  const middleRow = 4;
+  return state.turn % 2 === 0 ? pos[1] <= middleRow : pos[1] >= middleRow;
 }
 
 module.exports = {
