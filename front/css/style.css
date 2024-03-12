@@ -201,6 +201,12 @@ button:hover {
   font-size: 32px;
 }
 
+.small-text {
+  text-align: center; 
+  font-size: medium; 
+  font-weight: bold;
+}
+
 input {
   box-shadow: 0px 15px 10px #111430;
   color: white;
@@ -563,11 +569,13 @@ canvas {
   justify-content: center;
 }
 .square {
-  width: 20px;
+  width: 2px;
   height: 20px;
   background-color: #ffffff;
   border: 2px #000000;
-  margin: 5px 1px;
+  margin: 5px 5px;
+  rotate: 15deg;
+  border-radius: 5px;
   transition: opacity 1s; /* Transition de l'opacité prenant 1 seconde */
   opacity: 1;
 }
