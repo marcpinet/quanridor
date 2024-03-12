@@ -583,3 +583,21 @@ canvas {
 .transparent {
   opacity: 0; /* Classe pour rendre le carré transparent */
 }
+
+.timer {
+  width: 80%;
+  height: 10vh;
+  background-color: rgba(1,5,37,1);
+  border-color: rgba(70, 80, 168, 0);
+  border-radius: 38px;
+  border-style: solid;
+  border-width: 10px;
+  margin-top: 20px;
+}
+
+#timer-text{
+  margin: 7%; 
+  justify-content: center; 
+  align-items: center;
+  font-weight: bold;
+}
