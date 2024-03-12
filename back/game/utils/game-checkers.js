@@ -554,6 +554,20 @@ function areGoalsInsidePath(goals, path) {
   return goals.some((goal) => pathSet.has(JSON.stringify(goal)));
 }
 
+function getManhattanDistance(coord1, coord2) {
+  return Math.abs(coord1[0] - coord2[0]) + Math.abs(coord1[1] - coord2[1]);
+}
+
+function getPawnDistance(coord1, coord2) {
+  return Math.sqrt(
+    Math.pow(coord1[0] - coord2[0], 2) + Math.pow(coord1[1] - coord2[1], 2),
+  );
+}
+
+function isOnGoalSide(player, coord) {
+  return player === 1 ? coord[1] < 4 : coord[1] > 4;
+}
+
 module.exports = {
   isLegal,
   canJump,
@@ -570,4 +584,7 @@ module.exports = {
   getNextMoveToFollowShortestPath,
   areGoalsInsidePath,
   getPlayerNeighbour,
+  getManhattanDistance,
+  getPawnDistance,
+  isOnGoalSide,
 };
