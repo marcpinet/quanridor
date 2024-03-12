@@ -54,7 +54,6 @@ function heuristicEvaluation(state, player) {
     player === 1 ? 2 : 1,
   ).length;
 
-  // Ajout de critères d'évaluation supplémentaires
   const playerManhattanDist = getManhattanDistance(playerPosition, playerGoals);
   const opponentManhattanDist = getManhattanDistance(
     opponentPosition,
@@ -66,17 +65,20 @@ function heuristicEvaluation(state, player) {
   const playerWallsRemaining = player === 1 ? state.p1walls : state.p2walls;
   const opponentWallsRemaining = player === 1 ? state.p2walls : state.p1walls;
 
-  // Pondération des différents critères (à ajuster)
+  const lateGameWeight =
+    playerPathLength <= 3 || opponentPathLength <= 3 ? 2 : 1;
+
   const eval =
-    playerPathLength * -2.0 +
-    opponentPathLength * 1.5 +
-    playerManhattanDist * -0.5 +
-    opponentManhattanDist * 0.3 +
-    pawnDistance * 0.2 +
-    (playerOnGoalSide ? 1.0 : 0) +
-    (opponentOnGoalSide ? -1.0 : 0) +
-    playerWallsRemaining * 0.1 +
-    opponentWallsRemaining * -0.05;
+    (playerPathLength * -3.0 +
+      opponentPathLength * 2.0 +
+      playerManhattanDist * -1.0 +
+      opponentManhattanDist * 0.8 +
+      pawnDistance * 1.5 +
+      (playerOnGoalSide ? 2.0 : 0) +
+      (opponentOnGoalSide ? -2.0 : 0) +
+      playerWallsRemaining * 0.3 +
+      opponentWallsRemaining * -0.2) *
+    lateGameWeight;
 
   return eval;
 }
@@ -115,14 +117,16 @@ class Node {
     this.untriedMoves = new Set(possibleMoves.concat(possibleWalls));
   }
 
-  selectChild(explorationParam = Math.sqrt(2)) {
+  selectChild(explorationParam = 1.414) {
     let selectedChild = null;
     let bestUCTValue = -Infinity;
 
     for (let child of this.children) {
       const uctValue =
         child.wins / child.visits +
-        explorationParam * Math.sqrt(Math.log(this.visits) / child.visits);
+        explorationParam *
+          Math.sqrt(Math.log(this.visits) / child.visits) *
+          (1 + Math.sqrt(this.visits) / (1 + child.visits));
       if (uctValue > bestUCTValue) {
         selectedChild = child;
         bestUCTValue = uctValue;
@@ -165,7 +169,6 @@ class Node {
 
       if (checkWin(state, player)) return 1;
       if (checkWin(state, player === 1 ? 2 : 1)) return -1;
-      // Si un joueur a une séquence gagnante assurée, on arrête
       if (canWin(state, player).canWin) return 1;
       if (canWin(state, player === 1 ? 2 : 1).canWin) return -1;
       if (state.turn >= 200) return 0;
@@ -182,10 +185,8 @@ function computeMove(
   gameState,
   player,
   timeLimit = 500,
-  explorationParam = Math.sqrt(2),
+  explorationParam = 1.414,
 ) {
-  const startTime = Date.now();
-
   const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   const { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
@@ -198,7 +199,6 @@ function computeMove(
     canWinOpponent &&
     areGoalsInsidePath(opponentPath, player === 1 ? p2goals : p1goals)
   ) {
-    const opponentNextMove = opponentPath[1];
     const wallMoves = getPossibleMovesAndStrategicWalls(
       gameState,
       player,

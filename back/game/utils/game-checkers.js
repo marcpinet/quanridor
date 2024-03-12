@@ -330,7 +330,12 @@ function canWin(gameState, player) {
     gameState,
     player,
   );
-  return { canWin: playerPath.length === 2, path: playerPath };
+  return {
+    canWin:
+      playerPath.length === 2 &&
+      areGoalsInsidePath(player === 1 ? p1goals : p2goals, playerPath),
+    path: playerPath,
+  };
 }
 
 function getPlayerNeighbour(coord) {

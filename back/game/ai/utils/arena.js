@@ -34,14 +34,20 @@ function simulateGameBetween2AI() {
       game = applyMove(game, move, 2);
       totalTimeP2 += performance.now() - startTime;
     }
+
     let endTime = performance.now();
     let elapsedTime = endTime - startTime;
     console.log(`Time elapsed: ${Math.round(elapsedTime)} milliseconds`);
+
     if (checkWin(game, 1)) {
       console.log("\n");
       console.log(game);
       console.log("\n");
-      if (canWin(game, 2)) {
+
+      let { canWin: canWinPlayer2, player2path: path } = canWin(game, 2);
+
+      if (canWinPlayer2) {
+        game = applyMove(game, path[1], 2);
         console.log("It's a draw");
         break;
       }
