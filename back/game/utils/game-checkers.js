@@ -593,5 +593,6 @@ module.exports = {
   getPlayerNeighbour,
   getManhattanDistance,
   getPawnDistance,
+  getStrategicWalls,
   isOnGoalSide,
 };

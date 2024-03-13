@@ -10,6 +10,7 @@ const {
   getManhattanDistance,
   getPawnDistance,
   isOnGoalSide,
+  getStrategicWalls,
 } = require("../utils/game-checkers.js");
 
 const p1goals = [
@@ -155,8 +156,7 @@ class Node {
     let currentPlayer = player;
 
     while (true) {
-      const { possibleMoves, possibleWalls } =
-        getPossibleMovesAndStrategicWalls(state, currentPlayer);
+      const possibleWalls = getStrategicWalls(state, currentPlayer);
       const wallsLeft = currentPlayer === 1 ? state.p1walls : state.p2walls;
 
       if (Math.random() < 0.7 || wallsLeft === 0) {
