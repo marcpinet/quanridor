@@ -117,6 +117,9 @@ function getStrategicWalls(gameState, player) {
     return [];
   }
 
+  const playerPosition = gameState.playerspositions[player - 1];
+  const opponentPosition = gameState.playerspositions[1 - (player - 1)];
+  const opponent = player === 1 ? 2 : 1;
   const playerGoals = player === 1 ? p1goals : p2goals;
   const opponentGoals = player === 1 ? p2goals : p1goals;
   const playerPath = getShortestPath(
