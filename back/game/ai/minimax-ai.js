@@ -6,7 +6,6 @@ const {
   getPossibleMoves,
   getPossibleWalls,
   applyMove,
-  areGoalsInsidePath,
   canWin,
 } = require("../utils/game-checkers.js");
 
@@ -249,7 +248,6 @@ function evaluate(gameState, player, depthPenalty) {
 }
 
 function computeMove(gameState, player, depth = 2) {
-  const aiPlayer = player;
   const opponent = player === 1 ? 2 : 1;
   const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
   const opponentGoals = opponent === 1 ? p1goals : p2goals;
@@ -259,11 +257,7 @@ function computeMove(gameState, player, depth = 2) {
     opponent,
   );
 
-  if (
-    (aiPath.length >= 2 && canWinPlayer && !canWinOpponent) ||
-    playerWalls === 0
-  ) {
-    console.log("Minimax follows path", aiPath);
+  if (canWinPlayer && !canWinOpponent && playerWalls === 0) {
     return aiPath[1];
   }
 
