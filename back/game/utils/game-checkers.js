@@ -82,35 +82,27 @@ function getPossibleWalls(gameState, player) {
 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
-      if (
-        isWallLegal(
-          player,
-          [i, j],
-          "v",
-          gameState.p1walls,
-          gameState.p2walls,
-          gameState.vwalls,
-          gameState.hwalls,
-          gameState.playerspositions[0],
-          gameState.playerspositions[1],
-        )
-      ) {
-        possibleWalls.push([i, j, "v"]);
-      }
-      if (
-        isWallLegal(
-          player,
-          [i, j],
-          "h",
-          gameState.p1walls,
-          gameState.p2walls,
-          gameState.vwalls,
-          gameState.hwalls,
-          gameState.playerspositions[0],
-          gameState.playerspositions[1],
-        )
-      ) {
-        possibleWalls.push([i, j, "h"]);
+      const directions = [
+        ["v", [i, j]],
+        ["h", [i, j]],
+      ];
+
+      for (let [direction, coord] of directions) {
+        if (
+          isWallLegal(
+            player,
+            coord,
+            direction,
+            gameState.p1walls,
+            gameState.p2walls,
+            gameState.vwalls,
+            gameState.hwalls,
+            gameState.playerspositions[0],
+            gameState.playerspositions[1],
+          )
+        ) {
+          possibleWalls.push([...coord, direction]);
+        }
       }
     }
   }
@@ -140,32 +132,39 @@ function getStrategicWalls(gameState, player) {
     player === 1 ? 2 : 1,
   );
 
-  return possibleWalls.filter((wall) => {
-    const tempGameState = cloneGameState(gameState);
-    if (wall[2] === "v") {
-      tempGameState.vwalls.push([wall[0], wall[1]]);
-    } else {
-      tempGameState.hwalls.push([wall[0], wall[1]]);
-    }
+  return possibleWalls
+    .map((wall) => {
+      const tempGameState = cloneGameState(gameState);
+      if (wall[2] === "v") {
+        tempGameState.vwalls.push([wall[0], wall[1]]);
+      } else {
+        tempGameState.hwalls.push([wall[0], wall[1]]);
+      }
 
-    const newPlayerPath = getShortestPath(
-      tempGameState.playerspositions[player - 1],
-      playerGoals,
-      tempGameState,
-      player,
-    );
-    const newOpponentPath = getShortestPath(
-      tempGameState.playerspositions[1 - (player - 1)],
-      opponentGoals,
-      tempGameState,
-      player === 1 ? 2 : 1,
-    );
+      const newPlayerPath = getShortestPath(
+        tempGameState.playerspositions[player - 1],
+        playerGoals,
+        tempGameState,
+        player,
+      );
+      const newOpponentPath = getShortestPath(
+        tempGameState.playerspositions[1 - (player - 1)],
+        opponentGoals,
+        tempGameState,
+        player === 1 ? 2 : 1,
+      );
 
-    return (
-      newOpponentPath.length > opponentPath.length &&
-      newPlayerPath.length <= playerPath.length + 2
-    );
-  });
+      return {
+        wall,
+        playerPathDelta: newPlayerPath.length - playerPath.length,
+        opponentPathDelta: newOpponentPath.length - opponentPath.length,
+      };
+    })
+    .filter(({ playerPathDelta, opponentPathDelta }) => {
+      return opponentPathDelta > 0 && playerPathDelta <= 2;
+    })
+    .sort((a, b) => b.opponentPathDelta - a.opponentPathDelta)
+    .map(({ wall }) => wall);
 }
 
 function cloneGameState(gameState) {
