@@ -136,9 +136,9 @@ function getStrategicWalls(gameState, player) {
     .map((wall) => {
       const tempGameState = cloneGameState(gameState);
       if (wall[2] === "v") {
-        tempGameState.vwalls.push([wall[0], wall[1]]);
+        tempGameState.vwalls.push([wall[0], wall[1], "v"]);
       } else {
-        tempGameState.hwalls.push([wall[0], wall[1]]);
+        tempGameState.hwalls.push([wall[0], wall[1], "h"]);
       }
 
       const newPlayerPath = getShortestPath(
