@@ -1,6 +1,6 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
-const Random = require("./random-ai.js");
+const Rulebased = require("./rulebased-ai.js");
 const Minimax = require("./minimax-ai.js");
 const MCTS = require("./mcts-ai.js");
 const { getDB } = require("../../query-managers/db.js");
@@ -147,7 +147,7 @@ function createSocket(server) {
 
         // @arol90 c'est quoi cette merde
         // const gameState = data.gameState;
-        // let newCoord = Random.computeMove(gameState);
+        // let newCoord = Rulebased.computeMove(gameState);
         // gameState.playerspositions[1] = newCoord;
 
         // Tiens voilà mieux
@@ -263,7 +263,7 @@ function createSocket(server) {
       let newCoord;
       let startTime = performance.now();
       if (gameState.difficulty === 0) {
-        newCoord = Random.computeMove(gameState);
+        newCoord = Rulebased.computeMove(gameState, 2);
       } else if (gameState.difficulty === 1) {
         newCoord = Minimax.computeMove(gameState, 2);
       } else if (gameState.difficulty === 2) {

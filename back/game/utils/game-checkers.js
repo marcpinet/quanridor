@@ -141,18 +141,34 @@ function getStrategicWalls(gameState, player) {
         tempGameState.hwalls.push([wall[0], wall[1], "h"]);
       }
 
-      const newPlayerPath = getShortestPath(
+      let newPlayerPath = getShortestPath(
         tempGameState.playerspositions[player - 1],
         playerGoals,
         tempGameState,
         player,
       );
-      const newOpponentPath = getShortestPath(
+      let newOpponentPath = getShortestPath(
         tempGameState.playerspositions[1 - (player - 1)],
         opponentGoals,
         tempGameState,
         player === 1 ? 2 : 1,
       );
+
+      if (playerPath.length === 0) {
+        newPlayerPath = getShortestPath(
+          playerPosition,
+          [opponentPosition],
+          gameState,
+          player,
+        );
+      } else if (opponentPath.length === 0) {
+        newOpponentPath = getShortestPath(
+          opponentPosition,
+          [playerPosition],
+          gameState,
+          opponent,
+        );
+      }
 
       return {
         wall,
@@ -604,4 +620,6 @@ module.exports = {
   getPawnDistance,
   getStrategicWalls,
   isOnGoalSide,
+  p1goals,
+  p2goals,
 };

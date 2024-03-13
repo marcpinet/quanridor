@@ -7,30 +7,9 @@ const {
   getPossibleWalls,
   applyMove,
   canWin,
+  p1goals,
+  p2goals,
 } = require("../utils/game-checkers.js");
-
-const p1goals = [
-  [0, 0],
-  [1, 0],
-  [2, 0],
-  [3, 0],
-  [4, 0],
-  [5, 0],
-  [6, 0],
-  [7, 0],
-  [8, 0],
-];
-const p2goals = [
-  [0, 8],
-  [1, 8],
-  [2, 8],
-  [3, 8],
-  [4, 8],
-  [5, 8],
-  [6, 8],
-  [7, 8],
-  [8, 8],
-];
 
 class TranspositionTable {
   constructor() {
@@ -164,14 +143,31 @@ function minimax(
 }
 
 function evaluate(gameState, player, depthPenalty) {
-  const [playerPosition, opponentPosition] = gameState.playerspositions;
+  const playerPosition = gameState.playerspositions[player - 1];
+  const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
   const opponent = player === 1 ? 2 : 1;
 
-  const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
-  const { canWin: canWinOpponent, path: opponentPath } = canWin(
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
+  let { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
     opponent,
   );
+
+  if (playerPath.length === 0) {
+    playerPath = getShortestPath(
+      playerPosition,
+      [opponentPosition],
+      gameState,
+      player,
+    );
+  } else if (opponentPath.length === 0) {
+    opponentPath = getShortestPath(
+      opponentPosition,
+      [playerPosition],
+      gameState,
+      opponent,
+    );
+  }
 
   if (canWinPlayer) {
     return 1000000 - depthPenalty;

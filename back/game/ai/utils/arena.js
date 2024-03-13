@@ -1,4 +1,4 @@
-const Random = require("../random-ai.js");
+const Rulebased = require("../rulebased-ai.js");
 const Minimax = require("../minimax-ai.js");
 const MCTS = require("../mcts-ai.js");
 
@@ -8,6 +8,8 @@ const {
   checkWin,
   canWin,
   getShortestPath,
+  p1goals,
+  p2goals,
 } = require("../../utils/game-checkers.js");
 
 let game = initializeGame();
@@ -29,7 +31,7 @@ function simulateGameBetween2AI() {
     let move;
     let startTime = performance.now();
     if (game.turn % 2 === 0) {
-      move = MCTS.computeMove(game, playsAsPlayer1);
+      move = Rulebased.computeMove(game, playsAsPlayer1);
       console.log("Player1 played", move);
       game = applyMove(game, move, 1);
       totalTimeP1 += performance.now() - startTime;
@@ -43,6 +45,13 @@ function simulateGameBetween2AI() {
     let endTime = performance.now();
     let elapsedTime = endTime - startTime;
     console.log(`Time elapsed: ${Math.round(elapsedTime)} milliseconds`);
+
+    if (game.turn > 300) {
+      console.log("\n");
+      console.log(game);
+      console.log("\n");
+      throw new Error("Game took too long");
+    }
 
     if (checkWin(game, 1)) {
       console.log("\n");
