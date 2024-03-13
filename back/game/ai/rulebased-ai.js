@@ -48,6 +48,10 @@ function computeMove(gameState, player) {
     );
   }
 
+  if (playerPath.length === 0 && walls.length === 0) {
+    return playerPosition;
+  }
+
   if (playerPath.length < opponentPath.length || walls.length === 0) {
     return playerPath[1];
   }
