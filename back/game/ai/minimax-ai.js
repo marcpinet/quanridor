@@ -30,13 +30,15 @@ const transpositionTable = new TranspositionTable();
 function createUniqueKey(gameState, player) {
   const { playerspositions, p1walls, p2walls, vwalls, hwalls } = gameState;
   const [p1x, p1y, p2x, p2y] = [...playerspositions[0], ...playerspositions[1]];
-  const vwallsSum = vwalls.reduce((sum, [x, y]) => sum + x + y, 0);
-  const hwallsSum = hwalls.reduce((sum, [x, y]) => sum + x + y, 0);
-  return `${p1x}${p1y}${p2x}${p2y}${p1walls}${p2walls}${vwallsSum}${hwallsSum}${player}`;
-}
-
-function selectRandom(array) {
-  return array[Math.floor(Math.random() * array.length)];
+  const vwalls_s = vwalls
+    .map(([x, y]) => `${x}${y}`)
+    .sort()
+    .join("");
+  const hwalls_s = hwalls
+    .map(([x, y]) => `${x}${y}`)
+    .sort()
+    .join("");
+  return `${p1x}${p1y}${p2x}${p2y}${p1walls}${p2walls}${vwalls_s}${hwalls_s}${player}`;
 }
 
 function determineDefaultMove(gameState, player) {
@@ -257,9 +259,9 @@ function computeMove(gameState, player, depth = 2) {
     return aiPath[1];
   }
 
-  if (aiPath.length <= 4 || opponentPath.length <= 4) {
-    depth = 4;
-  }
+  //if (aiPath.length <= 4 || opponentPath.length <= 4) {
+  //  depth = 4;
+  //}
 
   const { move } = minimax(
     gameState,
