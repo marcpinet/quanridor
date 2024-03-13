@@ -199,11 +199,6 @@ function computeMove(
   timeLimit = 500,
   explorationParam = 1.414,
 ) {
-  const openingMove = getOpeningMove(gameState, player);
-  if (openingMove) {
-    return openingMove;
-  }
-
   const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   const { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
@@ -310,14 +305,6 @@ function getBackwardMove(gameState, player) {
   }
 
   return maxDistanceMove;
-}
-
-function getOpeningMove(gameState, player) {
-  if (gameState.turn <= 5) {
-    // Implement common opening moves based on the current game state and turn
-    // Return the opening move if applicable, otherwise return null
-  }
-  return null;
 }
 
 module.exports = { computeMove };
