@@ -84,21 +84,6 @@ function simulateGameBetween2AI() {
   console.log("Turns: ", game.turn);
 }
 
-// USE THIS TO FIX GETSHORTESTPATH
-//const test = {playerspositions:[[4,4],[0,2]],p1walls:0,p2walls:0,vwalls:[[4,1,"v"],[7,4,"v"],[1,4,"v"],[4,5,"v"]],hwalls:[[2,2,"h"],[4,2,"h"],[0,2,"h"],[6,1,"h"],[3,1,"h"],[1,1,"h"],[6,3,"h"],[4,3,"h"],[7,0,"h"],[7,6,"h"],[7,5,"h"],[2,3,"h"],[0,6,"h"],[2,6,"h"],[4,6,"h"],[4,4,"h"]],turn:100,winner:null,board_visibility:[[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1,1]],author:"admin",players:["admin","debug"],status:1,created:"2024-03-13T02:41:32.514Z"};
-//const p2goals = [
-//  [0, 8],
-//  [1, 8],
-//  [2, 8],
-//  [3, 8],
-//  [4, 8],
-//  [5, 8],
-//  [6, 8],
-//  [7, 8],
-//  [8, 8],
-//];
-//console.log(getShortestPath(test.playerspositions[1], p2goals, test, 2));
-
 try {
   simulateGameBetween2AI();
 } catch (e) {

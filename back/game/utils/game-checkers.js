@@ -419,12 +419,19 @@ function getShortestPath(start, goals, gameState, player) {
     return totalPath;
   }
 
+  const originalPosition = [...gameState.playerspositions[player - 1]];
+
   while (queue.length > 0) {
     let current = queue.shift();
+
+    // Mettre à jour temporairement la position du joueur dans gameState
+    gameState.playerspositions[player - 1] = current;
 
     // Vérifier si le but est atteint
     for (let goal of goals) {
       if (current[0] === goal[0] && current[1] === goal[1]) {
+        // Remettre la position d'origine du joueur dans gameState avant de retourner le chemin
+        gameState.playerspositions[player - 1] = originalPosition;
         return reconstructPath(cameFrom, current);
       }
     }
@@ -441,6 +448,8 @@ function getShortestPath(start, goals, gameState, player) {
     }
   }
 
+  // Remettre la position d'origine du joueur dans gameState avant de retourner un chemin vide
+  gameState.playerspositions[player - 1] = originalPosition;
   return []; // Aucun chemin trouvé
 }
 
