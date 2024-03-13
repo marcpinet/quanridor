@@ -1,6 +1,6 @@
 const {
   checkWin,
-  cloneGameState,
+  getPossibleMoves,
   getPossibleMovesAndStrategicWalls,
   getShortestPath,
   applyMove,
@@ -157,14 +157,26 @@ class Node {
     while (true) {
       const { possibleMoves, possibleWalls } =
         getPossibleMovesAndStrategicWalls(state, currentPlayer);
-      const concatenatedMoves = possibleMoves.concat(possibleWalls);
+      const wallsLeft = currentPlayer === 1 ? state.p1walls : state.p2walls;
 
-      if (concatenatedMoves.length === 0) break;
+      if (Math.random() < 0.7 || wallsLeft === 0) {
+        // Move the pawn to one of the shortest paths
+        const move = getNextMoveToFollowShortestPath(state, currentPlayer);
+        if (!move) break;
+        state = applyMove(state, move, currentPlayer);
+      } else {
+        // Place a probable wall randomly or move the pawn backwards
+        if (possibleWalls.length > 0) {
+          const randomWall =
+            possibleWalls[Math.floor(Math.random() * possibleWalls.length)];
+          state = applyMove(state, randomWall, currentPlayer);
+        } else {
+          const backwardMove = getBackwardMove(state, currentPlayer);
+          if (!backwardMove) break;
+          state = applyMove(state, backwardMove, currentPlayer);
+        }
+      }
 
-      const move = heuristicSelect(concatenatedMoves, state, currentPlayer);
-      if (move === undefined) break;
-
-      state = applyMove(state, move, currentPlayer);
       currentPlayer = currentPlayer === 1 ? 2 : 1;
 
       if (checkWin(state, player)) return 1;
@@ -187,6 +199,11 @@ function computeMove(
   timeLimit = 500,
   explorationParam = 1.414,
 ) {
+  const openingMove = getOpeningMove(gameState, player);
+  if (openingMove) {
+    return openingMove;
+  }
+
   const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   const { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
@@ -232,11 +249,18 @@ function computeMove(
 
     // Expansion
     if (node.untriedMoves.size > 0) {
-      const move = heuristicSelect(
-        Array.from(node.untriedMoves),
-        state,
-        player,
-      );
+      const opponentWallsLeft = player === 1 ? state.p2walls : state.p1walls;
+      let move;
+
+      if (opponentWallsLeft === 0) {
+        const { possibleMoves, possibleWalls } =
+          getPossibleMovesAndStrategicWalls(state, player);
+        const candidateMoves = [...possibleMoves, ...possibleWalls];
+        move = heuristicSelect(candidateMoves, state, player);
+      } else {
+        move = heuristicSelect(Array.from(node.untriedMoves), state, player);
+      }
+
       state = applyMove(state, move, player);
       node = node.addChild(move, state, player);
     }
@@ -262,6 +286,38 @@ function computeMove(
   }
 
   return bestMove;
+}
+
+function getBackwardMove(gameState, player) {
+  const playerPosition = gameState.playerspositions[player - 1];
+  const opponentPosition = gameState.playerspositions[player === 1 ? 1 : 0];
+  const playerGoals = player === 1 ? p1goals : p2goals;
+
+  const possibleMoves = getPossibleMoves(gameState, playerPosition, player);
+
+  let maxDistanceMove = null;
+  let maxDistance = -Infinity;
+
+  for (const move of possibleMoves) {
+    const distance =
+      getManhattanDistance(move, playerGoals) +
+      getManhattanDistance(move, opponentPosition);
+
+    if (distance > maxDistance) {
+      maxDistance = distance;
+      maxDistanceMove = move;
+    }
+  }
+
+  return maxDistanceMove;
+}
+
+function getOpeningMove(gameState, player) {
+  if (gameState.turn <= 5) {
+    // Implement common opening moves based on the current game state and turn
+    // Return the opening move if applicable, otherwise return null
+  }
+  return null;
 }
 
 module.exports = { computeMove };
