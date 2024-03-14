@@ -6,5 +6,11 @@ cd ~/ps8-24-quanridor/
 # Pull the latest changes
 git pull origin main
 
-# Restart Docker containers
-docker-compose down && docker-compose up --build -d
+# Stop and remove containers
+docker-compose down
+
+# Build and start containers
+docker-compose up -d
+
+# Remove unused images, containers, and volumes
+docker system prune -f
