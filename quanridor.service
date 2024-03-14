@@ -4,6 +4,7 @@ After=multi-user.target
 
 [Service]
 Restart=always
+RuntimeMaxSec=86400
 User=ec2-user
 Type=simple
 ExecStart=/home/ec2-user/ps8-24-quanridor/.env/bin/python /home/ec2-user/ps8-24-quanridor/webhook.py
