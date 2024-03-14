@@ -7,6 +7,7 @@ const {
   getPossibleWalls,
   applyMove,
   canWin,
+  areGoalsInsidePath,
   p1goals,
   p2goals,
 } = require("../utils/game-checkers.js");
@@ -248,18 +249,55 @@ function evaluate(gameState, player, depthPenalty) {
 function computeMove(gameState, player, depth = 2) {
   const opponent = player === 1 ? 2 : 1;
   const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
-  const opponentGoals = opponent === 1 ? p1goals : p2goals;
-  let { canWin: canWinPlayer, path: aiPath } = canWin(gameState, player);
+  let { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   let { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
     opponent,
   );
 
-  if (canWinPlayer && !canWinOpponent && playerWalls === 0) {
-    return aiPath[1];
+  if (playerPath.length === 0) {
+    playerPath = getShortestPath(
+      playerPosition,
+      [opponentPosition],
+      gameState,
+      player,
+    );
+
+    if (playerPath.length === 0) {
+      return gameState.playerspositions[player - 1];
+    } else if (playerWalls === 0) {
+      return playerPath[1];
+    }
   }
 
-  //if (aiPath.length <= 4 || opponentPath.length <= 4) {
+  if (
+    (playerPath.length > 1 &&
+      canWinPlayer &&
+      !canWinOpponent &&
+      playerWalls === 0) ||
+    playerWalls === 0
+  ) {
+    return playerPath[1];
+  } else if (
+    canWinOpponent &&
+    areGoalsInsidePath(opponentPath, player === 1 ? p2goals : p1goals)
+  ) {
+    const wallMoves = getPossibleMovesAndStrategicWalls(
+      gameState,
+      player,
+    ).possibleWalls;
+    for (let wallMove of wallMoves) {
+      const newState = applyMove(gameState, wallMove, player);
+      if (!newState) continue;
+      const { canWin: canStillWinOpponent } = canWin(
+        newState,
+        player === 1 ? 2 : 1,
+      );
+      if (!canStillWinOpponent) return wallMove;
+    }
+  }
+
+  //if (playerPath.length <= 4 || opponentPath.length <= 4) {
   //  depth = 4;
   //}
 
@@ -272,19 +310,6 @@ function computeMove(gameState, player, depth = 2) {
     depth,
     player,
   );
-
-  if (move.length === 3) {
-    const gameStateAfterWall = applyMove(gameState, move, player);
-    const opponentPathAfterWall = getShortestPath(
-      gameStateAfterWall.playerspositions[opponent - 1],
-      opponentGoals,
-      gameStateAfterWall,
-      opponent,
-    );
-    if (opponentPathAfterWall.length > opponentPath.length + 2) {
-      return move;
-    }
-  }
 
   if (
     !move ||

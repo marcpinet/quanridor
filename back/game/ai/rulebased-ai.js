@@ -10,6 +10,7 @@ function computeMove(gameState, player) {
   let playerPosition = gameState.playerspositions[player - 1];
   let opponent = player === 1 ? 2 : 1;
   let opponentPosition = gameState.playerspositions[opponent - 1];
+  let playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
 
   let playerPath = getShortestPath(
     playerPosition,
@@ -31,6 +32,10 @@ function computeMove(gameState, player) {
 
   let walls = getStrategicWalls(gameState, player);
 
+  if (walls.length === 0 && playerPath.length > 1) {
+    return playerPath[1];
+  }
+
   if (playerPath.length === 0) {
     playerPath = getShortestPath(
       playerPosition,
@@ -38,7 +43,14 @@ function computeMove(gameState, player) {
       gameState,
       player,
     );
+
+    if (playerPath.length === 0) {
+      return gameState.playerspositions[player - 1];
+    } else if (playerWalls === 0) {
+      return playerPath[1];
+    }
   }
+
   if (opponentPath.length === 0) {
     opponentPath = getShortestPath(
       opponentPosition,

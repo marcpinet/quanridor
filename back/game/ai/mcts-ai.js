@@ -199,13 +199,35 @@ function computeMove(
   timeLimit = 500,
   explorationParam = 1.414,
 ) {
+  const playerWalls = player === 1 ? gameState.p1walls : gameState.p2walls;
   const { canWin: canWinPlayer, path: playerPath } = canWin(gameState, player);
   const { canWin: canWinOpponent, path: opponentPath } = canWin(
     gameState,
     player === 1 ? 2 : 1,
   );
 
-  if (canWinPlayer) {
+  if (playerPath.length === 0) {
+    playerPath = getShortestPath(
+      playerPosition,
+      [opponentPosition],
+      gameState,
+      player,
+    );
+
+    if (playerPath.length === 0) {
+      return gameState.playerspositions[player - 1];
+    } else if (playerWalls === 0) {
+      return playerPath[1];
+    }
+  }
+
+  if (
+    (playerPath.length > 1 &&
+      canWinPlayer &&
+      !canWinOpponent &&
+      playerWalls === 0) ||
+    playerWalls === 0
+  ) {
     return playerPath[1];
   } else if (
     canWinOpponent &&
