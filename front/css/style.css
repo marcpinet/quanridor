@@ -49,6 +49,7 @@ svg {
   background: url("../assets/user-circle.svg") center/50% no-repeat;
   width: 100%;
   height: 50%;
+  filter: none;
 }
 
 #bot {
@@ -607,27 +608,33 @@ canvas {
   font-size: 38px;
 }
 
-.popup-content {
+.scrollbar-content {
   padding: 10px;
-  height: 58vh;
+  height: 78%;
   overflow-y: auto;
   scrollbar-color: #EE4F3A rgba(1,5,37,1);
 }
 
+.scrollbar-friend-content {
+  padding: 10px;
+  height: 76vh;
+  overflow-y: auto;
+  scrollbar-color: #EE4F3A rgba(1,5,37,1);
+}
 
-.popup-content::-webkit-scrollbar {
+.scrollbar-content::-webkit-scrollbar {
   z-index: 2;
   border-radius: 10px;
   border: 20px solid #4650A8;
   padding: 10px;
 }
 
-.popup-content::-webkit-scrollbar-thumb {
+.scrollbar-content::-webkit-scrollbar-thumb {
   background-color: #4650A8;
   z-index: 2;
 }
 
-.popup-content::-webkit-scrollbar-track {
+.scrollbar-content::-webkit-scrollbar-track {
   background-color: #4650A8;
   border-radius: 10px;
 }
@@ -636,6 +643,13 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  border-radius: 30px;
+}
+
+.friends {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
   border-radius: 30px;
 }
 
@@ -674,8 +688,7 @@ canvas {
   text-align: center;
 }
 
-/* Hide scrollbar arrows */
-.popup-content::-webkit-scrollbar-button {
+.scrollbar-content::-webkit-scrollbar-button {
   display: none;
 }
 
@@ -750,4 +763,125 @@ canvas {
   cursor: pointer;
   filter: none;
   width: 35px;
+}
+
+.friends-header{
+  display: flex;
+  gap: 30px;
+  background-color: #4650A8;
+  border-top-left-radius: 38px;
+  border-top-right-radius: 38px;
+  width: 100%;
+  height: 60px;
+  padding: 10px;
+  text-align: center;
+  justify-content: center;
+  font-weight: bold;
+  align-items: center;
+  color: white;
+  font-size: 38px;
+  margin-top: -10px;
+}
+
+#add-friend{
+  background: url("../assets/add-friend.svg") center/50px no-repeat;
+
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#search{
+  background: url("../assets/search.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#small-user{
+  background: url("../assets/user-circle.svg") center/50% no-repeat;
+  width: 90px;
+  height: 90px;
+  filter: none;
+}
+
+.friend-container{
+  display: flex;
+  align-items: center;
+  width: 300px;
+  background-color: rgba(1,5,37,1);
+  border-radius: 30px;
+  padding: -10px;
+  gap:10px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+#friend-profile{
+  display: none;
+  position: absolute;
+  align-items: center;
+  padding: 10px;
+  border-radius: 30px;
+  background-color: rgba(1,5,37,1);
+  cursor: pointer;
+  width: 250px;
+  height: 300px;
+  left: 25%;
+  padding-top: 50px;
+}
+
+.friend-footer{
+  background-color: #4650A8;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  padding: 10px;
+  padding-bottom: 15px;
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  font-size: 38px;
+}
+
+#unfriend{
+  background: url("../assets/unfriend.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#chat {
+  background: url("../assets/chat.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#play {
+  background: url("../assets/play.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }

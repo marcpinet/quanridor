@@ -3,6 +3,8 @@ const popup = document.getElementById("popup");
 const unreadCount = document.getElementById("unread-count");
 const sideNotification = document.getElementById("side-notification");
 const closeArrowSide = document.getElementById("close-arrow");
+const friendList = document.getElementsByClassName("friend-container");
+const friendProfile = document.getElementById("friend-profile");
 
 let notificationCount = 0;
 
@@ -40,6 +42,43 @@ window.addEventListener("click", (event) => {
   ) {
     popup.style.display = "none";
   }
+
+  if (
+    !event.target.matches(".friend-container") &&
+    !event.target.matches(".friend-profile") &&
+    !friendsContainer.contains(event.target)
+  ) {
+    if (currentSelectedFriendContainer !== null) {
+      currentSelectedFriendContainer.style.backgroundColor =
+        "rgba(1, 5, 37, 1)";
+    }
+    currentSelectedFriendContainer = null;
+    friendProfile.style.display = "none";
+  }
+});
+
+const friendsContainer = document.querySelector(".friends");
+let currentSelectedFriendContainer = null;
+
+friendsContainer.addEventListener("click", (event) => {
+  const clickedElement = event.target.closest(".friend-container");
+
+  if (!clickedElement || !friendsContainer.contains(clickedElement)) return;
+
+  if (currentSelectedFriendContainer !== null) {
+    currentSelectedFriendContainer.style.backgroundColor = "rgba(1, 5, 37, 1)";
+  }
+
+  if (clickedElement === currentSelectedFriendContainer) {
+    currentSelectedFriendContainer = null;
+    friendProfile.style.display = "none";
+    return;
+  }
+
+  currentSelectedFriendContainer = clickedElement;
+  currentSelectedFriendContainer.style.backgroundColor = "#4650A8";
+  friendProfile.style.display =
+    currentSelectedFriendContainer == null ? "none" : "block";
 });
 
 sideNotification.addEventListener("click", (event) => {
