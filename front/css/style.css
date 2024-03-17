@@ -601,3 +601,91 @@ canvas {
   align-items: center;
   font-weight: bold;
 }
+
+.popup {
+  display: none;
+  position: absolute;
+  width: 35vh;
+  height: 75vh;
+  top: 15%;
+  right: 35vh;
+  background-color: rgba(1,5,37,1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 38px;
+}
+
+.popup-header {
+  background-color: #4650A8;
+  padding: 20px 10px;
+  border-top-left-radius: 38px;
+  border-top-right-radius: 38px;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  font-size: 38px;
+}
+
+.popup-content {
+  padding: 10px;
+  height: 58vh;
+  overflow-y: auto;
+  scrollbar-color: #EE4F3A rgba(1,5,37,1);
+}
+
+
+/* Track */
+.popup-content::-webkit-scrollbar {
+  z-index: 2;
+  border-radius: 10px;
+  border: 20px solid #4650A8;
+}
+
+/* Thumb */
+.popup-content::-webkit-scrollbar-thumb {
+  background-color: #4650A8;
+  z-index: 2;
+}
+
+/* Track */
+.popup-content::-webkit-scrollbar-track {
+  background-color: #4650A8; /* Color of the track */
+  border-radius: 10px; /* Rounded corners of the track */
+}
+
+.notifications {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  border-radius: 38px;
+}
+
+.notification{
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.notification-container{
+  background-color: #4650A8;
+  border-radius: 25px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.notification-content{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+}
+
+.date {
+  font-size: 18px;
+  font-weight: normal;
+  color: #F1A7FF;
+  text-align: center;
+}
+
+/* Hide scrollbar arrows */
+.popup-content::-webkit-scrollbar-button {
+  display: none;
+}

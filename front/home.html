@@ -26,11 +26,39 @@
         <a><button class="big-button">Achievements</button></a>
       </div>
       <div class="vertical-container">
-        <div class="vertical-container">
+        <div class="horizontal-container">
+          <div class="vertical-container">
+          <svg id="bell">
+          </svg>
+          <div id="popup" class="popup">
+            <div class="popup-header">Notifications</div>
+            <div class="popup-content">
+              <div class="notifications">
+                <p class="date">Fri. 18:00</p>
+                <div class="notification-container">
+                  <p class="notification">friend1's chat</p>
+                  <p class="notification-content">I'm waiting...</p>
+                </div>
+                <div class="notification-container">
+                  <p class="notification">Notification 9</p>
+                  <p class="notification-content">Additional content for Notification 10</p>
+                </div>
+                <div class="notification-container">
+                  <p class="notification">Notification 8</p>
+                  <p class="notification-content">Additional content for Notification 10</p>
+                </div>
+                <div class="notification-container">
+                  <p class="notification">Notification 7</p>
+                  <p class="notification-content">Additional content for Notification 10</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
           <a href="index.html"
             ><button class="small-button" onclick="logout()">Log out</button></a
           >
-          <svg id="bell"></svg>
         </div>
         <div class="profile-box">
           <div class="vertical-small-container">
@@ -47,5 +75,6 @@
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/svg.js"></script>
     <script src="js/user-info-retriever.js"></script>
+    <script src="js/home.js"></script>
   </body>
 </html>
