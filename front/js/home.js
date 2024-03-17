@@ -45,7 +45,8 @@ window.addEventListener("click", (event) => {
 
   if (
     !event.target.matches(".friend-container") &&
-    !event.target.matches(".friend-profile") &&
+    !event.target.matches("#friend-profile") &&
+    !friendProfile.contains(event.target) &&
     !friendsContainer.contains(event.target)
   ) {
     if (currentSelectedFriendContainer !== null) {
