@@ -28,8 +28,11 @@
       <div class="vertical-container">
         <div class="horizontal-container">
           <div class="vertical-container">
-          <svg id="bell">
-          </svg>
+            <div class="bell-container">
+            <svg id="bell">
+            </svg>
+            <span id="unread-count">0</span>
+          </div>
           <div id="popup" class="popup">
             <div class="popup-header">Notifications</div>
             <div class="popup-content">
@@ -37,7 +40,7 @@
                 <p class="date">Fri. 18:00</p>
                 <div class="notification-container">
                   <p class="notification">friend1's chat</p>
-                  <p class="notification-content">I'm waiting...</p>
+                  <p class="notification-content">I'm waiting...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
                 </div>
                 <div class="notification-container">
                   <p class="notification">Notification 9</p>
@@ -70,6 +73,12 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="side-notification">
+      <p class="notification">friend1's chat</p>
+      <svg id="close-arrow"></svg>
+      <p class="notification-content">I'm waiting. I wanna play with you, it's been a while dudeee</p>
     </div>
 
     <script src="js/auto-redirect-if-not-logged.js"></script>
