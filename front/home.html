@@ -13,7 +13,8 @@
   <body>
     <div class="horizontal-container">
       <div class="vertical-container">
-        <div class="friend-box">
+        <!-- friend list -->
+        <div class="friend-box" id="friend-list">
           <div class="vertical-small-container">
             <div class="friends-header">Friends
               <svg id="search"></svg>
@@ -50,6 +51,65 @@
                   <div class="text">friend7</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <!-- chat -->
+        <div class="friend-box" id="friend-chat">
+          <div class="vertical-small-container">
+            <div class="friends-header" style="justify-content: flex-start; gap:50px;">
+              <svg id="small-back-arrow"></svg>
+              <div class="text">friend1</div>
+            </div>
+            <div id="message-list">
+              <div class="date">Let's start chatting!</div>
+              <br />
+              <div class="friend-text-container">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container" style="flex-direction: row-reverse;">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container" style="flex-direction: row-reverse;">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container" style="flex-direction: row-reverse;">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+              <div class="friend-text-container" style="flex-direction: row-reverse;">
+                <div class="message-container">
+                  <div class="message-content">Here is a message from a friend!</div>
+                </div>
+                <svg id="small-user"></svg>
+              </div>
+            </div>
+            <div class="chat-footer">
+              <input id="message-input" type="text" placeholder="Type a message..." />
+              <svg id="send"></svg>
             </div>
           </div>
         </div>
