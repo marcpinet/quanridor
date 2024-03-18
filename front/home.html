@@ -8,7 +8,6 @@
       href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
     />
     <link rel="stylesheet" href="css/style.css" type="text/css" />
-    <script src="js/logout.js"></script>
   </head>
   <body>
     <div class="horizontal-container">
@@ -16,40 +15,12 @@
         <!-- friend list -->
         <div class="friend-box" id="friend-list">
           <div class="vertical-small-container">
-            <div class="friends-header">Friends
-              <svg id="search"></svg>
-              <svg id="add-friend"></svg>
+            <div class="friends-header">
+              Friends <svg id="search"></svg> <svg id="add-friend"></svg>
             </div>
             <div class="scrollbar-friend-content">
               <div class="friends">
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend1</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend2</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend3</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend4</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend5</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend6</div>
-                </div>
-                <div class="friend-container">
-                  <svg id="small-user"></svg>
-                  <div class="text">friend7</div>
-                </div>
+                <!-- Les vrais amis seront insérés ici dynamiquement -->
               </div>
             </div>
           </div>
@@ -57,55 +28,18 @@
         <!-- chat -->
         <div class="friend-box" id="friend-chat">
           <div class="vertical-small-container">
-            <div class="friends-header" style="justify-content: flex-start; gap:50px;">
+            <div
+              class="friends-header"
+              style="justify-content: flex-start; gap: 50px"
+            >
               <svg id="small-back-arrow"></svg>
-              <div class="text">friend1</div>
+              <div class="text" id="selected-friend-name"></div>
+              <input type="hidden" id="selected-friend-id" value="" />
             </div>
             <div id="message-list">
               <div class="date">Let's start chatting!</div>
               <br />
-              <div class="friend-text-container">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container" style="flex-direction: row-reverse;">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container" style="flex-direction: row-reverse;">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container" style="flex-direction: row-reverse;">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
-              <div class="friend-text-container" style="flex-direction: row-reverse;">
-                <div class="message-container">
-                  <div class="message-content">Here is a message from a friend!</div>
-                </div>
-                <svg id="small-user"></svg>
-              </div>
+              <!-- Les messages du chat seront insérés ici dynamiquement -->
             </div>
             <div class="chat-footer">
               <input id="message-input" type="text" placeholder="Type a message..." />
@@ -116,16 +50,15 @@
       </div>
       <div id="friend-profile">
         <div class="vertical-small-container">
-        <svg id="user"></svg>
-        <h1 class="text">friend1</h1>   
-        <div class="friend-footer">
-          <div class="horizontal-small-container">
-          <svg id="unfriend"></svg>
-          <svg id="chat"></svg>
-          <svg id="play"></svg>
+          <svg id="user"></svg>
+          <h1 class="text" id="selected-friend-profile-name"></h1>
+          <div class="friend-footer">
+            <div class="horizontal-small-container">
+              <svg id="unfriend"></svg> <svg id="chat"></svg>
+              <svg id="play"></svg>
+            </div>
+          </div>
         </div>
-        </div>     
-      </div>
       </div>
       <div class="vertical-container">
         <a href="home.html"><div class="small-title"></div></a>
@@ -137,36 +70,17 @@
         <div class="horizontal-container">
           <div class="vertical-container">
             <div class="bell-container">
-            <svg id="bell">
-            </svg>
-            <span id="unread-count">0</span>
-          </div>
-          <div id="popup" class="popup">
-            <div class="popup-header">Notifications</div>
-            <div class="scrollbar-content">
-              <div class="notifications">
-                <p class="date">Fri. 18:00</p>
-                <div class="notification-container">
-                  <p class="notification">friend1's chat</p>
-                  <p class="notification-content">I'm waiting...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+              <svg id="bell"></svg> <span id="unread-count">0</span>
+            </div>
+            <div id="popup" class="popup">
+              <div class="popup-header">Notifications</div>
+              <div class="scrollbar-content">
+                <div class="notifications">
+                  <!-- Les notifications seront insérées ici dynamiquement -->
                 </div>
-                <div class="notification-container">
-                  <p class="notification">Notification 9</p>
-                  <p class="notification-content">Additional content for Notification 10</p>
-                </div>
-                <div class="notification-container">
-                  <p class="notification">Notification 8</p>
-                  <p class="notification-content">Additional content for Notification 10</p>
-                </div>
-                <div class="notification-container">
-                  <p class="notification">Notification 7</p>
-                  <p class="notification-content">Additional content for Notification 10</p>
-                </div>
-
               </div>
             </div>
           </div>
-        </div>
           <a href="index.html"
             ><button class="small-button" onclick="logout()">Log out</button></a
           >
@@ -186,12 +100,16 @@
     <div id="side-notification">
       <p class="notification">friend1's chat</p>
       <svg id="close-arrow"></svg>
-      <p class="notification-content">I'm waiting. I wanna play with you, it's been a while dudeee</p>
+      <p class="notification-content">
+        I'm waiting. I wanna play with you, it's been a while dudeee
+      </p>
     </div>
-
+    <script src="js/socket.io.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/svg.js"></script>
     <script src="js/user-info-retriever.js"></script>
+    <script src="js/friend-list.js"></script>
     <script src="js/home.js"></script>
+    <script src="js/logout.js"></script>
   </body>
 </html>

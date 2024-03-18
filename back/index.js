@@ -3,7 +3,9 @@ const http = require("http");
 // Let's import our logic.
 const fileQuery = require("./query-managers/front.js");
 const apiQuery = require("./query-managers/api.js");
-const createSocket = require("./game/ai/socket.js");
+const createSocketGame = require("./game/ai/socket.js");
+const createSocketSocial = require("./social/social.js");
+const { Server } = require("socket.io");
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
  ** will be called whenever a new request arrives to the server.
@@ -31,10 +33,12 @@ const server = http.createServer(function (request, response) {
   // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
 });
 
-const io = createSocket(server);
+// We need to create a socket server to handle real-time communication.
+const io = new Server(server);
+createSocketGame(io);
+// For social
+createSocketSocial(io);
 
 server.listen(8000, () => {
   console.log("Server is running on port 8000");
 });
-
-module.exports = io;
