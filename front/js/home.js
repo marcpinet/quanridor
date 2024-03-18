@@ -80,6 +80,8 @@ friendsContainer.addEventListener("click", (event) => {
   currentSelectedFriendContainer.style.backgroundColor = "#4650A8";
   friendProfile.style.display =
     currentSelectedFriendContainer == null ? "none" : "block";
+  friendProfile.querySelector(".text").textContent =
+    clickedElement.querySelector(".text").textContent;
 });
 
 sideNotification.addEventListener("click", (event) => {
