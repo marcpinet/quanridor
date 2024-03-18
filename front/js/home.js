@@ -116,6 +116,8 @@ chatButton.addEventListener("click", function () {
   friendChat.style.display = "block";
   var scrollableDiv = document.getElementById("message-list");
   scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+  friendChat.querySelector(".text").textContent =
+    currentSelectedFriendContainer.querySelector(".text").textContent;
 });
 
 closeChatButton.addEventListener("click", function () {
