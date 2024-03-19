@@ -56,6 +56,7 @@ async function manageRequest(request, response) {
     ) {
       handleLogin(request, response);
     } else {
+      console.log("No token found in headers");
       response.writeHead(404, { "Content-Type": "application/json" });
       response.end(
         JSON.stringify({
@@ -74,7 +75,21 @@ async function manageRequest(request, response) {
       return;
     }
 
-    if (normalizedPath === `${apiPath}/game` && request.method === "GET") {
+    // Social
+    if (
+      normalizedPath === `${apiPath}/notifications` &&
+      request.method === "GET"
+    ) {
+      handleNotificationsGet(request, response, decodedToken);
+    } else if (
+      normalizedPath === `${apiPath}/notifications/markAsRead` &&
+      request.method === "PUT"
+    ) {
+      handleNotificationsMarkAsRead(request, response, decodedToken);
+    }
+
+    // Game
+    else if (normalizedPath === `${apiPath}/game` && request.method === "GET") {
       handleGameGet(request, response, decodedToken);
     } else if (
       normalizedPath === `${apiPath}/users` &&
@@ -313,6 +328,74 @@ async function handleUserGet(request, response, decodedToken) {
     console.error("Error in handleUserGet:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(JSON.stringify({ message: "Failed to retrieve user" }));
+  }
+}
+
+// ------------------------------ FRIENDS HANDLING ------------------------------
+
+async function handleNotificationsGet(request, response, decodedToken) {
+  addCors(response, ["GET"]);
+
+  try {
+    const db = getDB();
+    const notifications = db.collection("notifications");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const unreadNotifications = await notifications
+      .find({ to: user._id, read: false })
+      .toArray();
+
+    response.end(JSON.stringify(unreadNotifications));
+  } catch (e) {
+    console.error("Error in handleNotificationsGet:", e);
+    if (!response.headersSent) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Failed to retrieve notifications" }),
+      );
+    }
+  }
+}
+
+async function handleNotificationsMarkAsRead(request, response, decodedToken) {
+  addCors(response, ["PUT"]);
+
+  try {
+    const db = getDB();
+    const notifications = db.collection("notifications");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    await notifications.updateMany(
+      { to: user._id, read: false },
+      { $set: { read: true } },
+    );
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Notifications marked as read" }));
+  } catch (e) {
+    console.error("Error in handleNotificationsMarkAsRead:", e);
+    if (!response.headersSent) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Failed to mark notifications as read" }),
+      );
+    }
   }
 }
 

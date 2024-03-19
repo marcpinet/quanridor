@@ -53,6 +53,24 @@ function createSocketSocial(io) {
         await messages.insertOne(message);
         socialNamespace.to(to).emit("newMessage", message);
         console.log("Message transferred to recipient");
+      } catch (error) {
+        console.log(error);
+        callback(error);
+      }
+
+      const notifications = db.collection("notifications");
+      const notification = {
+        title: "New message from " + sender.username,
+        message: content,
+        to: new ObjectId(to),
+        read: false,
+        timestamp: new Date(),
+      };
+
+      try {
+        await notifications.insertOne(notification);
+        socialNamespace.to(to).emit("newMessageNotification", notification);
+        console.log("Notification sent to recipient");
         callback();
       } catch (error) {
         console.log(error);
@@ -100,6 +118,32 @@ function createSocketSocial(io) {
 
       // Envoyer les messages à l'utilisateur
       socket.emit("messageHistory", messageDocs);
+    });
+
+    socialNamespace.on("sendMessageNotification", async (data, callback) => {
+      const { title, message, to } = data;
+      console.log("Sending notification to", to, ":", title, message);
+
+      // Stocker la notification dans la base de données
+      const db = getDB();
+      const notifications = db.collection("notifications");
+      const notification = {
+        title,
+        message,
+        to: new ObjectId(to),
+        read: false,
+        timestamp: new Date(),
+      };
+
+      try {
+        await notifications.insertOne(notification);
+        socialNamespace.to(to).emit("newMessageNotification", notification);
+        console.log("Notification sent to recipient");
+        callback();
+      } catch (error) {
+        console.log(error);
+        callback(error);
+      }
     });
   });
 

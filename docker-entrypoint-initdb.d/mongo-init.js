@@ -61,4 +61,14 @@ db.messages.insertOne({
   date: new Date(),
 });
 
+db.createCollection("notifications");
+
+db.notifications.insertOne({
+  title: "New message from X",
+  message: "Hello world!",
+  to: null, // Will be an object ID
+  read: false,
+  timestamp: new Date(),
+});
+
 // TODO: Add more more fields for statistics and other stuff

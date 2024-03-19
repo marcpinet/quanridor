@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   const baseUrl = window.location.origin;
+
   fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {
@@ -146,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const content = messageInput.value.trim();
     if (content !== "") {
+      // Sending the message to the recipient
       socket.emit(
         "sendMessage",
         {
@@ -163,6 +165,19 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         },
       );
+      // Sending notification to the recipient
+      //socket.emit("sendMessageNotification", {
+      //  title: "New message from X",
+      //  message: content,
+      //  to: friendId,
+      //},
+      //(error) => {
+      //  if (error) {
+      //    console.error("Error sending notification:", error);
+      //  } else {
+      //    console.log("Notification sent successfully!");
+      //  }
+      //});
     }
   };
 
@@ -183,6 +198,116 @@ document.addEventListener("DOMContentLoaded", function () {
     messages.forEach((message) => {
       addMessageToChat(message, message.from !== currentUserId);
     });
+  });
+
+  socket.on("newMessageNotification", function (notification) {
+    incrementNotificationCount();
+    displaySideNotification(notification.title, notification.message);
+  });
+
+  // Récupérer les notifications non lues lors du chargement de la page
+  fetch(`${baseUrl}/api/notifications`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((notifications) => {
+      notificationCount = notifications.length;
+      unreadCount.textContent = notificationCount;
+      unreadCount.style.display = notificationCount > 0 ? "block" : "none";
+    })
+    .catch((error) => {
+      console.error(
+        "Error fetching notifications at",
+        `${baseUrl}/api/notifications`,
+        ":",
+        error,
+      );
+    });
+
+  // Marquer les notifications comme lues lors de l'ouverture de la popup
+  bellIcon.addEventListener("click", () => {
+    fetch(`${baseUrl}/api/notifications`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((notifications) => {
+        const notificationsContainer = document.querySelector(".notifications");
+        notificationsContainer.innerHTML = ""; // Clear existing notifications
+
+        if (notifications.length === 0) {
+          const noNotificationsMessage = document.createElement("p");
+          noNotificationsMessage.textContent = "No unread notifications";
+          notificationsContainer.appendChild(noNotificationsMessage);
+        } else {
+          const dateElement = document.createElement("p");
+          dateElement.classList.add("date");
+          dateElement.textContent = new Date().toLocaleString([], {
+            weekday: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          notificationsContainer.appendChild(dateElement);
+
+          notifications.forEach((notification) => {
+            const notificationContainer = document.createElement("div");
+            notificationContainer.classList.add("notification-container");
+
+            const notificationTitle = document.createElement("p");
+            notificationTitle.classList.add("notification");
+            notificationTitle.textContent = notification.title;
+            notificationContainer.appendChild(notificationTitle);
+
+            const notificationContent = document.createElement("p");
+            notificationContent.classList.add("notification-content");
+            notificationContent.textContent = notification.message;
+            notificationContainer.appendChild(notificationContent);
+
+            notificationsContainer.appendChild(notificationContainer);
+          });
+        }
+
+        // Marquer les notifications comme lues
+        fetch(`${baseUrl}/api/notifications/markAsRead`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            // Réinitialiser le compteur de notifications après les avoir marquées comme lues
+            notificationCount = 0;
+            unreadCount.textContent = notificationCount;
+            unreadCount.style.display = "none";
+          })
+          .catch((error) => {
+            console.error("Error marking notifications as read:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error fetching notifications:", error);
+      });
   });
 
   friendList.addEventListener("click", function (event) {
