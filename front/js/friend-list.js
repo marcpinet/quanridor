@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error fetching user data:", error);
     });
 
-  sendMessageButton.addEventListener("click", function (event) {
+  const sendMessage = function () {
     let friendId = document.getElementById("selected-friend-id").value;
 
     const content = messageInput.value.trim();
@@ -163,6 +163,15 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         },
       );
+    }
+  };
+
+  sendMessageButton.addEventListener("click", sendMessage);
+
+  messageInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendMessage();
     }
   });
 
