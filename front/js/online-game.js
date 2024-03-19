@@ -951,6 +951,8 @@ function confirmWall() {
       });
     }
     tour++;
+    leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+    rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
   }
   temp_wall = [];
   drawBoard();
@@ -966,6 +968,8 @@ socket.on("updateAfterPayer1Wall", (data) => {
     p1_walls--;
     updateWallBar(p1_walls, tour);
     tour++;
+    leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+    rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
   }
   temp_wall = [];
   drawBoard();
@@ -981,6 +985,8 @@ socket.on("updateAfterPayer2Wall", (data) => {
     p2_walls--;
     updateWallBar(p2_walls, tour);
     tour++;
+    leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+    rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
   }
   temp_wall = [];
   drawBoard();
