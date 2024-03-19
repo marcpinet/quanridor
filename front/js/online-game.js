@@ -18,8 +18,6 @@ let roomId;
 let player;
 
 let board_visibility = [];
-let ourCoord = [null, null];
-let opponentCoord = [null, null];
 let lastMove = false;
 
 const canvas = document.querySelector("canvas");
@@ -639,7 +637,6 @@ function getMouseCoordOnCanvas(event) {
   let new_coord = getCaseFromCoord(x, y);
   if (player == 1 && !isPlayer1Placed) {
     p1_coord = [new_coord[0], 8];
-    ourCoord = p1_coord;
     isPlayer1Placed = true;
     updateFogOfWar(1);
     drawBoard();
@@ -652,7 +649,6 @@ function getMouseCoordOnCanvas(event) {
   }
   if (player == 2 && !isPlayer2Placed && isPlayer1Placed) {
     p2_coord = [new_coord[0], 0];
-    ourCoord = p2_coord;
     isPlayer2Placed = true;
     updateFogOfWarReverse(2);
     drawBoard();
@@ -965,8 +961,8 @@ socket.on("updateAfterPayer1Wall", (data) => {
     temp_wall = [data[0], data[1]];
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    p1_walls--;
     updateWallBar(p1_walls, tour);
+    p1_walls--;
     tour++;
     leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
     rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
@@ -982,8 +978,8 @@ socket.on("updateAfterPayer2Wall", (data) => {
     temp_wall = [data[0], data[1]];
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
-    p2_walls--;
     updateWallBar(p2_walls, tour);
+    p2_walls--;
     tour++;
     leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
     rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
@@ -1063,10 +1059,7 @@ confirmWallButton.addEventListener("click", confirmWall);
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
-    difficulty: difficulty,
-    players: players,
     playerspositions: [p1_coord, p2_coord],
-    status: playing ? 1 : 2,
     p1walls: p1_walls,
     p2walls: p2_walls,
     vwalls: v_walls,
@@ -1176,7 +1169,6 @@ socket.on("placePlayer2", (data) => {
   if (player == 2) {
     p1_coord = data;
     updateFogOfWarReverse(1);
-    opponentCoord = p1_coord;
     canvas.addEventListener("mousemove", handleMouseOverCanvas);
   }
 });
@@ -1186,7 +1178,6 @@ socket.on("readyToStart", (data) => {
   if (player == 1) {
     p2_coord = data;
     updateFogOfWar(2);
-    opponentCoord = p2_coord;
     playing = true;
   }
 });
