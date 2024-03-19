@@ -4,13 +4,84 @@ socket.on("connect", () => {
   console.log("Connected to server.");
 });
 
+socket.emit("searchGame", {
+  token: localStorage.getItem("token"),
+});
+
+socket.on("waiting", () => {
+  console.log("waiting");
+});
+
 let gameId;
 let difficulty;
+let roomId;
+let player;
+
+let board_visibility = [];
+let ourCoord = [null, null];
+let opponentCoord = [null, null];
+let lastMove = false;
 
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
+const player1Name = document.getElementById("player1-name");
+const player2Name = document.getElementById("player2-name");
+
+//A CHANGER CAR CA PUE LA MERDE
+smoke.style.display = "block";
+socket.on("startGame", (data) => {
+  roomId = data;
+  smoke.style.display = "none";
+  socket.emit("userData", {
+    roomId: roomId,
+    player: player,
+    token: localStorage.getItem("token"),
+  });
+});
+
+socket.on("assignedPlayer", (data) => {
+  player = data;
+  if (player == 1) {
+    board_visibility = [
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ];
+  } else {
+    board_visibility = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+      [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    ];
+  }
+  drawBoard();
+});
+
+socket.on("usernames", (data) => {
+  if (data[0] !== null && data[1] !== null) {
+    player1Name.textContent = data[0];
+    player2Name.textContent = data[1];
+    console.log("ready");
+    socket.emit("readyToPlace", {
+      roomId: roomId,
+    });
+  }
+});
+
 const confirmWallButton = document.getElementById("confirm");
 const leaveButton = document.getElementById("leave");
 
@@ -54,8 +125,8 @@ const canvasLeft = canvasRect.left - 8;
 const canvasTop = canvasRect.top + 9;
 
 let tour = 0;
-let p1_coord = [4, 8];
-let p2_coord = [4, 0];
+let p1_coord = [0, 0];
+let p2_coord = [0, 0];
 let playing = false;
 let select1 = false;
 let select2 = false;
@@ -66,6 +137,7 @@ let h_walls = [];
 let current_direction = "v";
 let temp_wall = [];
 let isPlayer1Placed = false;
+let isPlayer2Placed = false;
 let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
@@ -104,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
       player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
-      initializeGame(game);
+      //initializeGame(game);
       if (p1_coord[0] != -1) {
         isPlayer1Placed = true;
         drawBoard();
@@ -119,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     socket.on("gameCreated", (game) => {
       gameId = game._id;
-      initializeGame(game);
+      //initializeGame(game);
       //const baseUrl = window.location.origin;
       //window.location.href = `${baseUrl}/ai-game.html?id=` + gameId;
 
@@ -154,18 +226,6 @@ function initializeGame(gameState) {
   initWallBar(p1_walls, 0);
   initWallBar(p2_walls, 1);
 }
-
-let board_visibility = [
-  [-1, -1, -1, -2, -2, -2, -1, -1, -1],
-  [-1, -1, -1, -1, -2, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
 
 let p1_goals = [
   [0, 0],
@@ -428,7 +488,7 @@ function drawBoard() {
     for (let j = 0; j < 9; j++) {
       let color;
       color =
-        board_visibility[j][i] >= 0 || (i == p1_coord[0] && j == p1_coord[1])
+        board_visibility[j][i] >= 0 || (i == ourCoord[0] && j == ourCoord[1])
           ? "#EE4F3A"
           : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
       drawRoundedRect(
@@ -441,11 +501,20 @@ function drawBoard() {
       );
     }
   }
-  drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
-  if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
-    clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
-  } else {
+  if (player == 1 && isPlayer1Placed) {
+    drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
+    if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
+      clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
+    } else {
+      drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
+    }
+  } else if (player == 2 && isPlayer2Placed) {
     drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
+    if (board_visibility[p1_coord[1]][p1_coord[0]] < 0) {
+      clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
+    } else {
+      drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
+    }
   }
   if (
     (Math.abs(p1_coord[0] - p2_coord[0]) == 1 && p1_coord[1] == p2_coord[1]) ||
@@ -474,7 +543,7 @@ function drawBoard() {
   drawWalls();
 }
 
-drawBoard();
+//drawBoard();
 
 function getCaseFromCoord(x, y) {
   return [Math.floor(x / 77), Math.floor(y / 77)];
@@ -499,11 +568,7 @@ function movePlayer(player, coord) {
     drawPlayer(42 + coord[0] * 77, 42 + coord[1] * 77, "#000000");
     select2 = false;
   }
-  socket.emit("win?", {
-    gameId: gameId,
-    gameState: getGameState(),
-    token: localStorage.getItem("token"),
-  });
+  tour++;
 }
 
 socket.on("win", (gameStateReturned) => {
@@ -557,42 +622,103 @@ function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let new_coord = getCaseFromCoord(x, y);
-  if (!isPlayer1Placed) {
+  if (player == 1 && !isPlayer1Placed) {
     p1_coord = [new_coord[0], 8];
+    ourCoord = p1_coord;
     isPlayer1Placed = true;
     updateFogOfWar(1);
-    playing = true;
     drawBoard();
     canvas.removeEventListener("mousemove", handleMouseOverCanvas);
-    socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+    socket.emit("player1Placed", {
+      coord: p1_coord,
+      roomId: roomId,
+    });
+    return;
+  }
+  if (player == 2 && !isPlayer2Placed && isPlayer1Placed) {
+    p2_coord = [new_coord[0], 0];
+    ourCoord = p2_coord;
+    isPlayer2Placed = true;
+    updateFogOfWarReverse(2);
+    drawBoard();
+    canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+    socket.emit("player2Placed", {
+      coord: p2_coord,
+      roomId: roomId,
+    });
     return;
   }
   if (!playing) return;
   let jump_coord = canJump(tour % 2 == 0 ? p1_coord : p2_coord);
-  if (!select1 && new_coord[0] == p1_coord[0] && new_coord[1] == p1_coord[1]) {
+  if (
+    player == 1 &&
+    !select1 &&
+    new_coord[0] == p1_coord[0] &&
+    new_coord[1] == p1_coord[1]
+  ) {
     displayPossibleMoves(1);
+  } else if (
+    player == 2 &&
+    !select2 &&
+    new_coord[0] == p2_coord[0] &&
+    new_coord[1] == p2_coord[1]
+  ) {
+    displayPossibleMoves(2);
   } else if (
     select1 &&
     (isLegal(p1_coord, new_coord) ||
       (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
   ) {
-    const dataToSend = {
-      gameId: gameId,
-      gameState: getGameState(),
-      newCoord: new_coord,
-    };
-    if (!checking) {
-      socket.emit("isMoveLegal", dataToSend);
-      checking = true;
+    updateFogOfWarReverse(1);
+    movePlayer(1, new_coord);
+    updateFogOfWar(1);
+    drawBoard();
+    if (checkWin(1)) {
+      socket.emit("lastMoveToPlay", {
+        roomId: roomId,
+        coord: new_coord,
+      });
+    } else {
+      socket.emit("movePlayer1", {
+        roomId: roomId,
+        coord: new_coord,
+      });
     }
-  } else {
+  } else if (
+    select2 &&
+    (isLegal(p2_coord, new_coord) ||
+      (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
+  ) {
+    updateFogOfWar(2);
+    movePlayer(2, new_coord);
+    updateFogOfWarReverse(2);
+    drawBoard();
+    if (!lastMove && checkWin(2)) {
+      socket.emit("player2Win", {
+        roomId: roomId,
+      });
+    } else if (lastMove && checkWin(2)) {
+      socket.emit("draw", {
+        roomId: roomId,
+      });
+    } else if (lastMove) {
+      socket.emit("player1Win", {
+        roomId: roomId,
+      });
+    } else {
+      socket.emit("movePlayer2", {
+        roomId: roomId,
+        coord: new_coord,
+      });
+    }
+  } else if ((player == 1 && tour % 2 == 0) || (player == 2 && tour % 2 == 1)) {
     select1 = false;
     select2 = false;
     drawBoard();
     let wall_coord = getWallFromCoord(x, y);
     current_direction = current_direction == "v" ? "h" : "v";
-    let player = tour % 2 == 0 ? 1 : 2;
-    if (isWallLegal(player, wall_coord) && player == 1) {
+    let playerWall = tour % 2 == 0 ? 1 : 2;
+    if (isWallLegal(playerWall, wall_coord) && playerWall == 1) {
       drawTempWall(wall_coord, current_direction);
     } else {
       current_direction = current_direction == "v" ? "h" : "v";
@@ -603,7 +729,39 @@ function getMouseCoordOnCanvas(event) {
   }
 }
 
+socket.on("player2LastMove", (data) => {
+  lastMove = true;
+  playing = !playing;
+  if (player == 2) {
+    updateFogOfWar(1);
+    movePlayer(1, data);
+    updateFogOfWarReverse(1);
+  }
+  drawBoard();
+});
+
+socket.on("updateAfterPayer1Move", (data) => {
+  playing = !playing;
+  if (player == 2) {
+    updateFogOfWar(1);
+    movePlayer(1, data);
+    updateFogOfWarReverse(1);
+  }
+  drawBoard();
+});
+
+socket.on("updateAfterPayer2Move", (data) => {
+  playing = !playing;
+  if (player == 1) {
+    updateFogOfWarReverse(2);
+    movePlayer(2, data);
+    updateFogOfWar(2);
+  }
+  drawBoard();
+});
+
 function displayPossibleMoves(player) {
+  console.log(tour);
   let color = "#F1A7FF";
   if (player == 1 && tour % 2 == 0) {
     clearTempWall(current_direction);
@@ -632,11 +790,38 @@ function displayPossibleMoves(player) {
         );
       }
     }
+  } else if (player == 2 && tour % 2 == 1) {
+    clearTempWall(current_direction);
+    drawWalls();
+    select2 = true;
+    for (let coord of getPlayerNeighbour(p2_coord)) {
+      if (isLegal(p2_coord, coord)) {
+        drawRoundedRect(
+          (coord[0] + 1) * 10 + coord[0] * 67,
+          (coord[1] + 1) * 10 + coord[1] * 67,
+          67,
+          67,
+          20,
+          color,
+        );
+      }
+      let jump_coord = canJump(p2_coord);
+      if (jump_coord.length > 0) {
+        drawRoundedRect(
+          (jump_coord[0] + 1) * 10 + jump_coord[0] * 67,
+          (jump_coord[1] + 1) * 10 + jump_coord[1] * 67,
+          67,
+          67,
+          20,
+          color,
+        );
+      }
+    }
   }
 }
 
-function updateFogOfWar(player) {
-  if (player == 1) {
+function updateFogOfWar(playerTurn) {
+  if (playerTurn == 1) {
     for (let coord of getPlayerNeighbour(p1_coord)) {
       board_visibility[coord[1]][coord[0]]++;
     }
@@ -647,8 +832,8 @@ function updateFogOfWar(player) {
   }
 }
 
-function updateFogOfWarReverse(player) {
-  if (player == 1) {
+function updateFogOfWarReverse(playerTurn) {
+  if (playerTurn == 1) {
     for (let coord of getPlayerNeighbour(p1_coord)) {
       board_visibility[coord[1]][coord[0]]--;
     }
@@ -662,7 +847,7 @@ function updateFogOfWarReverse(player) {
 function updateFogOfWarWall(wall_coord) {
   let x = wall_coord[0];
   let y = wall_coord[1];
-  if (tour % 2 == 0) {
+  if ((tour % 2 == 0 && player == 1) || (tour % 2 == 1 && player == 2)) {
     board_visibility[y][x] += 2;
     board_visibility[y + 1][x + 1] += 2;
     board_visibility[y + 1][x] += 2;
@@ -732,11 +917,57 @@ socket.on("legalWall", () => {
 
 function confirmWall() {
   if (!playing) return;
-  if (temp_wall.length > 0 && !wallChecking) {
-    wallChecking = true;
-    socket.emit("isWallLegal", [temp_wall, current_direction, getGameState()]);
+  if (temp_wall.length > 0) {
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    if (tour % 2 == 0) {
+      updateWallBar(p1_walls, tour);
+      p1_walls--;
+      socket.emit("player1Wall", {
+        roomId: roomId,
+        wall: [temp_wall[0], temp_wall[1], current_direction],
+      });
+    } else {
+      updateWallBar(p2_walls, tour);
+      p2_walls--;
+      socket.emit("player2Wall", {
+        roomId: roomId,
+        wall: [temp_wall[0], temp_wall[1], current_direction],
+      });
+    }
+    tour++;
   }
+  temp_wall = [];
+  drawBoard();
 }
+
+socket.on("updateAfterPayer1Wall", (data) => {
+  playing = !playing;
+  if (player == 2) {
+    current_direction = data[2];
+    temp_wall = [data[0], data[1]];
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    p1_walls--;
+    tour++;
+  }
+  temp_wall = [];
+  drawBoard();
+});
+
+socket.on("updateAfterPayer2Wall", (data) => {
+  playing = !playing;
+  if (player == 1) {
+    current_direction = data[2];
+    temp_wall = [data[0], data[1]];
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    p2_walls--;
+    tour++;
+  }
+  temp_wall = [];
+  drawBoard();
+});
 
 function isInclude(array, coord) {
   for (let subArray of array) {
@@ -911,13 +1142,38 @@ document.getElementById("replay").addEventListener("click", () => {
   window.location.href = "ai-game.html?difficulty=" + difficulty;
 });
 
-canvas.addEventListener("mousemove", handleMouseOverCanvas);
+socket.on("placePlayer1", () => {
+  if (player == 1) {
+    canvas.addEventListener("mousemove", handleMouseOverCanvas);
+  }
+});
+
+socket.on("placePlayer2", (data) => {
+  isPlayer1Placed = true;
+  if (player == 2) {
+    p1_coord = data;
+    updateFogOfWarReverse(1);
+    opponentCoord = p1_coord;
+    canvas.addEventListener("mousemove", handleMouseOverCanvas);
+  }
+});
+
+socket.on("readyToStart", (data) => {
+  isPlayer2Placed = true;
+  if (player == 1) {
+    p2_coord = data;
+    updateFogOfWar(2);
+    opponentCoord = p2_coord;
+    playing = true;
+  }
+});
 
 function handleMouseOverCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
   let hoverCoord = getCaseFromCoord(x, y);
   if (!isPlayer1Placed) hoverCoord = [hoverCoord[0], 8];
+  else hoverCoord = [hoverCoord[0], 0];
   drawBoard();
   drawRoundedRect(
     (hoverCoord[0] + 1) * 10 + hoverCoord[0] * 67,

@@ -15,6 +15,8 @@ const {
 } = require("../utils/game-checkers.js");
 
 function createSocket(server) {
+  let waitingPlayer = null;
+  const rooms = {};
   const io = new Server(server);
 
   const gameNamespace = io.of("/api/game");
@@ -334,6 +336,111 @@ function createSocket(server) {
         { _id: new ObjectId(gameId) },
         { $set: gameState },
       );
+    });
+
+    /*----------------------------------------------*/
+
+    socket.on("searchGame", async (data) => {
+      console.log("search game");
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ username: decoded.username });
+      if (!user) {
+        socket.emit("error", "User not found");
+        return;
+      }
+
+      if (waitingPlayer) {
+        console.log("find game");
+        const roomId = `room_${Math.floor(Math.random() * 1000)}`;
+        const socketPlayerRole = Math.random() < 0.5 ? 1 : 2;
+
+        socket.join(roomId);
+        socket.emit("assignedPlayer", socketPlayerRole);
+
+        waitingPlayer.join(roomId);
+        waitingPlayer.emit("assignedPlayer", (socketPlayerRole % 2) + 1);
+
+        rooms[roomId] = [null, null];
+        gameNamespace.to(roomId).emit("startGame", roomId);
+
+        waitingPlayer = null;
+      } else {
+        console.log("waiting");
+        waitingPlayer = socket;
+        socket.emit("waiting");
+      }
+    });
+
+    socket.on("userData", async (data) => {
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        return;
+      }
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ username: decoded.username });
+      if (!user) {
+        return;
+      }
+
+      rooms[data.roomId][data.player - 1] = decoded.username;
+
+      gameNamespace.to(data.roomId).emit("usernames", rooms[data.roomId]);
+    });
+
+    socket.on("readyToPlace", (data) => {
+      gameNamespace.to(data.roomId).emit("placePlayer1");
+    });
+
+    socket.on("player1Placed", (data) => {
+      gameNamespace.to(data.roomId).emit("placePlayer2", data.coord);
+    });
+
+    socket.on("player2Placed", (data) => {
+      gameNamespace.to(data.roomId).emit("readyToStart", data.coord);
+    });
+
+    socket.on("movePlayer1", (data) => {
+      gameNamespace.to(data.roomId).emit("updateAfterPayer1Move", data.coord);
+    });
+
+    socket.on("movePlayer2", (data) => {
+      gameNamespace.to(data.roomId).emit("updateAfterPayer2Move", data.coord);
+    });
+
+    socket.on("player1Wall", (data) => {
+      gameNamespace.to(data.roomId).emit("updateAfterPayer1Wall", data.wall);
+    });
+
+    socket.on("player2Wall", (data) => {
+      gameNamespace.to(data.roomId).emit("updateAfterPayer2Wall", data.wall);
+    });
+
+    socket.on("lastMoveToPlay", (data) => {
+      console.log("caca");
+      gameNamespace.to(data.roomId).emit("player2LastMove", data.coord);
+    });
+
+    socket.on("player1Win", (data) => {
+      console.log("1");
+    });
+
+    socket.on("player2Win", (data) => {
+      console.log("2");
+    });
+
+    socket.on("draw", (data) => {
+      console.log("0");
     });
   });
 
