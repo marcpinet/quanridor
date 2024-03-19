@@ -487,10 +487,7 @@ function drawBoard() {
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       let color;
-      color =
-        board_visibility[j][i] >= 0 || (i == ourCoord[0] && j == ourCoord[1])
-          ? "#EE4F3A"
-          : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
+      color = board_visibility[j][i] >= 0 ? "#EE4F3A" : "#FFFFFF"; //'rgba(238, 79, 58, 0.5)'
       drawRoundedRect(
         (i + 1) * 10 + i * 67,
         (j + 1) * 10 + j * 67,
@@ -502,6 +499,14 @@ function drawBoard() {
     }
   }
   if (player == 1 && isPlayer1Placed) {
+    drawRoundedRect(
+      (p1_coord[0] + 1) * 10 + p1_coord[0] * 67,
+      (p1_coord[1] + 1) * 10 + p1_coord[1] * 67,
+      67,
+      67,
+      20,
+      "#EE4F3A",
+    );
     drawPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77, "#FFFFFF");
     if (board_visibility[p2_coord[1]][p2_coord[0]] < 0) {
       clearPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77);
@@ -509,6 +514,14 @@ function drawBoard() {
       drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
     }
   } else if (player == 2 && isPlayer2Placed) {
+    drawRoundedRect(
+      (p2_coord[0] + 1) * 10 + p2_coord[0] * 67,
+      (p2_coord[1] + 1) * 10 + p2_coord[1] * 67,
+      67,
+      67,
+      20,
+      "#EE4F3A",
+    );
     drawPlayer(42 + p2_coord[0] * 77, 42 + p2_coord[1] * 77, "#000000");
     if (board_visibility[p1_coord[1]][p1_coord[0]] < 0) {
       clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
