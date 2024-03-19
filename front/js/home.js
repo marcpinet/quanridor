@@ -13,10 +13,13 @@ const closeChatButton = document.getElementById("small-back-arrow");
 let notificationCount = 0;
 
 function incrementNotificationCount() {
-  if (popup.style.display !== "none") return;
   notificationCount++;
+  updateNotificationDisplay();
+}
+
+function updateNotificationDisplay() {
   unreadCount.textContent = notificationCount;
-  unreadCount.style.display = "block";
+  unreadCount.style.display = notificationCount > 0 ? "block" : "none";
 }
 
 // Example: Call incrementNotificationCount when a new notification is received

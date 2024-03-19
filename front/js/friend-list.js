@@ -200,11 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  socket.on("newMessageNotification", function (notification) {
-    incrementNotificationCount();
-    displaySideNotification(notification.title, notification.message);
-  });
-
   // Récupérer les notifications non lues lors du chargement de la page
   fetch(`${baseUrl}/api/notifications`, {
     method: "GET",
@@ -221,8 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .then((notifications) => {
       notificationCount = notifications.length;
-      unreadCount.textContent = notificationCount;
-      unreadCount.style.display = notificationCount > 0 ? "block" : "none";
+      updateNotificationDisplay();
     })
     .catch((error) => {
       console.error(
@@ -298,8 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             // Réinitialiser le compteur de notifications après les avoir marquées comme lues
             notificationCount = 0;
-            unreadCount.textContent = notificationCount;
-            unreadCount.style.display = "none";
+            updateNotificationDisplay();
           })
           .catch((error) => {
             console.error("Error marking notifications as read:", error);
@@ -308,6 +301,12 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error fetching notifications:", error);
       });
+  });
+
+  // Écouter les nouvelles notifications en temps réel
+  socket.on("newMessageNotification", function (notification) {
+    incrementNotificationCount();
+    displaySideNotification(notification.title, notification.message);
   });
 
   friendList.addEventListener("click", function (event) {
