@@ -297,9 +297,9 @@ function isLegal(current_coord, new_coord) {
   return true;
 }
 
-function isWallLegal(player, coord) {
+function isWallLegal(playerWall, coord) {
   let isPossible;
-  if ((player == 1 && p1_walls == 0) || (player == 2 && p2_walls == 0))
+  if ((playerWall == 1 && p1_walls == 0) || (playerWall == 2 && p2_walls == 0))
     return false;
   if (coord[0] > 7 || coord[0] < 0 || coord[1] > 7 || coord[1] < 0)
     return false;
@@ -569,6 +569,8 @@ function movePlayer(player, coord) {
     select2 = false;
   }
   tour++;
+  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
 }
 
 socket.on("win", (gameStateReturned) => {
@@ -718,7 +720,7 @@ function getMouseCoordOnCanvas(event) {
     let wall_coord = getWallFromCoord(x, y);
     current_direction = current_direction == "v" ? "h" : "v";
     let playerWall = tour % 2 == 0 ? 1 : 2;
-    if (isWallLegal(playerWall, wall_coord) && playerWall == 1) {
+    if (isWallLegal(playerWall, wall_coord)) {
       drawTempWall(wall_coord, current_direction);
     } else {
       current_direction = current_direction == "v" ? "h" : "v";
@@ -949,6 +951,7 @@ socket.on("updateAfterPayer1Wall", (data) => {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     p1_walls--;
+    updateWallBar(p1_walls, tour);
     tour++;
   }
   temp_wall = [];
@@ -963,6 +966,7 @@ socket.on("updateAfterPayer2Wall", (data) => {
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     p2_walls--;
+    updateWallBar(p2_walls, tour);
     tour++;
   }
   temp_wall = [];
