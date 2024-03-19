@@ -14,9 +14,11 @@ services:
       - db
     networks:
       - app-network
+    restart: always
 
   db:
     image: mongo
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: quanridor
       MONGO_INITDB_ROOT_PASSWORD: ps8vella
