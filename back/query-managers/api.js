@@ -193,7 +193,7 @@ async function handleLogin(request, response) {
       if (!user) {
         response.writeHead(401, { "Content-Type": "application/json" });
         response.end(JSON.stringify({ message: "User not found" }));
-        return;
+        return; // S'assure que la fonction s'arrête ici si l'utilisateur n'existe pas
       }
 
       // Vérifier si le mot de passe est correct
@@ -201,13 +201,11 @@ async function handleLogin(request, response) {
       if (!match) {
         response.writeHead(401, { "Content-Type": "application/json" });
         response.end(JSON.stringify({ message: "Invalid password" }));
-        return;
+        return; // S'assure que la fonction s'arrête ici si le mot de passe ne correspond pas
       }
 
-      // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
+      // Générer le JWT
       let secret = await getJwtSecret();
-
-      // Generate JWT
       const token = jwt.sign({ username }, secret, { expiresIn: "90d" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
