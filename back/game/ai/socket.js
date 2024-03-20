@@ -463,15 +463,15 @@ function createSocketGame(io) {
     });
 
     socket.on("player1Win", (data) => {
-      console.log("1");
+      gameNamespace.to(data.roomId).emit("player1Win");
     });
 
     socket.on("player2Win", (data) => {
-      console.log("2");
+      gameNamespace.to(data.roomId).emit("player2Win");
     });
 
     socket.on("draw", (data) => {
-      console.log("0");
+      gameNamespace.to(data.roomId).emit("draw");
     });
 
     socket.on("timeIsUp", (data) => {

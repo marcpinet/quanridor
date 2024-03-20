@@ -1458,3 +1458,29 @@ function handleMouseOverCanvas(event) {
     "#888888",
   );
 }
+
+socket.on("player1Win", () => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+  if (player == 1) {
+    winText.textContent = "YOU WON!";
+  } else {
+    winText.textContent = "YOU LOST!";
+  }
+});
+
+socket.on("player2Win", () => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+  if (player == 2) {
+    winText.textContent = "YOU WON!";
+  } else {
+    winText.textContent = "YOU LOST!";
+  }
+});
+
+socket.on("draw", () => {
+  clearAfterWin();
+  winPopup.style.display = "block";
+  winText.textContent = "DRAW!";
+});
