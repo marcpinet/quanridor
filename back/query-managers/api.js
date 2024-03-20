@@ -550,7 +550,9 @@ async function handleFriendRequestPost(request, response, decodedToken) {
       }
 
       // Vérifier si les utilisateurs sont amis
-      const userFriendsAsStrings = user.friends.map((id) => id.toString());
+      const userFriendsAsStrings = currentUser.friends.map((id) =>
+        id.toString(),
+      );
       const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
       let friendId = friendUser._id.toString();
 
