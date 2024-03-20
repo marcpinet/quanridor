@@ -683,7 +683,7 @@ canvas {
   -webkit-line-clamp: 2;
 }
 
-.date {
+.pink-text {
   font-size: 18px;
   font-weight: normal;
   color: #F1A7FF;
@@ -1145,4 +1145,100 @@ canvas {
   transition: 
     width 0.3s ease,
     height 0.3s ease;
+}
+
+#add-friend-container{
+  display: none;
+  position: absolute;
+  width: 500px;
+  height: 140px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 30px;
+  background-color: rgba(1,5,37,1);
+  box-shadow: 0px 15px 20px #111430;
+  border: 5px solid #4650A8;
+  justify-content: center; 
+}
+
+#add-friend-input{
+  width: 100%;
+  height: 30px;
+  border-radius: 10px;
+  border: none;
+  padding: 5px;
+  font-size: 20px;
+  background-color: #4650A8;
+  box-shadow: none;
+}
+
+.find-friend{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 90%;
+  gap: 10px;
+}
+
+#add-friend-button{
+  background-color: #4650A8;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  width: 200px;
+  height: 40px;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#add-friend-button:hover{
+  width: 230px;
+}
+
+#add-friend-button:active {     
+  background-color: #f3b9ff;    
+}
+
+#add-friend-button:disabled{
+  background-color: #4650a86a;
+  color: #a8b1ff57;
+  pointer-events: none;
+}
+
+#couldnt-find-user{
+  display: none;
+}
+
+#already-friends{
+  display: none;
+}
+
+#cant-add-yourself{
+  display: none;
+}
+
+#friend-request-sent{
+  display: none;
+}
+
+#friend-request-already-sent{
+  display: none;
+}
+
+#cross{
+  background: url("../assets/cross.svg") center/25px no-repeat;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  filter: none;
+  cursor: pointer;
+  right: 0;
+  top: 0;
 }

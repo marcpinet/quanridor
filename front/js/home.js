@@ -21,6 +21,9 @@ const unfriendIcon = document.getElementById("unfriend");
 const removeFriendContainer = document.getElementById("remove-friend");
 const keepFriendButton = document.getElementById("normal-button");
 const removeFriendButton = document.getElementById("careful-button");
+const addFriendPopupCross = document.getElementById("cross");
+const addFriendPopup = document.getElementById("add-friend-container");
+const addFriendButton = document.getElementById("add-friend");
 
 let notificationCount = 0;
 
@@ -98,6 +101,14 @@ window.addEventListener("click", (event) => {
     }
     currentSelectedFriendContainer = null;
     friendProfile.style.display = "none";
+  }
+
+  if (
+    !event.target.matches("#add-friend-container") &&
+    !addFriendPopup.contains(event.target) &&
+    !event.target.matches("#add-friend")
+  ) {
+    addFriendPopup.style.display = "none";
   }
 });
 
@@ -206,4 +217,23 @@ function toggleRemoveFriend(hide = false) {
 
 keepFriendButton.addEventListener("click", function () {
   toggleRemoveFriend(true);
+});
+
+addFriendPopupCross.addEventListener("click", function () {
+  addFriendPopup.style.display = "none";
+});
+
+addFriendButton.addEventListener("click", function () {
+  addFriendPopup.style.display = "flex";
+});
+
+const addFriendInput = document.getElementById("add-friend-input");
+const sendFriendRequestButton = document.getElementById("add-friend-button");
+
+addFriendInput.addEventListener("input", function () {
+  if (addFriendInput.value.trim() !== "") {
+    sendFriendRequestButton.removeAttribute("disabled");
+  } else {
+    sendFriendRequestButton.setAttribute("disabled", "disabled");
+  }
 });

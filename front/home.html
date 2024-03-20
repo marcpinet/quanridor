@@ -47,7 +47,7 @@
               <input type="hidden" id="selected-friend-id" value="" />
             </div>
             <div id="message-list">
-              <div class="date">Let's start chatting!</div>
+              <div class="pink-text">Let's start chatting!</div>
               <br />
               <!-- Les messages du chat seront insérés ici dynamiquement -->
             </div>
@@ -89,6 +89,19 @@
         <a><button class="big-button">Statistics</button></a>
         <a><button class="big-button">Achievements</button></a>
       </div>
+      <div id="add-friend-container">
+        <svg id="cross"></svg>
+        <span class="text">Find a friend</span>
+        <span class="pink-text" id="couldnt-find-user">❌ Couldn't find user.</span>
+        <span class="pink-text" id="already-friends">❌ You are already friends.</span>
+        <span class="pink-text" id="cant-add-yourself">❌ You can't add yourself.</span>
+        <span class="pink-text" id="friend-request-already-sent">❌ Friend request already sent.</span>
+        <span class="pink-text" id="friend-request-sent">✔️ Friend request sent.</span>
+        <div class="find-friend">
+          <input id="add-friend-input" type="text" placeholder="Type a username..." />
+          <button disabled class="choice-button" id="add-friend-button">Send request</button>
+        </div>
+        </div>
       <div class="vertical-container">
         <div class="horizontal-container">
           <div class="vertical-container">

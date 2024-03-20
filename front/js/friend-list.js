@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("messageHistory", function (messages) {
     const messageList = document.getElementById("message-list");
     messageList.innerHTML =
-      '<div class="date">Let\'s start chatting!</div><br />'; // Vider la liste des messages
+      '<div class="pink-text">Let\'s start chatting!</div><br />'; // Vider la liste des messages
 
     messages.forEach((message) => {
       addMessageToChat(message, message.from !== currentUserId);
@@ -323,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function () {
           notificationsContainer.appendChild(noNotificationsMessage);
         } else {
           const dateElement = document.createElement("p");
-          dateElement.classList.add("date");
+          dateElement.classList.add("pink-text");
           dateElement.textContent = new Date().toLocaleString([], {
             weekday: "short",
             hour: "2-digit",
