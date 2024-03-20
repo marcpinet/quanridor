@@ -18,6 +18,7 @@ let roomId;
 let player;
 let timer;
 let timerInterval;
+let players = [];
 
 let board_visibility = [];
 let lastMove = false;
@@ -78,9 +79,10 @@ socket.on("assignedPlayer", (data) => {
 
 socket.on("usernames", (data) => {
   if (data[0] !== null && data[1] !== null) {
-    player1Name.textContent = data[0];
-    player2Name.textContent = data[1];
-    console.log("ready");
+    players.push(data[0].username);
+    players.push(data[1].username);
+    player1Name.textContent = data[0].username;
+    player2Name.textContent = data[1].username;
     socket.emit("readyToPlace", {
       roomId: roomId,
     });
@@ -143,7 +145,6 @@ let current_direction = "v";
 let temp_wall = [];
 let isPlayer1Placed = false;
 let isPlayer2Placed = false;
-let players;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
 document.addEventListener("DOMContentLoaded", async () => {
@@ -690,21 +691,11 @@ function getMouseCoordOnCanvas(event) {
     clearTimeout(timer);
     clearInterval(timerInterval);
     timeRemaining = timePerMove;
-    updateFogOfWarReverse(1);
-    movePlayer(1, new_coord);
-    updateFogOfWar(1);
-    drawBoard();
-    if (checkWin(1)) {
-      socket.emit("lastMoveToPlay", {
-        roomId: roomId,
-        coord: new_coord,
-      });
-    } else {
-      socket.emit("movePlayer1", {
-        roomId: roomId,
-        coord: new_coord,
-      });
-    }
+    socket.emit("isPlayer1MoveLegal", {
+      roomId: roomId,
+      newCoord: new_coord,
+      gameState: getGameState(),
+    });
   } else if (
     select2 &&
     (isLegal(p2_coord, new_coord) ||
@@ -713,28 +704,11 @@ function getMouseCoordOnCanvas(event) {
     clearTimeout(timer);
     clearInterval(timerInterval);
     timeRemaining = timePerMove;
-    updateFogOfWar(2);
-    movePlayer(2, new_coord);
-    updateFogOfWarReverse(2);
-    drawBoard();
-    if (!lastMove && checkWin(2)) {
-      socket.emit("player2Win", {
-        roomId: roomId,
-      });
-    } else if (lastMove && checkWin(2)) {
-      socket.emit("draw", {
-        roomId: roomId,
-      });
-    } else if (lastMove) {
-      socket.emit("player1Win", {
-        roomId: roomId,
-      });
-    } else {
-      socket.emit("movePlayer2", {
-        roomId: roomId,
-        coord: new_coord,
-      });
-    }
+    socket.emit("isPlayer2MoveLegal", {
+      roomId: roomId,
+      newCoord: new_coord,
+      gameState: getGameState(),
+    });
   } else if ((player == 1 && tour % 2 == 0) || (player == 2 && tour % 2 == 1)) {
     select1 = false;
     select2 = false;
@@ -752,6 +726,53 @@ function getMouseCoordOnCanvas(event) {
     }
   }
 }
+
+socket.on("player1MoveIsLegal", (data) => {
+  if (player == 1) {
+    updateFogOfWarReverse(1);
+    movePlayer(1, data);
+    updateFogOfWar(1);
+    drawBoard();
+    if (checkWin(1)) {
+      socket.emit("lastMoveToPlay", {
+        roomId: roomId,
+        coord: data,
+      });
+    } else {
+      socket.emit("movePlayer1", {
+        roomId: roomId,
+        coord: data,
+      });
+    }
+  }
+});
+
+socket.on("player2MoveIsLegal", (data) => {
+  if (player == 2) {
+    updateFogOfWar(2);
+    movePlayer(2, data);
+    updateFogOfWarReverse(2);
+    drawBoard();
+    if (!lastMove && checkWin(2)) {
+      socket.emit("player2Win", {
+        roomId: roomId,
+      });
+    } else if (lastMove && checkWin(2)) {
+      socket.emit("draw", {
+        roomId: roomId,
+      });
+    } else if (lastMove) {
+      socket.emit("player1Win", {
+        roomId: roomId,
+      });
+    } else {
+      socket.emit("movePlayer2", {
+        roomId: roomId,
+        coord: data,
+      });
+    }
+  }
+});
 
 socket.on("player2LastMove", (data) => {
   lastMove = true;
@@ -1168,6 +1189,7 @@ confirmWallButton.addEventListener("click", confirmWall);
 // ALLOW POSTING TO BACKEND
 export function getGameState() {
   return {
+    players: players,
     playerspositions: [p1_coord, p2_coord],
     p1walls: p1_walls,
     p2walls: p2_walls,

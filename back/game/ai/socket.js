@@ -394,7 +394,7 @@ function createSocketGame(io) {
         return;
       }
 
-      rooms[data.roomId][data.player - 1] = decoded.username;
+      rooms[data.roomId][data.player - 1] = user;
 
       gameNamespace.to(data.roomId).emit("usernames", rooms[data.roomId]);
     });
@@ -446,6 +446,60 @@ function createSocketGame(io) {
 
     socket.on("timeIsUp", (data) => {
       gameNamespace.to(data.roomId).emit("timeIsUp");
+    });
+
+    socket.on("isPlayer1MoveLegal", (data) => {
+      let gameState = data.gameState;
+      let newCoord = data.newCoord;
+      let jump_coord = canJump(
+        gameState.playerspositions[0],
+        gameState.playerspositions[0],
+        gameState.playerspositions[1],
+        gameState.vwalls,
+        gameState.hwalls,
+      );
+      if (
+        isLegal(
+          gameState.playerspositions[0],
+          newCoord,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        ) ||
+        (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
+      ) {
+        gameNamespace.to(data.roomId).emit("player1MoveIsLegal", newCoord);
+      } else {
+        gameNamespace.to(data.roomId).emit("illegal");
+      }
+    });
+
+    socket.on("isPlayer2MoveLegal", (data) => {
+      let gameState = data.gameState;
+      let newCoord = data.newCoord;
+      let jump_coord = canJump(
+        gameState.playerspositions[1],
+        gameState.playerspositions[0],
+        gameState.playerspositions[1],
+        gameState.vwalls,
+        gameState.hwalls,
+      );
+      if (
+        isLegal(
+          gameState.playerspositions[1],
+          newCoord,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        ) ||
+        (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
+      ) {
+        gameNamespace.to(data.roomId).emit("player2MoveIsLegal", newCoord);
+      } else {
+        gameNamespace.to(data.roomId).emit("illegal");
+      }
     });
   });
 
