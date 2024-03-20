@@ -237,3 +237,10 @@ addFriendInput.addEventListener("input", function () {
     sendFriendRequestButton.setAttribute("disabled", "disabled");
   }
 });
+
+// Make so that when we click on enter when focused on #add-friend-input, it will trigger the click event on #add-friend-button
+addFriendInput.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    sendFriendRequestButton.click();
+  }
+});

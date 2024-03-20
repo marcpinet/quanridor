@@ -396,12 +396,16 @@ async function handleFriendRequestPost(request, response, decodedToken) {
       }
 
       // Vérifier si les utilisateurs sont amis
-      const userFriendsAsStrings = user.friends.map((id) => id.toString());
-      const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+      const userFriendsAsStrings = currentUser.friends.map((id) =>
+        id.toString(),
+      );
+      const friendFriendsAsStrings = friendUser.friends.map((id) =>
+        id.toString(),
+      );
 
       if (
         userFriendsAsStrings.includes(friendUser._id.toString()) &&
-        friendFriendsAsStrings.includes(user._id.toString())
+        friendFriendsAsStrings.includes(currentUser._id.toString())
       ) {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(
@@ -513,80 +517,6 @@ async function handleNotificationsMarkAsRead(request, response, decodedToken) {
       );
     }
   }
-}
-
-async function handleFriendRequestPost(request, response, decodedToken) {
-  addCors(response, ["POST"]);
-
-  let body = "";
-  request.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-
-  request.on("end", async () => {
-    try {
-      const { friendUsername } = JSON.parse(body);
-
-      const db = getDB();
-      const users = db.collection("users");
-
-      const currentUser = await users.findOne({
-        username: decodedToken.username,
-      });
-      const friendUser = await users.findOne({ username: friendUsername });
-
-      if (!currentUser || !friendUser) {
-        response.writeHead(404, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "User not found" }));
-        return;
-      }
-
-      if (currentUser.username === friendUser.username) {
-        response.writeHead(400, { "Content-Type": "application/json" });
-        response.end(
-          JSON.stringify({ message: "Cannot add yourself as a friend" }),
-        );
-        return;
-      }
-
-      // Vérifier si les utilisateurs sont amis
-      const userFriendsAsStrings = currentUser.friends.map((id) =>
-        id.toString(),
-      );
-      const friendFriendsAsStrings = friendUser.friends.map((id) =>
-        id.toString(),
-      );
-      let friendId = friendUser._id.toString();
-
-      if (
-        userFriendsAsStrings.includes(friendId) &&
-        friendFriendsAsStrings.includes(currentUser._id.toString())
-      ) {
-        response.writeHead(400, { "Content-Type": "application/json" });
-        response.end(JSON.stringify({ message: "Already friends" }));
-        return;
-      }
-
-      const notification = {
-        title: "Friend Request",
-        message: `${currentUser.username} sent you a friend request`,
-        from: currentUser._id,
-        to: friendUser._id,
-        read: false,
-        type: "friendRequest",
-      };
-
-      const notifications = db.collection("notifications");
-      await notifications.insertOne(notification);
-
-      response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Friend request sent" }));
-    } catch (e) {
-      console.error("Error in handleFriendRequestPost:", e);
-      response.writeHead(400, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Invalid JSON" }));
-    }
-  });
 }
 
 async function handleFriendRequestAccept(request, response, decodedToken) {

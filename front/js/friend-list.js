@@ -464,7 +464,9 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          return response.json().then((data) => {
+            throw new Error(JSON.stringify(data));
+          });
         }
         return response.json();
       })
@@ -480,17 +482,18 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error sending friend request:", error);
-        console.log("message:", error.message);
-        console.log("specific:", error.specific);
+        const errorData = JSON.parse(error.message);
+        console.log("message:", errorData.message);
+        console.log("specific:", errorData.specific);
         let feedbackElementId;
-        if (error.specific) {
-          if (error.specific === 0) {
+        if (errorData.specific !== undefined) {
+          if (errorData.specific === 0) {
             feedbackElementId = "couldnt-find-user";
-          } else if (error.specific === 1) {
+          } else if (errorData.specific === 1) {
             feedbackElementId = "cant-add-yourself";
-          } else if (error.specific === 2) {
+          } else if (errorData.specific === 2) {
             feedbackElementId = "already-friends";
-          } else if (error.specific === 3) {
+          } else if (errorData.specific === 3) {
             feedbackElementId = "friend-request-already-sent";
           } else {
             feedbackElementId = "unexpected-error";
