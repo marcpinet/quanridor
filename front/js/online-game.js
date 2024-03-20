@@ -797,6 +797,8 @@ socket.on("updateAfterPayer1Move", (data) => {
     updateFogOfWarReverse(1);
 
     timer = setTimeout(() => {
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       clearTempWall();
       drawBoard();
       socket.emit("timeIsUpForPlayer2", {
@@ -824,6 +826,8 @@ socket.on("updateAfterPayer2Move", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
         gameState: getGameState(),
@@ -849,6 +853,8 @@ socket.on("timeIsUp", () => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
         gameState: getGameState(),
@@ -858,6 +864,8 @@ socket.on("timeIsUp", () => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer2", {
         roomId: roomId,
         gameState: getGameState(),
@@ -1141,6 +1149,8 @@ socket.on("updateAfterPayer1Wall", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer2", {
         roomId: roomId,
         gameState: getGameState(),
@@ -1172,6 +1182,8 @@ socket.on("updateAfterPayer2Wall", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
         gameState: getGameState(),
@@ -1419,6 +1431,8 @@ socket.on("readyToStart", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
+      clearTimeout(timer);
+      clearInterval(timerInterval);
       socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
         gameState: getGameState(),
