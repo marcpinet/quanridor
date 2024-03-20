@@ -9,6 +9,11 @@ const chatButton = document.getElementById("chat");
 const friendList = document.getElementById("friend-list");
 const friendChat = document.getElementById("friend-chat");
 const closeChatButton = document.getElementById("small-back-arrow");
+const searchHeader = document.getElementById("friend-search");
+const friendButtons = document.getElementById("friend-buttons");
+const searchButton = document.getElementById("search");
+const friendSearchBar = document.getElementById("search-input");
+const closeSearchButton = document.getElementById("close-search");
 
 let notificationCount = 0;
 
@@ -35,6 +40,17 @@ function displaySideNotification(title, message) {
   sideNotification.querySelector(".notification").textContent = title;
   sideNotification.querySelector(".notification-content").textContent = message;
 }
+
+closeSearchButton.addEventListener("click", function () {
+  searchHeader.style.display = "none";
+  friendButtons.style.display = "flex";
+});
+
+searchButton.addEventListener("click", function () {
+  friendButtons.style.display = "none";
+  searchHeader.style.display = "flex";
+  friendSearchBar.focus();
+});
 
 bellIcon.addEventListener("click", () => {
   togglePopup();

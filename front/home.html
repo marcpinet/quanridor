@@ -16,7 +16,11 @@
         <div class="friend-box" id="friend-list">
           <div class="vertical-small-container">
             <div class="friends-header">
-              Friends <svg id="search"></svg> <svg id="add-friend"></svg>
+              <div id="friend-search">
+                <svg class="small-back-arrow" id="close-search"></svg>
+                <input id="search-input" type="text" placeholder="Type a username..." />
+              </div>
+              <div id="friend-buttons">Friends <svg id="search"></svg> <svg id="add-friend"></svg></div>
             </div>
             <div class="scrollbar-friend-content">
               <div class="friends">
@@ -32,7 +36,7 @@
               class="friends-header"
               style="justify-content: flex-start; gap: 50px"
             >
-              <svg id="small-back-arrow"></svg>
+            <svg class="small-back-arrow" id="close-chat"></svg>
               <div class="text" id="selected-friend-name"></div>
               <input type="hidden" id="selected-friend-id" value="" />
             </div>
