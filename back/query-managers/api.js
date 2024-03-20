@@ -155,6 +155,7 @@ async function handleSignup(request, response) {
         elo: DEFAULT_ELO,
         admin: false,
         friends: [],
+        activity: "inactive",
       });
 
       // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
@@ -265,6 +266,7 @@ async function handleUsersGet(request, response, decodedToken) {
             username: otherUser.username,
             elo: otherUser.elo,
             friends: otherUser.friends,
+            activity: otherUser.activity,
           }),
         );
         return;
@@ -278,6 +280,7 @@ async function handleUsersGet(request, response, decodedToken) {
           username: user.username,
           elo: user.elo,
           friends: user.friends,
+          activity: user.activity,
         }),
       );
     } catch (e) {
@@ -320,6 +323,7 @@ async function handleUserGet(request, response, decodedToken) {
         _id: otherUser._id.toString(),
         username: otherUser.username,
         elo: otherUser.elo,
+        activity: otherUser.activity,
       }),
     );
   } catch (e) {

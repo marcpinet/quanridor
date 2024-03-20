@@ -72,6 +72,12 @@ function createSocketGame(io) {
       // Join the game
       socket.join(game._id.toString());
       socket.emit("gameCreated", game);
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "active" } },
+      );
     });
 
     socket.on("gameId", async (data) => {
@@ -112,6 +118,12 @@ function createSocketGame(io) {
         socket.join(game._id.toString());
         socket.emit("retrieveGame", game);
       }
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "active" } },
+      );
     });
 
     socket.on("isMoveLegal", async (data) => {
@@ -378,6 +390,12 @@ function createSocketGame(io) {
         waitingPlayer = socket;
         socket.emit("waiting");
       }
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "active" } },
+      );
     });
 
     socket.on("userData", async (data) => {

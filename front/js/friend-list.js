@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       currentUserId = data._id;
       socket.emit("joinRoom", currentUserId); // Join a room based on the user ID
+      socket.emit("userConnected", currentUserId); // Notify that the user is currently online
     })
     .catch((error) => {
       console.error("Error fetching user data:", error);
@@ -362,12 +363,6 @@ function addMessageToChat(message, isFromFriend) {
   const smallUser = document.createElement("svg");
   smallUser.id = "small-user";
   messageElement.appendChild(smallUser);
-
-  // Add <div class="small-activity" id="inactive"></div>
-  const smallActivity = document.createElement("div");
-  smallActivity.className = "small-activity";
-  smallActivity.id = friendData.activity;
-  friendContainer.appendChild(smallActivity);
 
   messageList.appendChild(messageElement);
   messageList.scrollTop = messageList.scrollHeight;

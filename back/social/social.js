@@ -8,8 +8,28 @@ function createSocketSocial(io) {
     let userId;
 
     socket.on("joinRoom", (id) => {
-      userId = id;
+      socket.userId = id;
       socket.join(id);
+    });
+
+    socket.on("userConnected", async (userId) => {
+      const db = getDB();
+      const users = db.collection("users");
+      console.log(userId + " connected");
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "active" } },
+      );
+    });
+
+    socket.on("disconnect", async () => {
+      console.log(socket.userId + " disconnected");
+      const db = getDB();
+      const users = db.collection("users");
+      await users.updateOne(
+        { _id: new ObjectId(socket.userId) },
+        { $set: { activity: "inactive" } },
+      );
     });
 
     socket.on("sendMessage", async (data, callback) => {
