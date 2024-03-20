@@ -196,9 +196,3 @@ function toggleRemoveFriend(hide = false) {
 keepFriendButton.addEventListener("click", function () {
   toggleRemoveFriend(true);
 });
-
-removeFriendButton.addEventListener("click", function () {
-  toggleRemoveFriend(true);
-  friendProfile.style.display = "none";
-  currentSelectedFriendContainer.style.display = "none";
-});

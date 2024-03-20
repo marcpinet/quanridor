@@ -86,6 +86,11 @@ async function manageRequest(request, response) {
       request.method === "PUT"
     ) {
       handleNotificationsMarkAsRead(request, response, decodedToken);
+    } else if (
+      normalizedPath.startsWith(`${apiPath}/friends/`) &&
+      request.method === "DELETE"
+    ) {
+      handleFriendDelete(request, response, decodedToken);
     }
 
     // Game
@@ -334,6 +339,64 @@ async function handleUserGet(request, response, decodedToken) {
 }
 
 // ------------------------------ FRIENDS HANDLING ------------------------------
+
+async function handleFriendDelete(request, response, decodedToken) {
+  addCors(response, ["DELETE"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const friendId = parsedUrl.pathname.split("/").pop();
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+
+    const username = decodedToken.username;
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const friend = await users.findOne({ _id: new ObjectId(friendId) });
+    if (!friend) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Friend not found" }));
+      return;
+    }
+
+    // Vérifier si les utilisateurs sont amis
+    const userFriendsAsStrings = user.friends.map((id) => id.toString());
+    const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+
+    if (
+      !userFriendsAsStrings.includes(friendId) ||
+      !friendFriendsAsStrings.includes(user._id.toString())
+    ) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Users are not friends" }));
+      return;
+    }
+
+    // Supprimer les utilisateurs de leurs listes d'amis respectives
+    await users.updateOne(
+      { _id: user._id },
+      { $pull: { friends: new ObjectId(friendId) } },
+    );
+    await users.updateOne(
+      { _id: new ObjectId(friendId) },
+      { $pull: { friends: user._id } },
+    );
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Friend removed successfully" }));
+  } catch (e) {
+    console.error("Error in handleFriendDelete:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Failed to remove friend" }));
+  }
+}
 
 async function handleNotificationsGet(request, response, decodedToken) {
   addCors(response, ["GET"]);

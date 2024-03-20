@@ -384,6 +384,39 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
+
+  const removeFriendButton = document.getElementById("careful-button");
+  removeFriendButton.addEventListener("click", function () {
+    const friendId =
+      currentSelectedFriendContainer.getAttribute("data-friendId");
+
+    fetch(`${baseUrl}/api/friends/${friendId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Friend removed successfully");
+        // Mettre à jour la liste des amis après la suppression
+        const friendContainer = document.querySelector(
+          `[data-friendid="${friendId}"]`,
+        );
+        friendContainer.remove();
+        toggleRemoveFriend(true);
+        friendProfile.style.display = "none";
+      })
+      .catch((error) => {
+        console.error("Error removing friend:", error);
+      });
+  });
 });
 
 function addMessageToChat(message, isFromFriend) {

@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         console.log("Success:", data);
         if (data.token) {
-          alert("Login successful!");
           localStorage.setItem("token", data.token); // Save token
           window.location.href = "home.html"; // Redirect
         } else {
