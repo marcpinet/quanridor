@@ -111,9 +111,6 @@ friendsContainer.addEventListener("click", (event) => {
 
   toggleRemoveFriend(true);
 
-  clickedElement.querySelector(".unread-message-count").style.display = "none";
-  clickedElement.querySelector(".unread-message-count").textContent = "0";
-
   if (currentSelectedFriendContainer !== null) {
     currentSelectedFriendContainer.onmouseover = function () {
       this.style.backgroundColor = "rgb(28, 32, 67)";
@@ -178,6 +175,16 @@ closeChatButton.addEventListener("click", function () {
   friendChat.style.display = "none";
   friendList.style.display = "block";
   currentSelectedFriendContainer.style.backgroundColor = "rgba(1, 5, 37, 1)";
+
+  if (currentSelectedFriendContainer !== null) {
+    currentSelectedFriendContainer.querySelector(
+      ".unread-message-count",
+    ).style.display = "none";
+    currentSelectedFriendContainer.querySelector(
+      ".unread-message-count",
+    ).textContent = "0";
+  }
+
   currentSelectedFriendContainer = null;
 });
 

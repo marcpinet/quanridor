@@ -224,6 +224,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   socket.on("newMessage", function (message) {
     addMessageToChat(message, message.from !== currentUserId);
+
+    if (message.from !== currentUserId) {
+      const friendId = message.from;
+      const friendContainer = document.querySelector(
+        `[data-friendid="${friendId}"]`,
+      );
+
+      if (friendContainer !== currentSelectedFriendContainer) {
+        const unreadMessageCount = friendContainer.querySelector(
+          ".unread-message-count",
+        );
+        unreadMessageCount.textContent =
+          parseInt(unreadMessageCount.textContent) + 1;
+        unreadMessageCount.style.display = "block";
+      }
+    }
   });
 
   socket.on("messageHistory", function (messages) {
@@ -435,19 +451,6 @@ function addMessageToChat(message, isFromFriend) {
 
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
-  }
-
-  if (isFromFriend) {
-    const friendId = message.from;
-    const friendContainer = document.querySelector(
-      `[data-friendid="${friendId}"]`,
-    );
-    const unreadMessageCount = friendContainer.querySelector(
-      ".unread-message-count",
-    );
-    unreadMessageCount.textContent =
-      parseInt(unreadMessageCount.textContent) + 1;
-    unreadMessageCount.style.display = "block";
   }
 
   const messageContainer = document.createElement("div");
