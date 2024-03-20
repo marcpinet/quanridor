@@ -26,6 +26,8 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 - Play against bots with different levels of difficulty 🤖
 - Leaving a game? No problem, it's in our database, waiting for you to join back! 📂
 - Multiplayer online games with friends or random people 🌐
+- Social system (friends, chat, emotes, notifications, etc.) 📱
+- Leaderboard with elo 🏆
 
 ## ⚙️ Local installation
 
