@@ -513,7 +513,15 @@ async function handleFriendRequestPost(request, response, decodedToken) {
         return;
       }
 
-      if (currentUser.friends.includes(friendUser._id)) {
+      // Vérifier si les utilisateurs sont amis
+      const userFriendsAsStrings = user.friends.map((id) => id.toString());
+      const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+      let friendId = friendUser._id.toString();
+
+      if (
+        userFriendsAsStrings.includes(friendId) &&
+        friendFriendsAsStrings.includes(user._id.toString())
+      ) {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(JSON.stringify({ message: "Already friends" }));
         return;
