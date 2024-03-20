@@ -560,7 +560,7 @@ async function handleFriendRequestPost(request, response, decodedToken) {
 
       if (
         userFriendsAsStrings.includes(friendId) &&
-        friendFriendsAsStrings.includes(user._id.toString())
+        friendFriendsAsStrings.includes(currentUser._id.toString())
       ) {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(JSON.stringify({ message: "Already friends" }));
