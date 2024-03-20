@@ -332,6 +332,9 @@ document.addEventListener("DOMContentLoaded", function () {
           notificationsContainer.appendChild(dateElement);
 
           notifications.forEach((notification) => {
+            // ICI, GERER LE CAS OU LA NOTIFICATION.TYPE === friendRequest pour lui ajouter un bouton accepter/refuser
+            // ET UN EVENT LISTENER acceptFriendRequest(notification._id) et sinon cacher la notification
+
             const notificationContainer = document.createElement("div");
             notificationContainer.classList.add("notification-container");
 
@@ -472,4 +475,30 @@ function addMessageToChat(message, isFromFriend) {
 
   messageList.appendChild(messageElement);
   messageList.scrollTop = messageList.scrollHeight;
+}
+
+function acceptFriendRequest(notificationId) {
+  const token = localStorage.getItem("token");
+
+  fetch(`${baseUrl}/api/friendRequest/${notificationId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Friend request accepted successfully");
+      // Mettre à jour la liste des amis après l'acceptation
+      fetchFriendList();
+    })
+    .catch((error) => {
+      console.error("Error accepting friend request:", error);
+    });
 }

@@ -91,6 +91,16 @@ async function manageRequest(request, response) {
       request.method === "DELETE"
     ) {
       handleFriendDelete(request, response, decodedToken);
+    } else if (
+      normalizedPath === `${apiPath}/friendRequest` &&
+      request.method === "POST"
+    ) {
+      handleFriendRequestPost(request, response, decodedToken);
+    } else if (
+      normalizedPath.startsWith(`${apiPath}/friendRequest/`) &&
+      request.method === "PUT"
+    ) {
+      handleFriendRequestAccept(request, response, decodedToken);
     }
 
     // Game
@@ -466,6 +476,120 @@ async function handleNotificationsMarkAsRead(request, response, decodedToken) {
         JSON.stringify({ message: "Failed to mark notifications as read" }),
       );
     }
+  }
+}
+
+async function handleFriendRequestPost(request, response, decodedToken) {
+  addCors(response, ["POST"]);
+
+  let body = "";
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  request.on("end", async () => {
+    try {
+      const { friendUsername } = JSON.parse(body);
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const currentUser = await users.findOne({
+        username: decodedToken.username,
+      });
+      const friendUser = await users.findOne({ username: friendUsername });
+
+      if (!currentUser || !friendUser) {
+        response.writeHead(404, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not found" }));
+        return;
+      }
+
+      if (currentUser.username === friendUser.username) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: "Cannot add yourself as a friend" }),
+        );
+        return;
+      }
+
+      if (currentUser.friends.includes(friendUser._id)) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "Already friends" }));
+        return;
+      }
+
+      const notification = {
+        title: "Friend Request",
+        message: `${currentUser.username} sent you a friend request`,
+        from: currentUser._id,
+        to: friendUser._id,
+        read: false,
+        type: "friendRequest",
+      };
+
+      const notifications = db.collection("notifications");
+      await notifications.insertOne(notification);
+
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Friend request sent" }));
+    } catch (e) {
+      console.error("Error in handleFriendRequestPost:", e);
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Invalid JSON" }));
+    }
+  });
+}
+
+async function handleFriendRequestAccept(request, response, decodedToken) {
+  addCors(response, ["PUT"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const notificationId = parsedUrl.pathname.split("/").pop();
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+    const notifications = db.collection("notifications");
+
+    const notification = await notifications.findOne({
+      _id: new ObjectId(notificationId),
+    });
+
+    if (!notification) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Notification not found" }));
+      return;
+    }
+
+    const currentUser = await users.findOne({ _id: notification.to });
+    const friendUser = await users.findOne({ _id: notification.from });
+
+    if (!currentUser || !friendUser) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not found" }));
+      return;
+    }
+
+    await users.updateOne(
+      { _id: currentUser._id },
+      { $addToSet: { friends: friendUser._id } },
+    );
+    await users.updateOne(
+      { _id: friendUser._id },
+      { $addToSet: { friends: currentUser._id } },
+    );
+
+    await notifications.deleteOne({ _id: notification._id });
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Friend request accepted" }));
+  } catch (e) {
+    console.error("Error in handleFriendRequestAccept:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({ message: "Failed to accept friend request" }),
+    );
   }
 }
 
