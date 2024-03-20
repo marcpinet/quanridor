@@ -147,73 +147,8 @@ let isPlayer1Placed = false;
 let isPlayer2Placed = false;
 
 // Load the game state from the server and initialize the game with it (only if a gameId is present in the URL)
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   winPopup.style.display = "none";
-  const urlParams = new URLSearchParams(window.location.search);
-  gameId = urlParams.get("id");
-  difficulty = urlParams.get("difficulty");
-  difficulty = parseInt(difficulty);
-
-  if (gameId) {
-    socket.emit("gameId", {
-      gameId: gameId,
-      token: localStorage.getItem("token"),
-      difficulty: difficulty,
-    });
-    socket.on("retrieveGame", (game) => {
-      console.log(game.playerspositions);
-      // Check if game has ended
-      if (game.status === 2) {
-        alert(
-          "Game has already ended, you can't join it. Redirecting to home page...",
-        );
-        window.location.href = "home.html";
-      }
-
-      const player1name = document.getElementById("player1-name");
-      player1name.textContent = game.players[0];
-      const player2name = document.getElementById("player2-name");
-      player2name.textContent = game.players[1];
-      // ELO
-      const player1elo = document.getElementById("player1-elo");
-      const player2elo = document.getElementById("player2-elo");
-
-      console.log(game.elos);
-
-      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
-      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
-      //initializeGame(game);
-      if (p1_coord[0] != -1) {
-        isPlayer1Placed = true;
-        drawBoard();
-        canvas.removeEventListener("mousemove", handleMouseOverCanvas);
-        playing = true;
-      }
-    });
-  } else {
-    socket.emit("createGameAI", {
-      difficulty: difficulty,
-      token: localStorage.getItem("token"),
-    });
-    socket.on("gameCreated", (game) => {
-      gameId = game._id;
-      //initializeGame(game);
-      //const baseUrl = window.location.origin;
-      //window.location.href = `${baseUrl}/ai-game.html?id=` + gameId;
-
-      // Setting the game info display
-      // Usernames
-      const player1name = document.getElementById("player1-name");
-      player1name.textContent = game.players[0];
-      const player2name = document.getElementById("player2-name");
-      player2name.textContent = game.players[1];
-      // ELO
-      const player1elo = document.getElementById("player1-elo");
-      const player2elo = document.getElementById("player2-elo");
-      player1elo.textContent = game.elos?.[0] ?? "ELO : N/A";
-      player2elo.textContent = game.elos?.[1] ?? "ELO : N/A";
-    });
-  }
 });
 
 function initializeGame(gameState) {
@@ -620,25 +555,6 @@ function getWallFromCoord(x, y) {
   return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
 }
 
-let checking = false;
-
-socket.on("legalMove", (new_coord) => {
-  checking = false;
-  updateFogOfWarReverse(1);
-  movePlayer(1, new_coord);
-  updateFogOfWar(1);
-  socket.emit("sendGameState", {
-    gameId: gameId,
-    gameState: getGameState(),
-  });
-
-  tour++;
-
-  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
-  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
-  drawBoard();
-});
-
 function getMouseCoordOnCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;
@@ -1024,29 +940,6 @@ function updateFogOfWarWall(wall_coord) {
   }
 }
 
-let wallChecking = false;
-
-socket.on("legalWall", () => {
-  wallChecking = false;
-  if (temp_wall.length > 0) {
-    updateFogOfWarWall(temp_wall);
-    placeWall(temp_wall, current_direction);
-    if (tour % 2 == 0) {
-      updateWallBar(p1_walls, tour);
-      p1_walls--;
-    } else {
-      updateWallBar(p2_walls, tour);
-      p2_walls--;
-    }
-    tour++;
-  }
-  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
-  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
-  drawBoard();
-  const dataToSend = { gameId: gameId, gameState: getGameState() };
-  socket.emit("sendGameState", dataToSend);
-});
-
 function confirmWall() {
   clearTimeout(timer);
   clearInterval(timerInterval);
@@ -1277,68 +1170,10 @@ export function getGameState() {
   };
 }
 
-socket.on("aiMove", (newCoord) => {
-  updateFogOfWarReverse(2);
-
-  if (
-    newCoord === null ||
-    newCoord === undefined ||
-    newCoord.length === 0 ||
-    newCoord[0] === undefined ||
-    newCoord[0] === null ||
-    isNaN(newCoord[0])
-  ) {
-    console.log("AI has no move to play, keeping its current position...");
-    newCoord = p2_coord;
-  }
-
-  if (newCoord[2] !== undefined) {
-    placeWall(newCoord, newCoord[2]);
-    updateWallBar(p2_walls, tour);
-    p2_walls--;
-    console.log("ai walls : " + p2_walls);
-    updateFogOfWarWall(newCoord);
-  } else {
-    movePlayer(2, newCoord);
-  }
-
-  tour++;
-
-  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
-  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
-
-  updateFogOfWar(2);
-  drawBoard();
-});
-
-socket.on("aiLastMove", (newCoord) => {
-  updateFogOfWarReverse(2);
-  if (newCoord.length === 3) {
-    placeWall(newCoord, newCoord[2]);
-    updateWallBar(p2_walls, tour);
-    p2_walls--;
-    updateFogOfWarWall(newCoord);
-  } else {
-    p2_coord = newCoord;
-    drawPlayer(42 + newCoord[0] * 77, 42 + newCoord[1] * 77, "#000000");
-    select2 = false;
-  }
-  tour++;
-  updateFogOfWar(2);
-  drawBoard();
-});
-
 socket.on("illegal", () => {
   alert("Illegal Move !");
   wallChecking = false;
   checking = false;
-});
-
-window.addEventListener("onbeforeunload", function (event) {
-  event.preventDefault();
-  socket.emit("leave", { gameId: gameId, gameState: getGameState() });
-  window.location.href =
-    "ai-game.html?difficulty=" + difficulty + "&id=" + gameId;
 });
 
 window.addEventListener("unload", function (event) {
@@ -1352,6 +1187,8 @@ window.addEventListener("unload", function (event) {
       roomId: roomId,
       username: players[1],
     });
+  } else {
+    socket.emit("leaveWhileSearching");
   }
 });
 
