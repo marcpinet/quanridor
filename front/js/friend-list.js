@@ -55,6 +55,12 @@ document.addEventListener("DOMContentLoaded", function () {
               smallUser.id = "small-user";
               friendContainer.appendChild(smallUser);
 
+              // Add <div class="small-activity" id="inactive"></div>
+              const smallActivity = document.createElement("div");
+              smallActivity.className = "small-activity";
+              smallActivity.id = friendData.activity;
+              friendContainer.appendChild(smallActivity);
+
               const friendName = document.createElement("div");
               friendName.classList.add("text");
               friendName.textContent = friendData.username;
@@ -356,6 +362,12 @@ function addMessageToChat(message, isFromFriend) {
   const smallUser = document.createElement("svg");
   smallUser.id = "small-user";
   messageElement.appendChild(smallUser);
+
+  // Add <div class="small-activity" id="inactive"></div>
+  const smallActivity = document.createElement("div");
+  smallActivity.className = "small-activity";
+  smallActivity.id = friendData.activity;
+  friendContainer.appendChild(smallActivity);
 
   messageList.appendChild(messageElement);
   messageList.scrollTop = messageList.scrollHeight;

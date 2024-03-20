@@ -21,6 +21,7 @@ db.users.insertOne({
   admin: true,
   elo: 800,
   friends: [], // Friends list containing ObjectIds
+  activity: "inactive", // Activity status (active, inactive)
 });
 
 db.createCollection("secrets");
