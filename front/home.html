@@ -18,9 +18,15 @@
             <div class="friends-header">
               <div id="friend-search">
                 <svg class="small-back-arrow" id="close-search"></svg>
-                <input id="search-input" type="text" placeholder="Type a username..." />
+                <input
+                  id="search-input"
+                  type="text"
+                  placeholder="Type a username..."
+                />
               </div>
-              <div id="friend-buttons">Friends <svg id="search"></svg> <svg id="add-friend"></svg></div>
+              <div id="friend-buttons">
+                Friends <svg id="search"></svg> <svg id="add-friend"></svg>
+              </div>
             </div>
             <div class="scrollbar-friend-content">
               <div class="friends">
@@ -36,7 +42,7 @@
               class="friends-header"
               style="justify-content: flex-start; gap: 50px"
             >
-            <svg class="small-back-arrow" id="close-chat"></svg>
+              <svg class="small-back-arrow" id="close-chat"></svg>
               <div class="text" id="selected-friend-name"></div>
               <input type="hidden" id="selected-friend-id" value="" />
             </div>
@@ -46,21 +52,34 @@
               <!-- Les messages du chat seront insérés ici dynamiquement -->
             </div>
             <div class="chat-footer">
-              <input id="message-input" type="text" placeholder="Type a message..." />
+              <input
+                id="message-input"
+                type="text"
+                placeholder="Type a message..."
+              />
               <svg id="send"></svg>
             </div>
           </div>
         </div>
       </div>
       <div id="friend-profile">
-        <div class="vertical-small-container">
-          <svg id="user"></svg>
-          <h1 class="text" id="selected-friend-profile-name"></h1>
-          <div class="friend-footer">
-            <div class="horizontal-small-container">
-              <svg id="unfriend"></svg> <svg id="chat"></svg>
-              <svg id="play"></svg>
+        <div id="profile-container">
+          <div class="vertical-small-container">
+            <svg id="user"></svg>
+            <h1 class="text" id="selected-friend-profile-name"></h1>
+            <div class="friend-footer">
+              <div class="horizontal-small-container">
+                <svg id="unfriend"></svg> <svg id="chat"></svg>
+                <svg id="play"></svg>
+              </div>
             </div>
+          </div>
+        </div>
+        <div id="remove-friend">
+          <div class="text">Remove friend?</div>
+          <div class="horizontal-small-container">
+            <button class="choice-button" id="normal-button">No, keep</button>
+            <button class="choice-button" id="careful-button">Remove</button>
           </div>
         </div>
       </div>

@@ -752,6 +752,20 @@ canvas {
   cursor: pointer;
 }
 
+.choice-button{
+  font-size: 18px;
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  box-shadow: none;
+  transition:
+    width 0.3s ease;
+}
+
+.choice-button:hover{
+  width: 130px;
+}
+
 #close-arrow {
   position: inherit;
   background: url("../assets/back-arrow.svg") center/30px no-repeat;
@@ -828,17 +842,54 @@ canvas {
 }
 
 #friend-profile{
+  gap: 20px;
   display: none;
+  flex-direction: column;
   position: absolute;
+  left: 22%;
+  padding-top: 50px;
+}
+
+#profile-container{
+  width: 250px;
+  height: 300px;
   align-items: center;
   padding: 10px;
   border-radius: 30px;
   background-color: rgba(1,5,37,1);
-  cursor: pointer;
+}
+
+#remove-friend{
+  display: none;
+  flex-direction: column;
   width: 250px;
-  height: 300px;
-  left: 25%;
-  padding-top: 50px;
+  height: 100px;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 30px;
+  background-color: rgba(1,5,37,1);
+}
+
+#normal-button{
+  background-color: #4650A8;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#careful-button{
+  background-color: #EE4F3A;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
 }
 
 .friend-footer{
