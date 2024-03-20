@@ -1232,6 +1232,10 @@ canvas {
   display: none;
 }
 
+#unexpected-error{
+  display: none;
+}
+
 #cross{
   background: url("../assets/cross.svg") center/25px no-repeat;
   width: 50px;

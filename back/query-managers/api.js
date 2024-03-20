@@ -355,62 +355,98 @@ async function handleUserGet(request, response, decodedToken) {
 
 // ------------------------------ FRIENDS HANDLING ------------------------------
 
-async function handleFriendDelete(request, response, decodedToken) {
-  addCors(response, ["DELETE"]);
+async function handleFriendRequestPost(request, response, decodedToken) {
+  addCors(response, ["POST"]);
 
-  const parsedUrl = url.parse(request.url, true);
-  const friendId = parsedUrl.pathname.split("/").pop();
+  let body = "";
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
 
-  try {
-    const db = getDB();
-    const users = db.collection("users");
+  request.on("end", async () => {
+    try {
+      const { friendUsername } = JSON.parse(body);
 
-    const username = decodedToken.username;
-    const user = await users.findOne({ username });
+      const db = getDB();
+      const users = db.collection("users");
+      const notifications = db.collection("notifications");
 
-    if (!user) {
-      response.writeHead(401, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "User not authenticated" }));
-      return;
-    }
+      const currentUser = await users.findOne({
+        username: decodedToken.username,
+      });
+      const friendUser = await users.findOne({ username: friendUsername });
 
-    const friend = await users.findOne({ _id: new ObjectId(friendId) });
-    if (!friend) {
-      response.writeHead(404, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Friend not found" }));
-      return;
-    }
+      if (!currentUser || !friendUser) {
+        response.writeHead(404, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: "User not found", specific: 0 }),
+        );
+        return;
+      }
 
-    // Vérifier si les utilisateurs sont amis
-    const userFriendsAsStrings = user.friends.map((id) => id.toString());
-    const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+      if (currentUser.username === friendUser.username) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({
+            message: "Cannot add yourself as a friend",
+            specific: 1,
+          }),
+        );
+        return;
+      }
 
-    if (
-      !userFriendsAsStrings.includes(friendId) ||
-      !friendFriendsAsStrings.includes(user._id.toString())
-    ) {
+      // Vérifier si les utilisateurs sont amis
+      const userFriendsAsStrings = user.friends.map((id) => id.toString());
+      const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+
+      if (
+        userFriendsAsStrings.includes(friendUser._id.toString()) &&
+        friendFriendsAsStrings.includes(user._id.toString())
+      ) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: "Already friends", specific: 2 }),
+        );
+        return;
+      }
+
+      const existingNotification = await notifications.findOne({
+        from: currentUser._id,
+        to: friendUser._id,
+        type: "friendRequest",
+        read: false,
+      });
+
+      if (existingNotification) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({
+            message: "Friend request already sent",
+            specific: 3,
+          }),
+        );
+        return;
+      }
+
+      const notification = {
+        title: "Friend Request",
+        message: `${currentUser.username} sent you a friend request`,
+        from: currentUser._id,
+        to: friendUser._id,
+        read: false,
+        type: "friendRequest",
+      };
+
+      await notifications.insertOne(notification);
+
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Friend request sent" }));
+    } catch (e) {
+      console.error("Error in handleFriendRequestPost:", e);
       response.writeHead(400, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ message: "Users are not friends" }));
-      return;
+      response.end(JSON.stringify({ message: "Invalid JSON" }));
     }
-
-    // Supprimer les utilisateurs de leurs listes d'amis respectives
-    await users.updateOne(
-      { _id: user._id },
-      { $pull: { friends: new ObjectId(friendId) } },
-    );
-    await users.updateOne(
-      { _id: new ObjectId(friendId) },
-      { $pull: { friends: user._id } },
-    );
-
-    response.writeHead(200, { "Content-Type": "application/json" });
-    response.end(JSON.stringify({ message: "Friend removed successfully" }));
-  } catch (e) {
-    console.error("Error in handleFriendDelete:", e);
-    response.writeHead(400, { "Content-Type": "application/json" });
-    response.end(JSON.stringify({ message: "Failed to remove friend" }));
-  }
+  });
 }
 
 async function handleNotificationsGet(request, response, decodedToken) {

@@ -480,15 +480,22 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error sending friend request:", error);
+        console.log("message:", error.message);
         let feedbackElementId;
-        if (error.message.includes("404")) {
-          feedbackElementId = "couldnt-find-user";
-        } else if (error.message.includes("Cannot add yourself")) {
-          feedbackElementId = "cant-add-yourself";
-        } else if (error.message.includes("Already friends")) {
-          feedbackElementId = "already-friends";
+        if (error.specific) {
+          if (error.specific === 0) {
+            feedbackElementId = "couldnt-find-user";
+          } else if (error.specific === 1) {
+            feedbackElementId = "cant-add-yourself";
+          } else if (error.specific === 2) {
+            feedbackElementId = "already-friends";
+          } else if (error.specific === 3) {
+            feedbackElementId = "friend-request-already-sent";
+          } else {
+            feedbackElementId = "unexpected-error";
+          }
         } else {
-          feedbackElementId = "friend-request-already-sent";
+          feedbackElementId = "unexpected-error";
         }
         const feedbackElement = document.getElementById(feedbackElementId);
         feedbackElement.style.display = "block";
@@ -516,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log("Friend request accepted successfully");
-        // Mettre à jour la liste des amis après l'acceptation
+        // TODO: Mettre à jour la liste des amis après l'acceptation de la demande
         fetchFriendList();
       })
       .catch((error) => {
