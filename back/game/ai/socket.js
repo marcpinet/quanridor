@@ -437,7 +437,7 @@ function createSocketGame(io) {
       }
 
       const whoWon =
-        gameState.players[0] === user.username ? "player1win" : "player2win";
+        gameState.players[0] === user.username ? "player1Win" : "player2Win";
       gameNamespace.to(data.roomId).emit(whoWon);
     });
 
