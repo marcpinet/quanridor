@@ -228,7 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   socket.on("messageHistory", function (messages) {
     const messageList = document.getElementById("message-list");
-    messageList.innerHTML = ""; // Vider la liste des messages
+    messageList.innerHTML =
+      '<div class="date">Let\'s start chatting!</div><br />'; // Vider la liste des messages
 
     messages.forEach((message) => {
       addMessageToChat(message, message.from !== currentUserId);
