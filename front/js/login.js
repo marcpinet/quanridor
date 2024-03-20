@@ -26,6 +26,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return response.json();
       })
       .then((data) => {
+        if (data.banned) {
+          alert("You are banned, you can't login.");
+          return;
+        }
         console.log("Success:", data);
         if (data.token) {
           localStorage.setItem("token", data.token); // Save token

@@ -215,7 +215,12 @@ async function handleLogin(request, response) {
       const token = jwt.sign({ username }, secret, { expiresIn: "90d" });
 
       response.writeHead(200, { "Content-Type": "application/json" });
-      response.end(JSON.stringify({ token: token }));
+      response.end(
+        JSON.stringify({
+          token: token,
+          banned: user.banned === undefined ? false : user.banned,
+        }),
+      );
     } catch (e) {
       response.writeHead(400, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ message: "Invalid JSON" }));
