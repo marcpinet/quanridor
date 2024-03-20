@@ -973,13 +973,16 @@ canvas {
   background-color: #4650A8;
   border-radius: 20px;
   padding: 10px;
-  height: fit-content;
+  max-width: 200px;
+  word-wrap: break-word;
 }
 
 .message-content{
-  justify-content: space-between;
+  /*justify-content: space-between;
   align-items: center;
   font-size: 20px;
+  text-wrap: balance;
+  max-width: 30%;*/
 }
 
 .friend-text-container{
@@ -987,6 +990,7 @@ canvas {
   flex-direction: row;
   margin: 5px;
   margin-bottom: 10px;
+
 }
 
 .friend-text-container #small-user{

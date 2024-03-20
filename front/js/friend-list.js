@@ -451,6 +451,10 @@ function addMessageToChat(message, isFromFriend) {
 
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
+    messageElement.style.marginRight = "auto";
+  } else {
+    messageElement.style.flexDirection = "row";
+    messageElement.style.marginLeft = "auto";
   }
 
   const messageContainer = document.createElement("div");
