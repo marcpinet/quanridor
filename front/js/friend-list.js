@@ -481,6 +481,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error sending friend request:", error);
         console.log("message:", error.message);
+        console.log("specific:", error.specific);
         let feedbackElementId;
         if (error.specific) {
           if (error.specific === 0) {
