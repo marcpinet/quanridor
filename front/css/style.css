@@ -1021,6 +1021,10 @@ canvas {
   background-color: rgb(63, 66, 97);
 }
 
+#playing{
+  background-color: #ee4f3a;
+}
+
 .big-activity .tooltiptext {
   visibility: hidden;
   width: 120px;

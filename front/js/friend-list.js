@@ -79,9 +79,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
                 document.getElementById("selected-friend-name").textContent =
-                  selectedFriendName;
-                document.getElementById("selected-friend-id").value =
-                  selectedFriendId;
+                  friendName;
+                document.getElementById("selected-friend-id").value = friendId;
+
+                // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
+                const friendProfile = document.getElementById("friend-profile");
+                const userSvg = friendProfile.querySelector("#user");
+                const bigActivity = document.createElement("div");
+                bigActivity.className = "big-activity";
+                bigActivity.id = friendData.activity;
+                const tooltipText = document.createElement("span");
+                tooltipText.className = "tooltiptext";
+                tooltipText.textContent =
+                  friendData.activity === "active" ? "Active" : "Inactive";
+                bigActivity.appendChild(tooltipText);
+                userSvg.insertAdjacentElement("afterend", bigActivity);
               });
             })
             .catch((error) => {

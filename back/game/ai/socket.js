@@ -76,7 +76,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "active" } },
+        { $set: { activity: "playing" } },
       );
     });
 
@@ -122,7 +122,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "active" } },
+        { $set: { activity: "playing" } },
       );
     });
 
@@ -349,6 +349,16 @@ function createSocketGame(io) {
         { _id: new ObjectId(gameId) },
         { $set: gameState },
       );
+
+      let username = gameState.players[0];
+      let users = db.collection("users");
+      let user = await users.findOne({ username: username });
+      let userId = user._id;
+
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "inactive" } },
+      );
     });
 
     /*----------------------------------------------*/
@@ -394,7 +404,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "active" } },
+        { $set: { activity: "playing" } },
       );
     });
 
