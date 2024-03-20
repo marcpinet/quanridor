@@ -360,7 +360,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Écouter les nouvelles notifications en temps réel
   socket.on("newMessageNotification", function (notification) {
-    incrementMessageCount();
+    const friendId = notification.from;
+    incrementMessageCount(friendId);
     displaySideNotification(notification.title, notification.message);
   });
 
@@ -370,6 +371,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // Récupérer l'ID de l'ami à partir de l'attribut data-friendId
       const friendId = friendContainer.getAttribute("data-friendId");
       const friendName = friendIdToUsername[friendId];
+
+      // Réinitialiser le compteur de messages non lus pour l'ami sélectionné
+      const unreadMessageCount = friendContainer.querySelector(
+        ".unread-message-count",
+      );
+      unreadMessageCount.textContent = "0";
+      unreadMessageCount.style.display = "none";
 
       console.log("Selected friend ID:", friendId);
       console.log("Selected friend name:", friendName);
@@ -427,6 +435,19 @@ function addMessageToChat(message, isFromFriend) {
 
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
+  }
+
+  if (isFromFriend) {
+    const friendId = message.from;
+    const friendContainer = document.querySelector(
+      `[data-friendid="${friendId}"]`,
+    );
+    const unreadMessageCount = friendContainer.querySelector(
+      ".unread-message-count",
+    );
+    unreadMessageCount.textContent =
+      parseInt(unreadMessageCount.textContent) + 1;
+    unreadMessageCount.style.display = "block";
   }
 
   const messageContainer = document.createElement("div");

@@ -42,13 +42,17 @@ function updateNotificationDisplay() {
 }, 3000);
 */
 
-function incrementMessageCount() {
+function incrementMessageCount(friendId) {
   notificationCount++;
   updateNotificationDisplay();
-  for (const element of messageCountList) {
-    element.textContent = parseInt(element.textContent) + 1;
-    element.style.display = "block";
-  }
+  const friendContainer = document.querySelector(
+    `[data-friendid="${friendId}"]`,
+  );
+  const unreadMessageCount = friendContainer.querySelector(
+    ".unread-message-count",
+  );
+  unreadMessageCount.textContent = parseInt(unreadMessageCount.textContent) + 1;
+  unreadMessageCount.style.display = "block";
 }
 
 function displaySideNotification(title, message) {
