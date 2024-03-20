@@ -82,8 +82,15 @@ document.addEventListener("DOMContentLoaded", function () {
                   friendName;
                 document.getElementById("selected-friend-id").value = friendId;
 
-                // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
+                // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
                 const friendProfile = document.getElementById("friend-profile");
+                const existingBigActivity =
+                  friendProfile.querySelector(".big-activity");
+                if (existingBigActivity) {
+                  existingBigActivity.remove();
+                }
+
+                // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
                 const userSvg = friendProfile.querySelector("#user");
                 const bigActivity = document.createElement("div");
                 bigActivity.className = "big-activity";
