@@ -799,8 +799,9 @@ socket.on("updateAfterPayer1Move", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer2", {
         roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
@@ -823,8 +824,9 @@ socket.on("updateAfterPayer2Move", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
@@ -843,12 +845,22 @@ socket.on("timeIsUp", () => {
   tour++;
   leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
   rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
-  if ((tour % 2 == 0 && player == 1) || (tour % 2 == 1 && player == 2)) {
+  if (tour % 2 == 0 && player == 1) {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
+        gameState: getGameState(),
+      });
+    }, timePerMove * 1000);
+  } else if (tour % 2 == 1 && player == 2) {
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUpForPlayer2", {
+        roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
@@ -1036,15 +1048,13 @@ function confirmWall() {
     if (player == 1) {
       socket.emit("isPlayer1WallLegal", {
         roomId: roomId,
-        wall: [temp_wall[0], temp_wall[1]],
-        currentDirection: current_direction,
+        wall: [temp_wall[0], temp_wall[1], current_direction],
         gameState: getGameState(),
       });
     } else {
       socket.emit("isPlayer2WallLegal", {
         roomId: roomId,
-        wall: [temp_wall[0], temp_wall[1]],
-        currentDirection: current_direction,
+        wall: [temp_wall[0], temp_wall[1], current_direction],
         gameState: getGameState(),
       });
     }
@@ -1077,7 +1087,8 @@ function confirmWall() {
 
 socket.on("player1WallIsLegal", (data) => {
   if (player == 1) {
-    temp_wall = data;
+    current_direction = data[2];
+    temp_wall = [data[0], data[1]];
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     updateWallBar(p1_walls, tour);
@@ -1094,7 +1105,8 @@ socket.on("player1WallIsLegal", (data) => {
 
 socket.on("player2WallIsLegal", (data) => {
   if (player == 2) {
-    temp_wall = data;
+    current_direction = data[2];
+    temp_wall = [data[0], data[1]];
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     updateWallBar(p2_walls, tour);
@@ -1129,8 +1141,9 @@ socket.on("updateAfterPayer1Wall", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer2", {
         roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
@@ -1159,8 +1172,9 @@ socket.on("updateAfterPayer2Wall", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
@@ -1405,8 +1419,9 @@ socket.on("readyToStart", (data) => {
     timer = setTimeout(() => {
       clearTempWall();
       drawBoard();
-      socket.emit("timeIsUp", {
+      socket.emit("timeIsUpForPlayer1", {
         roomId: roomId,
+        gameState: getGameState(),
       });
     }, timePerMove * 1000);
   }
