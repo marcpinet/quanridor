@@ -445,7 +445,59 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error removing friend:", error);
       });
   });
+
+  sendFriendRequestButton.addEventListener("click", function () {
+    const friendUsername = addFriendInput.value.trim();
+    sendFriendRequest(friendUsername);
+  });
 });
+
+function sendFriendRequest(friendUsername) {
+  const token = localStorage.getItem("token");
+
+  fetch(`${baseUrl}/api/friendRequest`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ friendUsername }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Friend request sent successfully");
+      const feedbackElement = document.getElementById("friend-request-sent");
+      feedbackElement.style.display = "block";
+      setTimeout(() => {
+        feedbackElement.style.display = "none";
+      }, 3000);
+      addFriendInput.value = "";
+      sendFriendRequestButton.setAttribute("disabled", "disabled");
+    })
+    .catch((error) => {
+      console.error("Error sending friend request:", error);
+      let feedbackElementId;
+      if (error.message.includes("404")) {
+        feedbackElementId = "couldnt-find-user";
+      } else if (error.message.includes("Cannot add yourself")) {
+        feedbackElementId = "cant-add-yourself";
+      } else if (error.message.includes("Already friends")) {
+        feedbackElementId = "already-friends";
+      } else {
+        feedbackElementId = "friend-request-already-sent";
+      }
+      const feedbackElement = document.getElementById(feedbackElementId);
+      feedbackElement.style.display = "block";
+      setTimeout(() => {
+        feedbackElement.style.display = "none";
+      }, 3000);
+    });
+}
 
 function addMessageToChat(message, isFromFriend) {
   const messageList = document.getElementById("message-list");
