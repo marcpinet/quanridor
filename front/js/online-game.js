@@ -1342,7 +1342,17 @@ window.addEventListener("onbeforeunload", function (event) {
 });
 
 window.addEventListener("unload", function (event) {
-  socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+  if (player == 1) {
+    socket.emit("player1Leave", {
+      roomId: roomId,
+      username: players[0],
+    });
+  } else if (player == 2) {
+    socket.emit("player2Leave", {
+      roomId: roomId,
+      username: players[1],
+    });
+  }
 });
 
 function updateWallBar(value, t) {
@@ -1483,4 +1493,15 @@ socket.on("draw", () => {
   clearAfterWin();
   winPopup.style.display = "block";
   winText.textContent = "DRAW!";
+});
+
+socket.on("opponentLeave", () => {
+  clearTimeout(timer);
+  clearInterval(timerInterval);
+  playing = false;
+  clearTempWall();
+  drawBoard();
+  clearAfterWin();
+  winPopup.style.display = "block";
+  winText.textContent = "OPPONENT LEFT, YOU WON!";
 });
