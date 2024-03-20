@@ -16,6 +16,8 @@ let gameId;
 let difficulty;
 let roomId;
 let player;
+let timer;
+let timerInterval;
 
 let board_visibility = [];
 let lastMove = false;
@@ -26,6 +28,11 @@ const win = document.getElementById("win");
 const smoke = document.getElementById("smoke");
 const player1Name = document.getElementById("player1-name");
 const player2Name = document.getElementById("player2-name");
+const timePerMove = 10;
+const p1Timer = document.getElementById("p1-timer-text");
+const p2Timer = document.getElementById("p2-timer-text");
+
+let timeRemaining = timePerMove;
 
 //A CHANGER CAR CA PUE LA MERDE
 smoke.style.display = "block";
@@ -680,6 +687,9 @@ function getMouseCoordOnCanvas(event) {
     (isLegal(p1_coord, new_coord) ||
       (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
   ) {
+    clearTimeout(timer);
+    clearInterval(timerInterval);
+    timeRemaining = timePerMove;
     updateFogOfWarReverse(1);
     movePlayer(1, new_coord);
     updateFogOfWar(1);
@@ -700,6 +710,9 @@ function getMouseCoordOnCanvas(event) {
     (isLegal(p2_coord, new_coord) ||
       (jump_coord[0] == new_coord[0] && jump_coord[1] == new_coord[1]))
   ) {
+    clearTimeout(timer);
+    clearInterval(timerInterval);
+    timeRemaining = timePerMove;
     updateFogOfWar(2);
     movePlayer(2, new_coord);
     updateFogOfWarReverse(2);
@@ -752,24 +765,91 @@ socket.on("player2LastMove", (data) => {
 });
 
 socket.on("updateAfterPayer1Move", (data) => {
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
   playing = !playing;
+  clearInterval(timerInterval);
   if (player == 2) {
     updateFogOfWar(1);
     movePlayer(1, data);
     updateFogOfWarReverse(1);
+
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
+
   drawBoard();
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
 socket.on("updateAfterPayer2Move", (data) => {
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
   playing = !playing;
+  clearInterval(timerInterval);
   if (player == 1) {
     updateFogOfWarReverse(2);
     movePlayer(2, data);
     updateFogOfWar(2);
+
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
+
   drawBoard();
+  timerInterval = setInterval(updateTimer, 1000);
 });
+
+socket.on("timeIsUp", () => {
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
+  clearInterval(timerInterval);
+  clearTimeout(timer);
+  playing = !playing;
+  tour++;
+  leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+  rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+  if ((tour % 2 == 0 && player == 1) || (tour % 2 == 1 && player == 2)) {
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
+  }
+
+  timerInterval = setInterval(updateTimer, 1000);
+});
+
+function updateTimer() {
+  if (tour % 2 == 0) {
+    p1Timer.textContent = `Timer: ${timeRemaining - 1} sec`;
+    p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  } else {
+    p2Timer.textContent = `Timer: ${timeRemaining - 1} sec`;
+    p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  }
+
+  timeRemaining--;
+
+  if (timeRemaining < 0) {
+    clearInterval(timeRemaining);
+  }
+}
 
 function displayPossibleMoves(player) {
   console.log(tour);
@@ -927,6 +1007,9 @@ socket.on("legalWall", () => {
 });
 
 function confirmWall() {
+  clearTimeout(timer);
+  clearInterval(timerInterval);
+  timeRemaining = timePerMove;
   if (!playing) return;
   if (temp_wall.length > 0) {
     updateFogOfWarWall(temp_wall);
@@ -955,7 +1038,11 @@ function confirmWall() {
 }
 
 socket.on("updateAfterPayer1Wall", (data) => {
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
   playing = !playing;
+  clearInterval(timerInterval);
   if (player == 2) {
     current_direction = data[2];
     temp_wall = [data[0], data[1]];
@@ -966,13 +1053,26 @@ socket.on("updateAfterPayer1Wall", (data) => {
     tour++;
     leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
     rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
   temp_wall = [];
   drawBoard();
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
 socket.on("updateAfterPayer2Wall", (data) => {
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
   playing = !playing;
+  clearInterval(timerInterval);
   if (player == 1) {
     current_direction = data[2];
     temp_wall = [data[0], data[1]];
@@ -983,9 +1083,18 @@ socket.on("updateAfterPayer2Wall", (data) => {
     tour++;
     leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
     rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
   temp_wall = [];
   drawBoard();
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
 function isInclude(array, coord) {
@@ -1158,28 +1267,77 @@ document.getElementById("replay").addEventListener("click", () => {
   window.location.href = "ai-game.html?difficulty=" + difficulty;
 });
 
+let placing = false;
+
 socket.on("placePlayer1", () => {
-  if (player == 1) {
-    canvas.addEventListener("mousemove", handleMouseOverCanvas);
+  if (!placing) {
+    placing = true;
+    if (player == 1) {
+      canvas.addEventListener("mousemove", handleMouseOverCanvas);
+      timer = setTimeout(() => {
+        p1_coord = [4, 8];
+        isPlayer1Placed = true;
+        updateFogOfWar(1);
+        canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+        drawBoard();
+        socket.emit("player1Placed", {
+          coord: p1_coord,
+          roomId: roomId,
+        });
+      }, timePerMove * 1000);
+    }
+    timerInterval = setInterval(updateTimer, 1000);
   }
 });
 
 socket.on("placePlayer2", (data) => {
+  clearTimeout(timer);
+  clearInterval(timerInterval);
+  timeRemaining = timePerMove;
   isPlayer1Placed = true;
+  tour++;
+  leftProfileBox.style.borderColor = transparent;
+  rightProfileBox.style.borderColor = colored;
   if (player == 2) {
     p1_coord = data;
     updateFogOfWarReverse(1);
     canvas.addEventListener("mousemove", handleMouseOverCanvas);
+    timer = setTimeout(() => {
+      p2_coord = [4, 0];
+      isPlayer1Placed = true;
+      updateFogOfWar(2);
+      canvas.removeEventListener("mousemove", handleMouseOverCanvas);
+      drawBoard();
+      socket.emit("player2Placed", {
+        coord: p2_coord,
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
 socket.on("readyToStart", (data) => {
+  clearTimeout(timer);
+  clearInterval(timerInterval);
+  timeRemaining = timePerMove;
+  tour = 0;
+  leftProfileBox.style.borderColor = colored;
+  rightProfileBox.style.borderColor = transparent;
   isPlayer2Placed = true;
   if (player == 1) {
     p2_coord = data;
     updateFogOfWar(2);
     playing = true;
+    timer = setTimeout(() => {
+      clearTempWall();
+      drawBoard();
+      socket.emit("timeIsUp", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
 function handleMouseOverCanvas(event) {

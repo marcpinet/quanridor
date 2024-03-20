@@ -443,6 +443,10 @@ function createSocketGame(io) {
     socket.on("draw", (data) => {
       console.log("0");
     });
+
+    socket.on("timeIsUp", (data) => {
+      gameNamespace.to(data.roomId).emit("timeIsUp");
+    });
   });
 
   return io;
