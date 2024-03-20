@@ -553,7 +553,9 @@ async function handleFriendRequestPost(request, response, decodedToken) {
       const userFriendsAsStrings = currentUser.friends.map((id) =>
         id.toString(),
       );
-      const friendFriendsAsStrings = friend.friends.map((id) => id.toString());
+      const friendFriendsAsStrings = friendUser.friends.map((id) =>
+        id.toString(),
+      );
       let friendId = friendUser._id.toString();
 
       if (
