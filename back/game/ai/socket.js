@@ -409,6 +409,38 @@ function createSocketGame(io) {
       );
     });
 
+    socket.on("forcewin", async (data) => {
+      const gameState = data.gameState;
+      const userToken = data.token;
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      // Check if user is admin
+      const decoded = await verifyToken(userToken);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+
+      const user = await users.findOne({ username: decoded.username });
+      if (!user) {
+        socket.emit("error", "User not found");
+        return;
+      }
+
+      // Teleport demanding player to the end
+      if (gameState.players[0] === user.username) {
+        gameState.playerspositions[0] = [8, 4];
+      } else {
+        gameState.playerspositions[1] = [0, 4];
+      }
+
+      const whoWon =
+        gameState.players[0] === user.username ? "player1win" : "player2win";
+      gameNamespace.to(data.roomId).emit(whoWon);
+    });
+
     socket.on("userData", async (data) => {
       const decoded = await verifyToken(data.token);
       if (!decoded) {

@@ -1304,6 +1304,16 @@ socket.on("readyToStart", (data) => {
   timerInterval = setInterval(updateTimer, 1000);
 });
 
+window.addEventListener("message", (event) => {
+  if (event.data === "forcewin") {
+    socket.emit("forcewin", {
+      roomId: roomId,
+      gameState: getGameState(),
+      token: localStorage.getItem("token"),
+    });
+  }
+});
+
 function handleMouseOverCanvas(event) {
   let x = event.clientX - canvas.getBoundingClientRect().left;
   let y = event.clientY - canvas.getBoundingClientRect().top;

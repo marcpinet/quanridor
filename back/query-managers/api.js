@@ -575,6 +575,12 @@ async function startServer() {
     await connectDB();
     console.log("Database connected successfully.");
 
+    const db = getDB();
+    const users = db.collection("users");
+    // Set all users to inactive
+    await users.updateMany({}, { $set: { activity: "inactive" } });
+    console.log("All users activity reset to inactive");
+
     const server = http.createServer((req, res) => {
       manageRequest(req, res);
     });
