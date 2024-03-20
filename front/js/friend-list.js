@@ -256,6 +256,25 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     });
 
+  const friendSearchBar = document.getElementById("search-input");
+
+  friendSearchBar.addEventListener("input", function () {
+    const searchTerm = friendSearchBar.value.toLowerCase();
+    const friendContainers = document.querySelectorAll(".friend-container");
+
+    friendContainers.forEach((friendContainer) => {
+      const friendName = friendContainer
+        .querySelector(".text")
+        .textContent.toLowerCase();
+
+      if (friendName.includes(searchTerm)) {
+        friendContainer.style.display = "flex";
+      } else {
+        friendContainer.style.display = "none";
+      }
+    });
+  });
+
   // Marquer les notifications comme lues lors de l'ouverture de la popup
   bellIcon.addEventListener("click", () => {
     fetch(`${baseUrl}/api/notifications`, {
