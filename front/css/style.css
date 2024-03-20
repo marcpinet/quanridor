@@ -745,6 +745,7 @@ canvas {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   padding-left: 20px;
   padding-right: 20px;
+  cursor: pointer;
 }
 
 .side-notification:hover{
@@ -1072,4 +1073,21 @@ canvas {
   flex-direction: row;
   align-items: center;
   gap:10px;
+}
+
+.unread-message-count{
+  display: none;
+  background-color: #EE4F3A;
+  color: white;
+  border-radius: 50%;
+  padding: 5px;
+  font-size: 20px;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  margin-left: 30px;
+  text-align: center;
+  transition: 
+    width 0.3s ease,
+    height 0.3s ease;
 }

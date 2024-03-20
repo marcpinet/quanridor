@@ -66,6 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
               friendName.textContent = friendData.username;
               friendContainer.appendChild(friendName);
 
+              // Add <span class="unread-message-count">0</span>
+              const unreadMessageCount = document.createElement("span");
+              unreadMessageCount.className = "unread-message-count";
+              unreadMessageCount.textContent = "0";
+              friendContainer.appendChild(unreadMessageCount);
+
               friendList.appendChild(friendContainer);
 
               // Ajouter l'ID et le nom d'utilisateur de l'ami au dictionnaire
@@ -353,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Écouter les nouvelles notifications en temps réel
   socket.on("newMessageNotification", function (notification) {
-    incrementNotificationCount();
+    incrementMessageCount();
     displaySideNotification(notification.title, notification.message);
   });
 

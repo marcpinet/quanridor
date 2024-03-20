@@ -8,12 +8,15 @@ const friendProfile = document.getElementById("friend-profile");
 const chatButton = document.getElementById("chat");
 const friendList = document.getElementById("friend-list");
 const friendChat = document.getElementById("friend-chat");
-const closeChatButton = document.getElementById("small-back-arrow");
+const closeChatButton = document.getElementById("close-chat");
 const searchHeader = document.getElementById("friend-search");
 const friendButtons = document.getElementById("friend-buttons");
 const searchButton = document.getElementById("search");
 const friendSearchBar = document.getElementById("search-input");
 const closeSearchButton = document.getElementById("close-search");
+const messageCountList = document.getElementsByClassName(
+  "unread-message-count",
+);
 
 let notificationCount = 0;
 
@@ -34,6 +37,15 @@ function updateNotificationDisplay() {
   displaySideNotification('New Notification', 'You have a new notification');
 }, 3000);
 */
+
+function incrementMessageCount() {
+  notificationCount++;
+  updateNotificationDisplay();
+  for (const element of messageCountList) {
+    element.textContent = parseInt(element.textContent) + 1;
+    element.style.display = "block";
+  }
+}
 
 function displaySideNotification(title, message) {
   sideNotification.style.display = "block";
@@ -88,6 +100,9 @@ friendsContainer.addEventListener("click", (event) => {
   const clickedElement = event.target.closest(".friend-container");
 
   if (!clickedElement || !friendsContainer.contains(clickedElement)) return;
+
+  clickedElement.querySelector(".unread-message-count").style.display = "none";
+  clickedElement.querySelector(".unread-message-count").textContent = "0";
 
   if (currentSelectedFriendContainer !== null) {
     currentSelectedFriendContainer.onmouseover = function () {
