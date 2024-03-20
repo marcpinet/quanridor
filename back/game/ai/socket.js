@@ -501,6 +501,52 @@ function createSocketGame(io) {
         gameNamespace.to(data.roomId).emit("illegal");
       }
     });
+
+    socket.on("isPlayer1WallLegal", (data) => {
+      let temp_wall = data.wall;
+      let current_direction = data.currentDirection;
+      let gameState = data.gameState;
+      if (
+        !isWallLegal(
+          1,
+          temp_wall,
+          current_direction,
+          gameState.p1walls,
+          gameState.p2walls,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        )
+      ) {
+        socket.emit("illegal");
+      } else {
+        socket.emit("player1WallIsLegal", temp_wall);
+      }
+    });
+
+    socket.on("isPlayer2WallLegal", (data) => {
+      let temp_wall = data.wall;
+      let current_direction = data.currentDirection;
+      let gameState = data.gameState;
+      if (
+        !isWallLegal(
+          2,
+          temp_wall,
+          current_direction,
+          gameState.p1walls,
+          gameState.p2walls,
+          gameState.vwalls,
+          gameState.hwalls,
+          gameState.playerspositions[0],
+          gameState.playerspositions[1],
+        )
+      ) {
+        socket.emit("illegal");
+      } else {
+        socket.emit("player2WallIsLegal", temp_wall);
+      }
+    });
   });
 
   return io;

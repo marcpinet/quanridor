@@ -1033,6 +1033,22 @@ function confirmWall() {
   timeRemaining = timePerMove;
   if (!playing) return;
   if (temp_wall.length > 0) {
+    if (player == 1) {
+      socket.emit("isPlayer1WallLegal", {
+        roomId: roomId,
+        wall: [temp_wall[0], temp_wall[1]],
+        currentDirection: current_direction,
+        gameState: getGameState(),
+      });
+    } else {
+      socket.emit("isPlayer2WallLegal", {
+        roomId: roomId,
+        wall: [temp_wall[0], temp_wall[1]],
+        currentDirection: current_direction,
+        gameState: getGameState(),
+      });
+    }
+    /*
     updateFogOfWarWall(temp_wall);
     placeWall(temp_wall, current_direction);
     if (tour % 2 == 0) {
@@ -1053,10 +1069,45 @@ function confirmWall() {
     tour++;
     leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
     rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+  */
   }
   temp_wall = [];
   drawBoard();
 }
+
+socket.on("player1WallIsLegal", (data) => {
+  if (player == 1) {
+    temp_wall = data;
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    updateWallBar(p1_walls, tour);
+    p1_walls--;
+    socket.emit("player1Wall", {
+      roomId: roomId,
+      wall: [temp_wall[0], temp_wall[1], current_direction],
+    });
+    tour++;
+    leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+    rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+  }
+});
+
+socket.on("player2WallIsLegal", (data) => {
+  if (player == 2) {
+    temp_wall = data;
+    updateFogOfWarWall(temp_wall);
+    placeWall(temp_wall, current_direction);
+    updateWallBar(p2_walls, tour);
+    p2_walls--;
+    socket.emit("player2Wall", {
+      roomId: roomId,
+      wall: [temp_wall[0], temp_wall[1], current_direction],
+    });
+    tour++;
+    leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
+    rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
+  }
+});
 
 socket.on("updateAfterPayer1Wall", (data) => {
   p1Timer.textContent = `Timer: ${timePerMove} sec`;
