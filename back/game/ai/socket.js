@@ -425,7 +425,7 @@ function createSocketGame(io) {
 
       rooms[data.roomId][data.player - 1] = user;
 
-      gameNamespace.to(data.roomId).emit("usernames", rooms[data.roomId]);
+      gameNamespace.to(data.roomId).emit("usersData", rooms[data.roomId]);
     });
 
     socket.on("readyToPlace", (data) => {
@@ -647,8 +647,35 @@ function createSocketGame(io) {
       gameNamespace.to(data.roomId).emit("opponentLeave");
     });
 
-    socket.on("leaveWhileSearching", () => {
+    socket.on("leaveWhileSearching", async (data) => {
       waitingPlayer = null;
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        return;
+      }
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ username: decoded.username });
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "inactive" } },
+      );
+    });
+
+    socket.on("updatePlayerElo", async (data) => {
+      const db = getDB();
+      const users = db.collection("users");
+      const user = await users.findOne({ username: data.player });
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { elo: data.newElo } },
+      );
     });
   });
 

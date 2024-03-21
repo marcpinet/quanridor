@@ -19,6 +19,7 @@ let player;
 let timer;
 let timerInterval;
 let players = [];
+let playersElo = [];
 
 let board_visibility = [];
 let lastMove = false;
@@ -32,6 +33,11 @@ const player2Name = document.getElementById("player2-name");
 const timePerMove = 10;
 const p1Timer = document.getElementById("p1-timer-text");
 const p2Timer = document.getElementById("p2-timer-text");
+const p1Elo = document.getElementById("player1-elo");
+const p2Elo = document.getElementById("player2-elo");
+
+const eloLost = document.getElementById("elo-score-lose");
+const eloWin = document.getElementById("elo-score-win");
 
 let timeRemaining = timePerMove;
 
@@ -77,12 +83,17 @@ socket.on("assignedPlayer", (data) => {
   drawBoard();
 });
 
-socket.on("usernames", (data) => {
+socket.on("usersData", (data) => {
   if (data[0] !== null && data[1] !== null) {
     players.push(data[0].username);
     players.push(data[1].username);
+    playersElo.push(data[0].elo);
+    playersElo.push(data[1].elo);
+    console.log(playersElo);
     player1Name.textContent = data[0].username;
     player2Name.textContent = data[1].username;
+    p1Elo.textContent = data[0].elo;
+    p2Elo.textContent = data[1].elo;
     socket.emit("readyToPlace", {
       roomId: roomId,
     });
@@ -504,6 +515,8 @@ function getCaseFromCoord(x, y) {
 }
 
 function clearAfterWin() {
+  clearInterval(timerInterval);
+  clearTimeout(timer);
   confirmWallButton.style.display = "none";
   leaveButton.style.display = "none";
   clearPlayer(42 + p1_coord[0] * 77, 42 + p1_coord[1] * 77);
@@ -1188,7 +1201,9 @@ window.addEventListener("unload", function (event) {
       username: players[1],
     });
   } else {
-    socket.emit("leaveWhileSearching");
+    socket.emit("leaveWhileSearching", {
+      token: localStorage.getItem("token"),
+    });
   }
 });
 
@@ -1210,7 +1225,7 @@ function initWallBar(value, p) {
 }
 
 document.getElementById("replay").addEventListener("click", () => {
-  window.location.href = "ai-game.html?difficulty=" + difficulty;
+  window.location.href = "online-game.html";
 });
 
 let placing = false;
@@ -1309,27 +1324,128 @@ function handleMouseOverCanvas(event) {
 socket.on("player1Win", () => {
   clearAfterWin();
   winPopup.style.display = "block";
+  let D = playersElo[0] - playersElo[1];
+  let p;
+  let W;
+  let newElo;
   if (player == 1) {
+    p = 1 / (1 + 10 ** (-D / 400));
+    W = 1;
+    newElo = Math.round(playersElo[0] + 40 * (W - p));
     winText.textContent = "YOU WON!";
+    eloWin.textContent = "+" + Math.abs(playersElo[0] - newElo);
+    p1Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (D / 400));
+    let opponentNewElo = Math.round(playersElo[1] + 40 * (0 - p));
+    p2Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[0],
+    });
   } else {
+    p = 1 / (1 + 10 ** (D / 400));
+    W = 0;
+    newElo = Math.round(playersElo[1] + 40 * (W - p));
     winText.textContent = "YOU LOST!";
+    eloLost.textContent = "-" + Math.abs(playersElo[1] - newElo);
+    p2Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (-D / 400));
+    let opponentNewElo = Math.round(playersElo[0] + 40 * (1 - p));
+    p1Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[1],
+    });
   }
 });
 
 socket.on("player2Win", () => {
   clearAfterWin();
   winPopup.style.display = "block";
+  let D = playersElo[0] - playersElo[1];
+  let p;
+  let W;
+  let newElo;
   if (player == 2) {
+    p = 1 / (1 + 10 ** (D / 400));
+    W = 1;
+    newElo = Math.round(playersElo[1] + 40 * (W - p));
+    console.log(newElo);
     winText.textContent = "YOU WON!";
+    eloWin.textContent = "+" + Math.abs(playersElo[1] - newElo);
+    p2Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (-D / 400));
+    let opponentNewElo = Math.round(playersElo[0] + 40 * (0 - p));
+    console.log(opponentNewElo);
+    p1Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[1],
+    });
   } else {
+    p = 1 / (1 + 10 ** (-D / 400));
+    W = 0;
+    newElo = Math.round(playersElo[0] + 40 * (W - p));
+    console.log(newElo);
     winText.textContent = "YOU LOST!";
+    eloLost.textContent = "-" + Math.abs(playersElo[0] - newElo);
+    p1Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (D / 400));
+    let opponentNewElo = Math.round(playersElo[1] + 40 * (1 - p));
+    console.log(opponentNewElo);
+    p2Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[0],
+    });
   }
 });
 
 socket.on("draw", () => {
   clearAfterWin();
   winPopup.style.display = "block";
+  let D = playersElo[0] - playersElo[1];
+  let p;
+  let W = 0.5;
+  let newElo;
+  let eloText;
+  if (player == 1) {
+    p = 1 / (1 + 10 ** (-D / 400));
+    newElo = Math.round(playersElo[0] + 40 * (W - p));
+    eloText = Math.abs(playersElo[0] - newElo);
+    p1Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (-D / 400));
+    let opponentNewElo = Math.round(playersElo[1] + 40 * (W - p));
+    p2Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[0],
+    });
+  } else {
+    p = 1 / (1 + 10 ** (D / 400));
+    newElo = Math.round(playersElo[1] + 40 * (W - p));
+    eloText = Math.abs(playersElo[1] - newElo);
+    p2Elo.textContent = newElo;
+    p = 1 / (1 + 10 ** (D / 400));
+    let opponentNewElo = Math.round(playersElo[0] + 40 * (W - p));
+    p1Elo.textContent = opponentNewElo;
+    socket.emit("updatePlayerElo", {
+      roomId: roomId,
+      newElo: newElo,
+      player: players[1],
+    });
+  }
   winText.textContent = "DRAW!";
+  if (newElo >= 0) {
+    eloWin.textContent = "+" + eloText;
+  } else {
+    eloLost.textContent = "-" + eloText;
+  }
 });
 
 socket.on("opponentLeave", () => {
