@@ -3,7 +3,7 @@ const http = require("http");
 // Let's import our logic.
 const fileQuery = require("./query-managers/front.js");
 const apiQuery = require("./query-managers/api.js");
-const createSocketGame = require("./game/ai/socket.js");
+const createSocketGame = require("./game/socket.js");
 const createSocketSocial = require("./social/social.js");
 const { Server } = require("socket.io");
 

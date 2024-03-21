@@ -1,11 +1,11 @@
 const { ObjectId } = require("mongodb");
 const { Server } = require("socket.io");
-const Rulebased = require("./rulebased-ai.js");
-const Minimax = require("./minimax-ai.js");
-const MCTS = require("./mcts-ai.js");
-const { getDB } = require("../../query-managers/db.js");
-const { initializeGame } = require("../utils/game-initializer.js");
-const { verifyToken } = require("../../utils/jwt-utils.js");
+const Rulebased = require("./ai/rulebased-ai.js");
+const Minimax = require("./ai/minimax-ai.js");
+const MCTS = require("./ai/mcts-ai.js");
+const { getDB } = require("../query-managers/db.js");
+const { initializeGame } = require("./utils/game-initializer.js");
+const { verifyToken } = require("../utils/jwt-utils.js");
 const {
   isLegal,
   canJump,
@@ -14,7 +14,7 @@ const {
   getNextMoveToFollowShortestPath,
   getPossibleMoves,
   getPossibleWalls,
-} = require("../utils/game-checkers.js");
+} = require("./utils/game-checkers.js");
 
 function createSocket(server) {
   let waitingPlayer = null;
