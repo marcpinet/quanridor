@@ -80,7 +80,7 @@ function createSocketSocial(io) {
 
       const notifications = db.collection("notifications");
       const notification = {
-        title: "New message from " + sender.username,
+        title: sender.username + ":",
         message: content,
         to: new ObjectId(to),
         read: false,
