@@ -420,8 +420,8 @@ document.addEventListener("DOMContentLoaded", function () {
       incrementNotificationCount();
     } else {
       const friendId = notification.from;
-      incrementMessageCount(friendId);
       displaySideNotification(notification);
+      incrementMessageCount(friendId);
     }
   });
 

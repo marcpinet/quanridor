@@ -87,7 +87,12 @@ async function manageRequest(request, response) {
     ) {
       handleNotificationsMarkAsRead(request, response, decodedToken);
     } else if (
-      normalizedPath.startsWith(`${apiPath}/friends/`) &&
+      normalizedPath.startsWith(`${apiPath}/notifications/`) &&
+      request.method === "DELETE"
+    ) {
+      handleNotificationDelete(request, response, decodedToken);
+    } else if (
+      normalizedPath.startsWith(`${apiPath}/friends`) &&
       request.method === "DELETE"
     ) {
       handleFriendDelete(request, response, decodedToken);
@@ -459,6 +464,52 @@ async function handleFriendRequestPost(request, response, decodedToken) {
 
 async function handleNotificationsGet(request, response, decodedToken) {
   addCors(response, ["GET"]);
+  try {
+    const db = getDB();
+    const notifications = db.collection("notifications");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const allNotifications = await notifications
+      .find({ to: user._id })
+      .sort({ timestamp: -1 })
+      .toArray();
+
+    const filteredNotifications = allNotifications.filter((notification) => {
+      if (notification.type === "friendRequest") {
+        // Vérifier si la demande d'ami a déjà été acceptée ou refusée
+        const friendRequestStatus = user.friends.find(
+          (friend) => friend.id === notification.from,
+        );
+        return !friendRequestStatus;
+      } else {
+        return !notification.read;
+      }
+    });
+
+    response.end(JSON.stringify(filteredNotifications));
+  } catch (e) {
+    console.error("Error in handleNotificationsGet:", e);
+    if (!response.headersSent) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Failed to retrieve notifications" }),
+      );
+    }
+  }
+}
+
+async function handleNotificationDelete(request, response, decodedToken) {
+  addCors(response, ["DELETE"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const notificationId = parsedUrl.pathname.split("/").pop();
 
   try {
     const db = getDB();
@@ -473,20 +524,28 @@ async function handleNotificationsGet(request, response, decodedToken) {
       return;
     }
 
-    const unreadNotifications = await notifications
-      .find({ to: user._id, read: false })
-      .sort({ timestamp: -1 })
-      .toArray();
+    const notification = await notifications.findOne({
+      _id: new ObjectId(notificationId),
+      to: user._id,
+      type: "friendRequest",
+    });
 
-    response.end(JSON.stringify(unreadNotifications));
-  } catch (e) {
-    console.error("Error in handleNotificationsGet:", e);
-    if (!response.headersSent) {
-      response.writeHead(400, { "Content-Type": "application/json" });
-      response.end(
-        JSON.stringify({ message: "Failed to retrieve notifications" }),
-      );
+    if (!notification) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Notification not found" }));
+      return;
     }
+
+    await notifications.deleteOne({ _id: notification._id });
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Friend request declined" }));
+  } catch (e) {
+    console.error("Error in handleNotificationDelete:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({ message: "Failed to decline friend request" }),
+    );
   }
 }
 
