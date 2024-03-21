@@ -56,9 +56,10 @@
       <div class="vertical-small-container">
         <canvas></canvas>
         <div class="horizontal-small-container">
+          <button class="small-button" id="emote">Emote</button>
           <button class="small-button" id="confirm">Put Wall</button>
           <a href="home.html"
-            ><button class="small-button" id="leave">Leave</button></a
+            ><button class="small-button" id="leave">Abort</button></a
           >
         </div>
       </div>
@@ -112,8 +113,36 @@
       </div>
     </div>
 
+    <div id="emote-popup">
+      <svg id="cross"></svg>
+      <div class="vertical-small-container" id="emote-container">
+        <h1 class="big-text">Emotes</h1>
+        <div id="emojis">
+          <span class="bold-text">Emojis</span>
+          <div class="horizontal-container">
+            <a class="emoji-container">😉</a>
+            <a class="emoji-container">🥶</a>
+            <a class="emoji-container">🧠</a>
+            <a class="emoji-container">😶‍🌫️</a>
+            <a class="emoji-container">🤬</a>
+          </div>
+        </div>
+        <div id="dialogues">
+          <span class="bold-text">Messages</span>
+          <div class="horizontal-container">
+            <a class="dialogue-container">Nice move</a>
+            <a class="dialogue-container">Oops</a>
+            <a class="dialogue-container">What a save!</a>
+            <a class="dialogue-container">Wow!</a>
+            <a class="dialogue-container">Good game</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="js/socket.io.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/online-game.js" type="module"></script>
+    <script src="js/online-game-front.js"></script>
   </body>
 </html>
