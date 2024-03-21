@@ -48,15 +48,6 @@ function updateNotificationDisplay() {
 function incrementMessageCount(friendId) {
   notificationCount++;
   updateNotificationDisplay();
-  const friendContainer = document.querySelector(
-    `[data-friendid="${friendId}"]`,
-  );
-
-  const unreadMessageCount = friendContainer.querySelector(
-    ".unread-message-count",
-  );
-  unreadMessageCount.textContent = parseInt(unreadMessageCount.textContent) + 1;
-  unreadMessageCount.style.display = "block";
 }
 
 function displaySideNotification(notification) {
@@ -69,11 +60,10 @@ function displaySideNotification(notification) {
 
   const closeArrow = document.createElement("svg");
   closeArrow.id = "close-arrow";
-  sideNotification.appendChild(closeArrow);
-
   closeArrow.addEventListener("click", () => {
     sideNotification.style.display = "none";
   });
+  sideNotification.appendChild(closeArrow);
 
   if (notification.type === "friendRequest") {
     const verticalContainer = document.createElement("div");
