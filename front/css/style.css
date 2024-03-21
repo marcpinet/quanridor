@@ -740,7 +740,7 @@ canvas {
 }
 
 #side-notification{
-  display: block;
+  display: none;
   position: absolute;
   background-color: #4650A8;
   border-color: rgba(70, 80, 168, 0);

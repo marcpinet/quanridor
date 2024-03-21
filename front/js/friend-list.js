@@ -315,12 +315,12 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((notifications) => {
         const notificationsContainer = document.querySelector(".notifications");
-        //notificationsContainer.innerHTML = ""; // Clear existing notifications
+        notificationsContainer.innerHTML = ""; // Clear existing notifications
 
         if (notifications.length === 0) {
           const noNotificationsMessage = document.createElement("p");
           noNotificationsMessage.textContent = "No unread notifications";
-          //notificationsContainer.appendChild(noNotificationsMessage);
+          notificationsContainer.appendChild(noNotificationsMessage);
         } else {
           const dateElement = document.createElement("p");
           dateElement.classList.add("pink-text");
@@ -332,22 +332,57 @@ document.addEventListener("DOMContentLoaded", function () {
           notificationsContainer.appendChild(dateElement);
 
           notifications.forEach((notification) => {
-            // ICI, GERER LE CAS OU LA NOTIFICATION.TYPE === friendRequest pour lui ajouter un bouton accepter/refuser
-            // ET UN EVENT LISTENER acceptFriendRequest(notification._id) et sinon cacher la notification
-
             const notificationContainer = document.createElement("div");
             notificationContainer.classList.add("notification-container");
-            // Ajouter l'ID read-notification au notification-container pour rendre transparent la notification comme lue.
+            notificationContainer.id = `notification-${notification._id}`;
 
-            const notificationTitle = document.createElement("span");
-            notificationTitle.classList.add("notification");
-            notificationTitle.textContent = notification.title;
-            notificationContainer.appendChild(notificationTitle);
+            if (notification.type === "friendRequest") {
+              const notificationTitle = document.createElement("div");
+              notificationTitle.classList.add("notification");
+              notificationTitle.textContent = "New friend request";
+              notificationContainer.appendChild(notificationTitle);
 
-            const notificationContent = document.createElement("span");
-            notificationContent.classList.add("notification-content");
-            notificationContent.textContent = notification.message;
-            notificationContainer.appendChild(notificationContent);
+              const verticalContainer = document.createElement("div");
+              verticalContainer.classList.add("vertical-small-container");
+              notificationContainer.appendChild(verticalContainer);
+
+              const friendName = document.createElement("span");
+              friendName.classList.add("text");
+              friendName.textContent = notification.message.split(" ")[0];
+              verticalContainer.appendChild(friendName);
+
+              const buttonContainer = document.createElement("div");
+              buttonContainer.classList.add("horizontal-small-container");
+              verticalContainer.appendChild(buttonContainer);
+
+              const acceptButton = document.createElement("button");
+              acceptButton.classList.add("choice-button");
+              acceptButton.id = "accept-button";
+              acceptButton.textContent = "Accept";
+              acceptButton.addEventListener("click", () => {
+                acceptFriendRequest(notification._id);
+              });
+              buttonContainer.appendChild(acceptButton);
+
+              const declineButton = document.createElement("button");
+              declineButton.classList.add("choice-button");
+              declineButton.id = "decline-button";
+              declineButton.textContent = "Decline";
+              declineButton.addEventListener("click", () => {
+                declineFriendRequest(notification._id);
+              });
+              buttonContainer.appendChild(declineButton);
+            } else {
+              const notificationTitle = document.createElement("span");
+              notificationTitle.classList.add("notification");
+              notificationTitle.textContent = notification.title;
+              notificationContainer.appendChild(notificationTitle);
+
+              const notificationContent = document.createElement("span");
+              notificationContent.classList.add("notification-content");
+              notificationContent.textContent = notification.message;
+              notificationContainer.appendChild(notificationContent);
+            }
 
             notificationsContainer.appendChild(notificationContainer);
           });
@@ -380,11 +415,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Écouter les nouvelles notifications en temps réel
   socket.on("newMessageNotification", function (notification) {
-    const friendId = notification.from;
-    incrementMessageCount(friendId);
-    setInterval(function () {
+    if (notification.type === "friendRequest") {
+      displaySideNotification(notification);
+      incrementNotificationCount();
+    } else {
+      const friendId = notification.from;
+      incrementMessageCount(friendId);
       displaySideNotification(notification.title, notification.message);
-    }, 3000);
+    }
   });
 
   friendList.addEventListener("click", function (event) {
@@ -449,6 +487,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
+  const sendFriendRequestButton = document.getElementById("add-friend-button");
+
   sendFriendRequestButton.addEventListener("click", function () {
     const friendUsername = addFriendInput.value.trim();
     sendFriendRequest(friendUsername);
@@ -512,6 +552,139 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  function fetchFriendList() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.log("No token found in local storage.");
+      return;
+    }
+
+    const baseUrl = window.location.origin;
+    fetch(`${baseUrl}/api/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const friendIds = data.friends;
+        if (friendIds && friendIds.length > 0) {
+          const friendList = document.querySelector(".friends");
+          friendList.innerHTML = ""; // Clear existing friend list
+
+          const fetchFriendDetails = (friendId) => {
+            return fetch(`${baseUrl}/api/users/${friendId}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            })
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((friendData) => {
+                const friendContainer = document.createElement("div");
+                friendContainer.classList.add("friend-container");
+
+                // Ajouter l'ID de l'ami comme un attribut data- pour une utilisation ultérieure
+                friendContainer.setAttribute("data-friendId", friendData._id);
+
+                const smallUser = document.createElement("svg");
+                smallUser.id = "small-user";
+                friendContainer.appendChild(smallUser);
+
+                // Add <div class="small-activity" id="inactive"></div>
+                const smallActivity = document.createElement("div");
+                smallActivity.className = "small-activity";
+                smallActivity.id = friendData.activity;
+                friendContainer.appendChild(smallActivity);
+
+                const friendName = document.createElement("div");
+                friendName.classList.add("text");
+                friendName.textContent = friendData.username;
+                friendContainer.appendChild(friendName);
+
+                // Add <span class="unread-message-count">0</span>
+                const unreadMessageCount = document.createElement("span");
+                unreadMessageCount.className = "unread-message-count";
+                unreadMessageCount.textContent = "0";
+                friendContainer.appendChild(unreadMessageCount);
+
+                friendList.appendChild(friendContainer);
+
+                // Ajouter l'ID et le nom d'utilisateur de l'ami au dictionnaire
+                friendIdToUsername[friendData._id] = friendData.username;
+
+                friendContainer.addEventListener("click", function () {
+                  const selectedFriendId = friendData._id;
+                  const selectedFriendName = friendData.username;
+                  console.log("Selected friend ID:", selectedFriendId);
+                  console.log("Selected friend name:", selectedFriendName);
+
+                  // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
+                  document.getElementById("selected-friend-name").textContent =
+                    friendName;
+                  document.getElementById("selected-friend-id").value =
+                    friendId;
+
+                  // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
+                  const friendProfile =
+                    document.getElementById("friend-profile");
+                  const existingBigActivity =
+                    friendProfile.querySelector(".big-activity");
+                  if (existingBigActivity) {
+                    existingBigActivity.remove();
+                  }
+
+                  // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
+                  const userSvg = friendProfile.querySelector("#user");
+                  const bigActivity = document.createElement("div");
+                  bigActivity.className = "big-activity";
+                  bigActivity.id = friendData.activity;
+                  const tooltipText = document.createElement("span");
+                  tooltipText.className = "tooltiptext";
+                  tooltipText.textContent =
+                    friendData.activity === "active" ? "Active" : "Inactive";
+                  bigActivity.appendChild(tooltipText);
+                  userSvg.insertAdjacentElement("afterend", bigActivity);
+                });
+              })
+              .catch((error) => {
+                console.error(
+                  `Error fetching friend details for ${friendId}:`,
+                  error,
+                );
+              });
+          };
+
+          Promise.all(friendIds.map(fetchFriendDetails))
+            .then(() => {
+              console.log("All friend details fetched successfully.");
+            })
+            .catch((error) => {
+              console.error("Error fetching friend details:", error);
+            });
+        } else {
+          console.log("No friends found for the user.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }
+
   function acceptFriendRequest(notificationId) {
     const token = localStorage.getItem("token");
 
@@ -530,11 +703,72 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log("Friend request accepted successfully");
-        // TODO: Mettre à jour la liste des amis après l'acceptation de la demande
+        // Mettre à jour la liste des amis après l'acceptation de la demande
         fetchFriendList();
+
+        // Cacher les boutons "Accept" et "Decline"
+        const notificationContainer = document.getElementById(
+          `notification-${notificationId}`,
+        );
+        if (notificationContainer) {
+          const acceptButton =
+            notificationContainer.querySelector("#accept-button");
+          const declineButton =
+            notificationContainer.querySelector("#decline-button");
+          if (acceptButton && declineButton) {
+            acceptButton.style.display = "none";
+            declineButton.style.display = "none";
+          }
+        }
       })
       .catch((error) => {
         console.error("Error accepting friend request:", error);
+      });
+  }
+
+  // Fonction pour refuser une demande d'ami
+  function declineFriendRequest(notificationId) {
+    const token = localStorage.getItem("token");
+
+    fetch(`${baseUrl}/api/notifications/${notificationId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Friend request declined successfully");
+        // Supprimer la notification de la liste
+        const notificationContainer = document.getElementById(
+          `notification-${notificationId}`,
+        );
+        if (notificationContainer) {
+          notificationContainer.remove();
+        }
+
+        // Cacher les boutons "Accept" et "Decline" dans la notification latérale
+        const sideNotificationContainer =
+          document.getElementById("side-notification");
+        if (sideNotificationContainer) {
+          const acceptButton =
+            sideNotificationContainer.querySelector("#accept-button");
+          const declineButton =
+            sideNotificationContainer.querySelector("#decline-button");
+          if (acceptButton && declineButton) {
+            acceptButton.style.display = "none";
+            declineButton.style.display = "none";
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error declining friend request:", error);
       });
   }
 });

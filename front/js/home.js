@@ -64,6 +64,53 @@ function displaySideNotification(title, message) {
   sideNotification.querySelector(".notification-content").textContent = message;
 }
 
+function displaySideNotification(notification) {
+  sideNotification.innerHTML = ""; // Clear existing notification
+
+  const notificationTitle = document.createElement("div");
+  notificationTitle.classList.add("notification");
+  notificationTitle.textContent = "New friend request";
+  sideNotification.appendChild(notificationTitle);
+
+  const closeArrow = document.createElement("svg");
+  closeArrow.id = "close-arrow";
+  sideNotification.appendChild(closeArrow);
+
+  const verticalContainer = document.createElement("div");
+  verticalContainer.classList.add("vertical-small-container");
+  sideNotification.appendChild(verticalContainer);
+
+  const friendName = document.createElement("span");
+  friendName.classList.add("text");
+  friendName.id = "friend-name";
+  friendName.textContent = notification.message.split(" ")[0];
+  verticalContainer.appendChild(friendName);
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("horizontal-small-container");
+  verticalContainer.appendChild(buttonContainer);
+
+  const acceptButton = document.createElement("button");
+  acceptButton.classList.add("choice-button");
+  acceptButton.id = "accept-button";
+  acceptButton.textContent = "Accept";
+  acceptButton.addEventListener("click", () => {
+    acceptFriendRequest(notification._id);
+  });
+  buttonContainer.appendChild(acceptButton);
+
+  const declineButton = document.createElement("button");
+  declineButton.classList.add("choice-button");
+  declineButton.id = "decline-button";
+  declineButton.textContent = "Decline";
+  declineButton.addEventListener("click", () => {
+    declineFriendRequest(notification._id);
+  });
+  buttonContainer.appendChild(declineButton);
+
+  sideNotification.style.display = "block";
+}
+
 closeSearchButton.addEventListener("click", function () {
   searchHeader.style.display = "none";
   friendButtons.style.display = "flex";
