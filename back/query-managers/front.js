@@ -41,7 +41,7 @@ function manageRequest(request, response) {
 
   // Check if the request is for the favicon
   if (parsedUrl.pathname === "/favicon.ico") {
-    pathName = path.join(baseFrontPath, "favicon.ico");
+    pathName = path.join(__dirname, "../..", "favicon.ico");
   }
 
   fs.stat(pathName, function (err, stats) {
