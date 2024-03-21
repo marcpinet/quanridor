@@ -29,6 +29,7 @@ const mimeTypes = {
   ".pdf": "application/pdf",
   ".doc": "application/msword",
   ".md": "text/plain",
+  ".ico": "image/x-icon",
   default: "application/octet-stream",
 };
 
@@ -37,6 +38,11 @@ function manageRequest(request, response) {
   const parsedUrl = url.parse(request.url);
   // Construire le chemin vers la ressource demandée
   let pathName = path.join(baseFrontPath, parsedUrl.pathname);
+
+  // Check if the request is for the favicon
+  if (parsedUrl.pathname === "/favicon.ico") {
+    pathName = path.join(baseFrontPath, "favicon.ico");
+  }
 
   fs.stat(pathName, function (err, stats) {
     if (err) {
