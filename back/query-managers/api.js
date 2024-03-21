@@ -87,10 +87,20 @@ async function manageRequest(request, response) {
     ) {
       handleNotificationsMarkAsRead(request, response, decodedToken);
     } else if (
+      normalizedPath === `${apiPath}/unreadMessagesCount` &&
+      request.method === "GET"
+    ) {
+      handleUnreadMessagesCount(request, response, decodedToken);
+    } else if (
       normalizedPath.startsWith(`${apiPath}/notifications/`) &&
       request.method === "DELETE"
     ) {
       handleNotificationDelete(request, response, decodedToken);
+    } else if (
+      normalizedPath === `${apiPath}/markMessagesAsRead` &&
+      request.method === "PUT"
+    ) {
+      handleMarkMessagesAsRead(request, response, decodedToken);
     } else if (
       normalizedPath.startsWith(`${apiPath}/friends`) &&
       request.method === "DELETE"
@@ -478,15 +488,10 @@ async function handleNotificationsGet(request, response, decodedToken) {
       .toArray();
 
     const filteredNotifications = allNotifications.filter((notification) => {
-      if (notification.type === "friendRequest") {
-        // Vérifier si la demande d'ami a déjà été acceptée ou refusée
-        const friendRequestStatus = user.friends.find(
-          (friend) => friend.id === notification.from,
-        );
-        return !friendRequestStatus;
-      } else {
-        return !notification.read;
-      }
+      return (
+        notification.type === "friendRequest" ||
+        notification.type === "battleRequest"
+      );
     });
 
     response.end(JSON.stringify(filteredNotifications));
@@ -498,6 +503,78 @@ async function handleNotificationsGet(request, response, decodedToken) {
         JSON.stringify({ message: "Failed to retrieve notifications" }),
       );
     }
+  }
+}
+
+async function handleUnreadMessagesCount(request, response, decodedToken) {
+  addCors(response, ["GET"]);
+
+  // retrieve friendId from query parameters
+  const parsedUrl = url.parse(request.url, true);
+  const friendId = parsedUrl.query.friendId;
+
+  try {
+    const db = getDB();
+    const messages = db.collection("messages");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const unreadMessagesCount = await messages.countDocuments({
+      from: new ObjectId(friendId),
+      to: user._id,
+      read: false,
+    });
+
+    response.end(JSON.stringify({ count: unreadMessagesCount }));
+  } catch (e) {
+    console.error("Error in handleUnreadMessagesCount:", e);
+    if (!response.headersSent) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Failed to retrieve unread messages count" }),
+      );
+    }
+  }
+}
+
+async function handleMarkMessagesAsRead(request, response, decodedToken) {
+  addCors(response, ["PUT"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const friendId = parsedUrl.query.friendId;
+
+  try {
+    const db = getDB();
+    const messages = db.collection("messages");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    await messages.updateMany(
+      { from: new ObjectId(friendId), to: user._id, read: false },
+      { $set: { read: true } },
+    );
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Messages marked as read" }));
+  } catch (e) {
+    console.error("Error in handleMarkMessagesAsRead:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({ message: "Failed to mark messages as read" }),
+    );
   }
 }
 

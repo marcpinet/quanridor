@@ -19,6 +19,10 @@
     </div>
     <div class="horizontal-container">
       <div class="vertical-small-container">
+        <div id="left-emote">
+          <div id="left-emoji"></div>
+          <div id="left-dialogue"></div>
+        </div>
         <br />
         <br />
         <br />
@@ -64,6 +68,10 @@
         </div>
       </div>
       <div class="vertical-small-container">
+        <div id="right-emote">
+          <div id="right-dialogue"></div>
+          <div id="right-emoji"></div>
+        </div>
         <br />
         <br />
         <br />
@@ -120,21 +128,21 @@
         <div id="emojis">
           <span class="bold-text">Emojis</span>
           <div class="horizontal-container">
-            <a class="emoji-container">😉</a>
-            <a class="emoji-container">🥶</a>
-            <a class="emoji-container">🧠</a>
-            <a class="emoji-container">😶‍🌫️</a>
-            <a class="emoji-container">🤬</a>
+            <a class="emoji-container" id="emoji1">😉</a>
+            <a class="emoji-container" id="emoji2">🥶</a>
+            <a class="emoji-container" id="emoji3">🧠</a>
+            <a class="emoji-container" id="emoji4">😶‍🌫️</a>
+            <a class="emoji-container" id="emoji5">🤬</a>
           </div>
         </div>
         <div id="dialogues">
           <span class="bold-text">Messages</span>
           <div class="horizontal-container">
-            <a class="dialogue-container">Nice move</a>
-            <a class="dialogue-container">Oops</a>
-            <a class="dialogue-container">What a save!</a>
-            <a class="dialogue-container">Wow!</a>
-            <a class="dialogue-container">Good game</a>
+            <a class="dialogue-container" id="dialogue1">Nice move</a>
+            <a class="dialogue-container" id="dialogue2">Oops</a>
+            <a class="dialogue-container" id="dialogue3">What a save!</a>
+            <a class="dialogue-container" id="dialogue4">Wow!</a>
+            <a class="dialogue-container" id="dialogue5">Good game</a>
           </div>
         </div>
       </div>
@@ -143,6 +151,6 @@
     <script src="js/socket.io.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/online-game.js" type="module"></script>
-    <script src="js/online-game-front.js"></script>
+    <script src="js/online-game-front.js" type="module"></script>
   </body>
 </html>

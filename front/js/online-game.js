@@ -15,7 +15,7 @@ socket.on("waiting", () => {
 let gameId;
 let difficulty;
 let roomId;
-let player;
+export let player;
 let timer;
 let timerInterval;
 let waitingTimerInterval;

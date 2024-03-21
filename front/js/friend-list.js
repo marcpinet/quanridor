@@ -29,101 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (friendIds && friendIds.length > 0) {
         const friendList = document.querySelector(".friends");
         friendList.innerHTML = ""; // Clear existing friend list
-
-        const fetchFriendDetails = (friendId) => {
-          return fetch(`${baseUrl}/api/users/${friendId}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return response.json();
-            })
-            .then((friendData) => {
-              const friendContainer = document.createElement("div");
-              friendContainer.classList.add("friend-container");
-
-              // Ajouter l'ID de l'ami comme un attribut data- pour une utilisation ultérieure
-              friendContainer.setAttribute("data-friendId", friendData._id);
-
-              const smallUser = document.createElement("svg");
-              smallUser.id = "small-user";
-              friendContainer.appendChild(smallUser);
-
-              // Add <div class="small-activity" id="inactive"></div>
-              const smallActivity = document.createElement("div");
-              smallActivity.className = "small-activity";
-              smallActivity.id = friendData.activity;
-              friendContainer.appendChild(smallActivity);
-
-              const friendName = document.createElement("div");
-              friendName.classList.add("text");
-              friendName.textContent = friendData.username;
-              friendContainer.appendChild(friendName);
-
-              // Add <span class="unread-message-count">0</span>
-              const unreadMessageCount = document.createElement("span");
-              unreadMessageCount.className = "unread-message-count";
-              unreadMessageCount.textContent = "0";
-              friendContainer.appendChild(unreadMessageCount);
-
-              friendList.appendChild(friendContainer);
-
-              // Ajouter l'ID et le nom d'utilisateur de l'ami au dictionnaire
-              friendIdToUsername[friendData._id] = friendData.username;
-
-              friendContainer.addEventListener("click", function () {
-                const selectedFriendId = friendData._id;
-                const selectedFriendName = friendData.username;
-                console.log("Selected friend ID:", selectedFriendId);
-                console.log("Selected friend name:", selectedFriendName);
-
-                // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
-                document.getElementById("selected-friend-name").textContent =
-                  friendName;
-                document.getElementById("selected-friend-id").value = friendId;
-
-                // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
-                const friendProfile = document.getElementById("friend-profile");
-                const existingBigActivity =
-                  friendProfile.querySelector(".big-activity");
-                if (existingBigActivity) {
-                  existingBigActivity.remove();
-                }
-
-                // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
-                const userSvg = friendProfile.querySelector("#user");
-                const bigActivity = document.createElement("div");
-                bigActivity.className = "big-activity";
-                bigActivity.id = friendData.activity;
-                const tooltipText = document.createElement("span");
-                tooltipText.className = "tooltiptext";
-                tooltipText.textContent =
-                  friendData.activity === "active" ? "Active" : "Inactive";
-                bigActivity.appendChild(tooltipText);
-                userSvg.insertAdjacentElement("afterend", bigActivity);
-              });
-            })
-            .catch((error) => {
-              console.error(
-                `Error fetching friend details for ${friendId}:`,
-                error,
-              );
-            });
-        };
-
-        Promise.all(friendIds.map(fetchFriendDetails))
-          .then(() => {
-            console.log("All friend details fetched successfully.");
-          })
-          .catch((error) => {
-            console.error("Error fetching friend details:", error);
-          });
       } else {
         console.log("No friends found for the user.");
       }
@@ -152,6 +57,172 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const baseUrl = window.location.origin;
 
+  const fetchFriendDetails = (friendId) => {
+    return fetch(`${baseUrl}/api/users/${friendId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((friendData) => {
+        const friendContainer = document.createElement("div");
+        friendContainer.classList.add("friend-container");
+
+        // Ajouter l'ID de l'ami comme un attribut data- pour une utilisation ultérieure
+        friendContainer.setAttribute("data-friendId", friendData._id);
+
+        const smallUser = document.createElement("svg");
+        smallUser.id = "small-user";
+        friendContainer.appendChild(smallUser);
+
+        // Add <div class="small-activity" id="inactive"></div>
+        const smallActivity = document.createElement("div");
+        smallActivity.className = "small-activity";
+        smallActivity.id = friendData.activity;
+        friendContainer.appendChild(smallActivity);
+
+        const friendName = document.createElement("div");
+        friendName.classList.add("text");
+        friendName.textContent = friendData.username;
+        friendContainer.appendChild(friendName);
+
+        // Add <span class="unread-message-count">0</span>
+        const unreadMessageCount = document.createElement("span");
+        unreadMessageCount.className = "unread-message-count";
+        unreadMessageCount.textContent = "0";
+        friendContainer.appendChild(unreadMessageCount);
+        // Récupérer le nombre de messages non lus pour cet ami
+        return fetch(
+          `${baseUrl}/api/unreadMessagesCount?friendId=${friendId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data.count);
+            unreadMessageCount.textContent = data.count;
+            unreadMessageCount.style.display =
+              data.count > 0 ? "block" : "none";
+            friendContainer.appendChild(unreadMessageCount);
+
+            friendList.appendChild(friendContainer);
+
+            // Ajouter l'ID et le nom d'utilisateur de l'ami au dictionnaire
+            friendIdToUsername[friendData._id] = friendData.username;
+
+            friendContainer.addEventListener("click", function () {
+              const selectedFriendId = friendData._id;
+              const selectedFriendName = friendData.username;
+              console.log("Selected friend ID:", selectedFriendId);
+              console.log("Selected friend name:", selectedFriendName);
+
+              // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
+              document.getElementById("selected-friend-name").textContent =
+                friendName;
+              document.getElementById("selected-friend-id").value = friendId;
+
+              // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
+              const friendProfile = document.getElementById("friend-profile");
+              const existingBigActivity =
+                friendProfile.querySelector(".big-activity");
+              if (existingBigActivity) {
+                existingBigActivity.remove();
+              }
+
+              // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
+              const userSvg = friendProfile.querySelector("#user");
+              const bigActivity = document.createElement("div");
+              bigActivity.className = "big-activity";
+              bigActivity.id = friendData.activity;
+              const tooltipText = document.createElement("span");
+              tooltipText.className = "tooltiptext";
+              tooltipText.textContent =
+                friendData.activity === "active" ? "Active" : "Inactive";
+              bigActivity.appendChild(tooltipText);
+              userSvg.insertAdjacentElement("afterend", bigActivity);
+            });
+
+            return friendContainer;
+          });
+      })
+      .catch((error) => {
+        console.error(`Error fetching friend details for ${friendId}:`, error);
+      });
+  };
+
+  function fetchFriendList() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.log("No token found in local storage.");
+      return;
+    }
+
+    const baseUrl = window.location.origin;
+    fetch(`${baseUrl}/api/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const friendIds = data.friends;
+        if (friendIds && friendIds.length > 0) {
+          const friendList = document.querySelector(".friends");
+          friendList.innerHTML = ""; // Clear existing friend list
+
+          const friendPromises = friendIds.map((friendId) => {
+            const existingFriendContainer = friendList.querySelector(
+              `[data-friendid="${friendId}"]`,
+            );
+            if (!existingFriendContainer) {
+              return fetchFriendDetails(friendId);
+            }
+            return Promise.resolve(existingFriendContainer);
+          });
+
+          Promise.all(friendPromises)
+            .then((friendContainers) => {
+              friendContainers.forEach((friendContainer) => {
+                friendList.appendChild(friendContainer);
+              });
+            })
+            .catch((error) => {
+              console.error("Error fetching friend details:", error);
+            });
+        } else {
+          console.log("No friends found for the user.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }
+
   fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {
@@ -169,6 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
       currentUserId = data._id;
       socket.emit("joinRoom", currentUserId); // Join a room based on the user ID
       socket.emit("userConnected", currentUserId); // Notify that the user is currently online
+
+      fetchFriendList();
     })
     .catch((error) => {
       console.error("Error fetching user data:", error);
@@ -267,7 +340,10 @@ document.addEventListener("DOMContentLoaded", function () {
       return response.json();
     })
     .then((notifications) => {
-      notificationCount = notifications.length;
+      const unreadNotifications = notifications.filter(
+        (notification) => !notification.read,
+      );
+      notificationCount = unreadNotifications.length;
       updateNotificationDisplay();
     })
     .catch((error) => {
@@ -415,14 +491,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Écouter les nouvelles notifications en temps réel
   socket.on("newMessageNotification", function (notification) {
-    if (notification.type === "friendRequest") {
-      displaySideNotification(notification);
+    if (
+      notification.type === "friendRequest" ||
+      notification.type === "battleRequest"
+    ) {
       incrementNotificationCount();
-    } else {
-      const friendId = notification.from;
-      displaySideNotification(notification);
-      incrementMessageCount(friendId);
     }
+    displaySideNotification(notification);
   });
 
   friendList.addEventListener("click", function (event) {
@@ -552,17 +627,22 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  function fetchFriendList() {
-    const token = localStorage.getItem("token");
+  const chatButton = document.getElementById("chat");
 
-    if (!token) {
-      console.log("No token found in local storage.");
-      return;
-    }
+  chatButton.addEventListener("click", function () {
+    friendProfile.style.display = "none";
+    friendList.style.display = "none";
+    friendChat.style.display = "block";
+    var scrollableDiv = document.getElementById("message-list");
+    scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+    friendChat.querySelector(".text").textContent =
+      currentSelectedFriendContainer.querySelector(".text").textContent;
 
-    const baseUrl = window.location.origin;
-    fetch(`${baseUrl}/api/users`, {
-      method: "GET",
+    // Marquer les messages comme lus
+    const friendId =
+      currentSelectedFriendContainer.getAttribute("data-friendid");
+    fetch(`${baseUrl}/api/markMessagesAsRead?friendId=${friendId}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -572,118 +652,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.json();
-      })
-      .then((data) => {
-        const friendIds = data.friends;
-        if (friendIds && friendIds.length > 0) {
-          const friendList = document.querySelector(".friends");
-          friendList.innerHTML = ""; // Clear existing friend list
-
-          const fetchFriendDetails = (friendId) => {
-            return fetch(`${baseUrl}/api/users/${friendId}`, {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-              })
-              .then((friendData) => {
-                const friendContainer = document.createElement("div");
-                friendContainer.classList.add("friend-container");
-
-                // Ajouter l'ID de l'ami comme un attribut data- pour une utilisation ultérieure
-                friendContainer.setAttribute("data-friendId", friendData._id);
-
-                const smallUser = document.createElement("svg");
-                smallUser.id = "small-user";
-                friendContainer.appendChild(smallUser);
-
-                // Add <div class="small-activity" id="inactive"></div>
-                const smallActivity = document.createElement("div");
-                smallActivity.className = "small-activity";
-                smallActivity.id = friendData.activity;
-                friendContainer.appendChild(smallActivity);
-
-                const friendName = document.createElement("div");
-                friendName.classList.add("text");
-                friendName.textContent = friendData.username;
-                friendContainer.appendChild(friendName);
-
-                // Add <span class="unread-message-count">0</span>
-                const unreadMessageCount = document.createElement("span");
-                unreadMessageCount.className = "unread-message-count";
-                unreadMessageCount.textContent = "0";
-                friendContainer.appendChild(unreadMessageCount);
-
-                friendList.appendChild(friendContainer);
-
-                // Ajouter l'ID et le nom d'utilisateur de l'ami au dictionnaire
-                friendIdToUsername[friendData._id] = friendData.username;
-
-                friendContainer.addEventListener("click", function () {
-                  const selectedFriendId = friendData._id;
-                  const selectedFriendName = friendData.username;
-                  console.log("Selected friend ID:", selectedFriendId);
-                  console.log("Selected friend name:", selectedFriendName);
-
-                  // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
-                  document.getElementById("selected-friend-name").textContent =
-                    friendName;
-                  document.getElementById("selected-friend-id").value =
-                    friendId;
-
-                  // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
-                  const friendProfile =
-                    document.getElementById("friend-profile");
-                  const existingBigActivity =
-                    friendProfile.querySelector(".big-activity");
-                  if (existingBigActivity) {
-                    existingBigActivity.remove();
-                  }
-
-                  // Ajouter l'élément <div class="big-activity"> après l'élément <svg id="user">
-                  const userSvg = friendProfile.querySelector("#user");
-                  const bigActivity = document.createElement("div");
-                  bigActivity.className = "big-activity";
-                  bigActivity.id = friendData.activity;
-                  const tooltipText = document.createElement("span");
-                  tooltipText.className = "tooltiptext";
-                  tooltipText.textContent =
-                    friendData.activity === "active" ? "Active" : "Inactive";
-                  bigActivity.appendChild(tooltipText);
-                  userSvg.insertAdjacentElement("afterend", bigActivity);
-                });
-              })
-              .catch((error) => {
-                console.error(
-                  `Error fetching friend details for ${friendId}:`,
-                  error,
-                );
-              });
-          };
-
-          Promise.all(friendIds.map(fetchFriendDetails))
-            .then(() => {
-              console.log("All friend details fetched successfully.");
-            })
-            .catch((error) => {
-              console.error("Error fetching friend details:", error);
-            });
-        } else {
-          console.log("No friends found for the user.");
-        }
+        // Réinitialiser le compteur de messages non lus pour l'ami sélectionné
+        const unreadMessageCount = currentSelectedFriendContainer.querySelector(
+          ".unread-message-count",
+        );
+        unreadMessageCount.textContent = "0";
+        unreadMessageCount.style.display = "none";
       })
       .catch((error) => {
-        console.error("Error fetching user data:", error);
+        console.error("Error marking messages as read:", error);
       });
-  }
+  });
 
   function acceptFriendRequest(notificationId) {
     const token = localStorage.getItem("token");

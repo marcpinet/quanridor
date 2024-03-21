@@ -60,6 +60,10 @@ function displaySideNotification(notification) {
 
   const closeArrow = document.createElement("svg");
   closeArrow.id = "close-arrow";
+  closeArrow.setAttribute("style", "filter: none;");
+  closeArrow.innerHTML = `<svg width="113" height="111" viewBox="0 0 113 111" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64.9551 103.565L59.3562 109.208C56.9855 111.597 53.152 111.597 50.8065 109.208L1.77804 59.821C-0.592679 57.4318 -0.592679 53.5682 1.77804 51.2044L50.8065 1.79196C53.1772 -0.597321 57.0107 -0.597321 59.3562 1.79196L64.9551 7.43474C67.3511 9.84944 67.3006 13.7892 64.8543 16.1531L34.4637 45.3328H106.947C110.301 45.3328 113 48.0526 113 51.4331V59.5669C113 62.9475 110.301 65.6672 106.947 65.6672H34.4637L64.8543 94.8469C67.3259 97.2108 67.3763 101.151 64.9551 103.565Z" fill="white"/>
+  </svg>`;
   closeArrow.addEventListener("click", () => {
     sideNotification.style.display = "none";
   });
@@ -198,8 +202,6 @@ friendsContainer.addEventListener("click", (event) => {
 sideNotification.addEventListener("click", (event) => {
   if (event.target.matches("#close-arrow")) return;
   sideNotification.style.display = "none";
-  if (event.target.matches(".choice-button")) return;
-  togglePopup(false);
 });
 
 const acceptRequestButton = document.getElementById("accept-button");

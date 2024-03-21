@@ -67,6 +67,7 @@ function createSocketSocial(io) {
         from: new ObjectId(from),
         to: new ObjectId(to),
         timestamp: new Date(),
+        read: false,
       };
 
       try {
