@@ -297,24 +297,6 @@ async function handleUsersGet(request, response, decodedToken) {
         return;
       }
 
-      // user.friends is a list of ObjectIds
-      // sorting all friends by their their username (implying that we need to query each friend)
-      const friendsIdsStrings = user.friends.map((id) => id.toString());
-      const friends = [];
-      for (let i = 0; i < friendsIdsStrings.length; i++) {
-        const friend = await users.findOne({
-          _id: new ObjectId(friendsIdsStrings[i]),
-        });
-        if (friend) {
-          friends.push({
-            _id: friend._id.toString(),
-            username: friend.username,
-            elo: friend.elo,
-            activity: friend.activity,
-          });
-        }
-      }
-
       // Return every information about the user except the password
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(
@@ -322,7 +304,7 @@ async function handleUsersGet(request, response, decodedToken) {
           _id: user._id.toString(),
           username: user.username,
           elo: user.elo,
-          friends: friends,
+          friends: user.friends,
           activity: user.activity,
         }),
       );
