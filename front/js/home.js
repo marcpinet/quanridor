@@ -71,6 +71,10 @@ function displaySideNotification(notification) {
   closeArrow.id = "close-arrow";
   sideNotification.appendChild(closeArrow);
 
+  closeArrow.addEventListener("click", () => {
+    sideNotification.style.display = "none";
+  });
+
   if (notification.type === "friendRequest") {
     const verticalContainer = document.createElement("div");
     verticalContainer.classList.add("vertical-small-container");
@@ -210,10 +214,6 @@ sideNotification.addEventListener("click", (event) => {
 
 const acceptRequestButton = document.getElementById("accept-button");
 const declineRequestButton = document.getElementById("decline-button");
-
-closeArrowSide.addEventListener("click", () => {
-  sideNotification.style.display = "none";
-});
 
 function togglePopup(toggle = true) {
   if (toggle) {
