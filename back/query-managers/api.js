@@ -297,10 +297,6 @@ async function handleUsersGet(request, response, decodedToken) {
         return;
       }
 
-      const sortedUserFiends = user.friends.sort((a, b) => {
-        return a.username.localeCompare(b.username);
-      });
-
       // Return every information about the user except the password
       response.writeHead(200, { "Content-Type": "application/json" });
       response.end(
@@ -308,7 +304,7 @@ async function handleUsersGet(request, response, decodedToken) {
           _id: user._id.toString(),
           username: user.username,
           elo: user.elo,
-          friends: sortedUserFiends,
+          friends: user.friends,
           activity: user.activity,
         }),
       );
