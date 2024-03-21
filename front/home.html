@@ -115,6 +115,16 @@
               <div class="scrollbar-content">
                 <div class="notifications">
                   <!-- Les notifications seront insérées ici dynamiquement -->
+                  <div class="notification-container" id="friend-request">
+                  <div class="notification">New friend request</div>
+                    <div class="vertical-small-container">
+                      <span class="text">Friend1</span>
+                      <div class="horizontal-small-container">
+                      <button class="choice-button" id="accept-button">Accept</button>
+                      <button class="choice-button" id="decline-button">Decline</button>
+                    </div>
+                  </div>
+                </div>  
                 </div>
               </div>
             </div>
@@ -135,12 +145,23 @@
       </div>
     </div>
 
-    <div id="side-notification">
+    <!--<div id="side-notification">
       <p class="notification">friend1's chat</p>
       <svg id="close-arrow"></svg>
       <p class="notification-content">
         I'm waiting. I wanna play with you, it's been a while dudeee
       </p>
+    </div>-->
+    <div id="side-notification">
+      <div class="notification">New friend request</div>
+      <svg id="close-arrow"></svg>
+      <div class="vertical-small-container">
+        <span class="text">Friend1</span>
+        <div class="horizontal-small-container">
+        <button class="choice-button" id="accept-button">Accept</button>
+        <button class="choice-button" id="decline-button">Decline</button>
+        </div>
+      </div>
     </div>
     <script src="js/socket.io.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>

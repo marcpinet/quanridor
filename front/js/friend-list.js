@@ -315,12 +315,12 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((notifications) => {
         const notificationsContainer = document.querySelector(".notifications");
-        notificationsContainer.innerHTML = ""; // Clear existing notifications
+        //notificationsContainer.innerHTML = ""; // Clear existing notifications
 
         if (notifications.length === 0) {
           const noNotificationsMessage = document.createElement("p");
           noNotificationsMessage.textContent = "No unread notifications";
-          notificationsContainer.appendChild(noNotificationsMessage);
+          //notificationsContainer.appendChild(noNotificationsMessage);
         } else {
           const dateElement = document.createElement("p");
           dateElement.classList.add("pink-text");

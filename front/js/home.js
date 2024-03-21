@@ -84,6 +84,7 @@ window.addEventListener("click", (event) => {
     !event.target.matches("#bell") &&
     !event.target.matches(".popup") &&
     !event.target.matches("#side-notification") &&
+    !popup.contains(event.target) &&
     !sideNotification.contains(event.target)
   ) {
     popup.style.display = "none";
@@ -152,9 +153,13 @@ friendsContainer.addEventListener("click", (event) => {
 
 sideNotification.addEventListener("click", (event) => {
   if (event.target.matches("#close-arrow")) return;
-  togglePopup(false);
   sideNotification.style.display = "none";
+  if (event.target.matches(".choice-button")) return;
+  togglePopup(false);
 });
+
+const acceptRequestButton = document.getElementById("accept-button");
+const declineRequestButton = document.getElementById("decline-button");
 
 closeArrowSide.addEventListener("click", () => {
   sideNotification.style.display = "none";

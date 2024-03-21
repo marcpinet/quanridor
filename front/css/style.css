@@ -670,6 +670,7 @@ canvas {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer; 
+  margin-top: 20px;
 }
 
 .notification-container{
@@ -739,7 +740,7 @@ canvas {
 }
 
 #side-notification{
-  display: none;
+  display: block;
   position: absolute;
   background-color: #4650A8;
   border-color: rgba(70, 80, 168, 0);
@@ -764,6 +765,7 @@ canvas {
   font-size: 18px;
   width: 100px;
   height: 40px;
+  margin: 5px;
   border-radius: 10px;
   box-shadow: none;
   transition:
@@ -1294,4 +1296,30 @@ canvas {
     stroke-dashoffset: 187;
     transform: rotate(450deg);
   }
+}
+
+#accept-button{
+  background-color: #f3b9ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+#decline-button{
+  background-color: rgba(1,5,37,1);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.choice-button:disabled{
+  pointer-events: none;
+  cursor: not-allowed;
 }
