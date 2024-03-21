@@ -1,6 +1,7 @@
 // -------------------------- FRIENDS --------------------------
 
 const friendIdToUsername = {};
+let currentSelectedFriendId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
   const token = localStorage.getItem("token");
@@ -136,7 +137,8 @@ document.addEventListener("DOMContentLoaded", function () {
               // Mettre à jour les éléments HTML avec le nom et l'ID de l'ami sélectionné
               document.getElementById("selected-friend-name").textContent =
                 friendName;
-              document.getElementById("selected-friend-id").value = friendId;
+              document.getElementById("selected-friend-id").value =
+                friendData._id;
 
               // Vérifier si l'élément <div class="big-activity"> existe déjà et le supprimer
               const friendProfile = document.getElementById("friend-profile");
@@ -300,17 +302,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (message.from !== currentUserId) {
       const friendId = message.from;
-      const friendContainer = document.querySelector(
-        `[data-friendid="${friendId}"]`,
-      );
 
-      if (friendContainer !== currentSelectedFriendContainer) {
-        const unreadMessageCount = friendContainer.querySelector(
-          ".unread-message-count",
+      // Vérifier si le message provient de l'ami actuellement sélectionné
+      if (friendId === currentSelectedFriendId) {
+        // Marquer les messages comme lus
+        fetch(`${baseUrl}/api/markMessagesAsRead?friendId=${friendId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error marking messages as read:", error);
+          });
+      } else {
+        const friendContainer = document.querySelector(
+          `[data-friendid="${friendId}"]`,
         );
-        unreadMessageCount.textContent =
-          parseInt(unreadMessageCount.textContent) + 1;
-        unreadMessageCount.style.display = "block";
+
+        if (friendContainer !== currentSelectedFriendContainer) {
+          const unreadMessageCount = friendContainer.querySelector(
+            ".unread-message-count",
+          );
+          unreadMessageCount.textContent =
+            parseInt(unreadMessageCount.textContent) + 1;
+          unreadMessageCount.style.display = "block";
+        }
       }
     }
   });
@@ -505,6 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (friendContainer) {
       // Récupérer l'ID de l'ami à partir de l'attribut data-friendId
       const friendId = friendContainer.getAttribute("data-friendId");
+      currentSelectedFriendId = friendId;
       const friendName = friendIdToUsername[friendId];
 
       // Réinitialiser le compteur de messages non lus pour l'ami sélectionné
