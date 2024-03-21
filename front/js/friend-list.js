@@ -381,7 +381,9 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("newMessageNotification", function (notification) {
     const friendId = notification.from;
     incrementMessageCount(friendId);
-    displaySideNotification(notification.title, notification.message);
+    setInterval(function () {
+      displaySideNotification(notification.title, notification.message);
+    }, 3000);
   });
 
   friendList.addEventListener("click", function (event) {
