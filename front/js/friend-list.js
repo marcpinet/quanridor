@@ -421,7 +421,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       const friendId = notification.from;
       incrementMessageCount(friendId);
-      displaySideNotification(notification.title, notification.message);
+      displaySideNotification(notification);
     }
   });
 

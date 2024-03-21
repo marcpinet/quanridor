@@ -51,6 +51,7 @@ function incrementMessageCount(friendId) {
   const friendContainer = document.querySelector(
     `[data-friendid="${friendId}"]`,
   );
+
   const unreadMessageCount = friendContainer.querySelector(
     ".unread-message-count",
   );
@@ -58,56 +59,58 @@ function incrementMessageCount(friendId) {
   unreadMessageCount.style.display = "block";
 }
 
-function displaySideNotification(title, message) {
-  sideNotification.style.display = "block";
-  sideNotification.querySelector(".notification").textContent = title;
-  sideNotification.querySelector(".notification-content").textContent = message;
-}
-
 function displaySideNotification(notification) {
   sideNotification.innerHTML = ""; // Clear existing notification
 
   const notificationTitle = document.createElement("div");
   notificationTitle.classList.add("notification");
-  notificationTitle.textContent = "New friend request";
+  notificationTitle.textContent = notification.title;
   sideNotification.appendChild(notificationTitle);
 
   const closeArrow = document.createElement("svg");
   closeArrow.id = "close-arrow";
   sideNotification.appendChild(closeArrow);
 
-  const verticalContainer = document.createElement("div");
-  verticalContainer.classList.add("vertical-small-container");
-  sideNotification.appendChild(verticalContainer);
+  if (notification.type === "friendRequest") {
+    const verticalContainer = document.createElement("div");
+    verticalContainer.classList.add("vertical-small-container");
+    sideNotification.appendChild(verticalContainer);
 
-  const friendName = document.createElement("span");
-  friendName.classList.add("text");
-  friendName.id = "friend-name";
-  friendName.textContent = notification.message.split(" ")[0];
-  verticalContainer.appendChild(friendName);
+    const friendName = document.createElement("span");
+    friendName.classList.add("text");
+    friendName.id = "friend-name";
+    friendName.textContent = notification.message.split(" ")[0];
+    verticalContainer.appendChild(friendName);
 
-  const buttonContainer = document.createElement("div");
-  buttonContainer.classList.add("horizontal-small-container");
-  verticalContainer.appendChild(buttonContainer);
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("horizontal-small-container");
+    verticalContainer.appendChild(buttonContainer);
 
-  const acceptButton = document.createElement("button");
-  acceptButton.classList.add("choice-button");
-  acceptButton.id = "accept-button";
-  acceptButton.textContent = "Accept";
-  acceptButton.addEventListener("click", () => {
-    acceptFriendRequest(notification._id);
-  });
-  buttonContainer.appendChild(acceptButton);
+    const acceptButton = document.createElement("button");
+    acceptButton.classList.add("choice-button");
+    acceptButton.id = "accept-button";
+    acceptButton.textContent = "Accept";
+    acceptButton.addEventListener("click", () => {
+      acceptFriendRequest(notification._id);
+    });
+    buttonContainer.appendChild(acceptButton);
 
-  const declineButton = document.createElement("button");
-  declineButton.classList.add("choice-button");
-  declineButton.id = "decline-button";
-  declineButton.textContent = "Decline";
-  declineButton.addEventListener("click", () => {
-    declineFriendRequest(notification._id);
-  });
-  buttonContainer.appendChild(declineButton);
+    const declineButton = document.createElement("button");
+    declineButton.classList.add("choice-button");
+    declineButton.id = "decline-button";
+    declineButton.textContent = "Decline";
+    declineButton.addEventListener("click", () => {
+      declineFriendRequest(notification._id);
+    });
+    buttonContainer.appendChild(declineButton);
+  } else {
+    const notificationContent = document.createElement("div");
+    notificationContent.classList.add("notification-content");
+    notificationContent.textContent = notification.message;
+    sideNotification.appendChild(notificationContent);
+  }
 
+  console.log("Side Notification shown");
   sideNotification.style.display = "block";
 }
 
