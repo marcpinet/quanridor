@@ -6,7 +6,16 @@
     <link rel="stylesheet" href="css/style.css" type="text/css" />
   </head>
   <body id="game">
-    <div id="smoke" class="anticheat"></div>
+    <div id="smoke" class="anticheat">
+      <svg
+      id="back-arrow"
+      onclick="window.location.href = 'game-choice.html';"
+      ></svg>
+      <h1 class="text" id="waiting-text">Waiting for player...</h1>
+      <svg class="spinner" width="105px" height="105px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+     </svg>
+    </div>
     <div class="horizontal-container">
       <div class="vertical-small-container">
         <br />

@@ -18,6 +18,7 @@ let roomId;
 let player;
 let timer;
 let timerInterval;
+let waitingTimerInterval;
 let players = [];
 let playersElo = [];
 let finished = false;
@@ -36,15 +37,28 @@ const p1Timer = document.getElementById("p1-timer-text");
 const p2Timer = document.getElementById("p2-timer-text");
 const p1Elo = document.getElementById("player1-elo");
 const p2Elo = document.getElementById("player2-elo");
+const waitingText = document.getElementById("waiting-text");
 
 const eloLost = document.getElementById("elo-score-lose");
 const eloWin = document.getElementById("elo-score-win");
 
 let timeRemaining = timePerMove;
+let waiting = 1;
 
 //A CHANGER CAR CA PUE LA MERDE
 smoke.style.display = "block";
+function updateWaitingTimer() {
+  let dots = ".".repeat(waiting);
+  waitingText.textContent = "Waiting for player" + dots;
+  if (waiting == 3) {
+    waiting = 0;
+  }
+  waiting++;
+}
+waitingTimerInterval = setInterval(updateWaitingTimer, 500);
+
 socket.on("startGame", (data) => {
+  clearInterval(waitingTimerInterval);
   roomId = data;
   smoke.style.display = "none";
   socket.emit("userData", {
