@@ -1323,3 +1323,9 @@ canvas {
   pointer-events: none;
   cursor: not-allowed;
 }
+
+#read-notification {
+  filter:brightness(.5);
+  cursor: none;
+  pointer-events: none;
+}

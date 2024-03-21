@@ -337,13 +337,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const notificationContainer = document.createElement("div");
             notificationContainer.classList.add("notification-container");
+            // Ajouter l'ID read-notification au notification-container pour rendre transparent la notification comme lue.
 
-            const notificationTitle = document.createElement("p");
+            const notificationTitle = document.createElement("span");
             notificationTitle.classList.add("notification");
             notificationTitle.textContent = notification.title;
             notificationContainer.appendChild(notificationTitle);
 
-            const notificationContent = document.createElement("p");
+            const notificationContent = document.createElement("span");
             notificationContent.classList.add("notification-content");
             notificationContent.textContent = notification.message;
             notificationContainer.appendChild(notificationContent);
