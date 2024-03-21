@@ -20,6 +20,7 @@ let timer;
 let timerInterval;
 let players = [];
 let playersElo = [];
+let finished = false;
 
 let board_visibility = [];
 let lastMove = false;
@@ -1332,6 +1333,7 @@ function handleMouseOverCanvas(event) {
 }
 
 socket.on("player1Win", () => {
+  finished = true;
   clearAfterWin();
   winPopup.style.display = "block";
   let D = playersElo[0] - playersElo[1];
@@ -1372,6 +1374,7 @@ socket.on("player1Win", () => {
 });
 
 socket.on("player2Win", () => {
+  finished = true;
   clearAfterWin();
   winPopup.style.display = "block";
   let D = playersElo[0] - playersElo[1];
@@ -1416,6 +1419,7 @@ socket.on("player2Win", () => {
 });
 
 socket.on("draw", () => {
+  finished = true;
   clearAfterWin();
   winPopup.style.display = "block";
   let D = playersElo[0] - playersElo[1];
@@ -1465,6 +1469,50 @@ socket.on("opponentLeave", () => {
   clearTempWall();
   drawBoard();
   clearAfterWin();
-  winPopup.style.display = "block";
-  winText.textContent = "OPPONENT LEFT, YOU WON!";
+  let D = playersElo[0] - playersElo[1];
+  let p;
+  let W = 1;
+  let newElo;
+  if (!finished) {
+    finished = true;
+    winPopup.style.display = "block";
+    winText.textContent = "OPPONENT LEFT, YOU WON!";
+    if (player == 1) {
+      p = 1 / (1 + 10 ** (-D / 400));
+      newElo = Math.round(playersElo[0] + 40 * (W - p));
+      eloWin.textContent = "+" + Math.abs(playersElo[0] - newElo);
+      p1Elo.textContent = newElo;
+      p = 1 / (1 + 10 ** (D / 400));
+      let opponentNewElo = Math.round(playersElo[1] + 40 * (0 - p));
+      p2Elo.textContent = opponentNewElo;
+      socket.emit("updatePlayerElo", {
+        roomId: roomId,
+        newElo: newElo,
+        player: players[0],
+      });
+      socket.emit("updatePlayerElo", {
+        roomId: roomId,
+        newElo: opponentNewElo,
+        player: players[1],
+      });
+    } else {
+      p = 1 / (1 + 10 ** (D / 400));
+      newElo = Math.round(playersElo[1] + 40 * (W - p));
+      eloWin.textContent = "+" + Math.abs(playersElo[1] - newElo);
+      p2Elo.textContent = newElo;
+      p = 1 / (1 + 10 ** (-D / 400));
+      let opponentNewElo = Math.round(playersElo[0] + 40 * (0 - p));
+      p1Elo.textContent = opponentNewElo;
+      socket.emit("updatePlayerElo", {
+        roomId: roomId,
+        newElo: newElo,
+        player: players[1],
+      });
+      socket.emit("updatePlayerElo", {
+        roomId: roomId,
+        newElo: opponentNewElo,
+        player: players[0],
+      });
+    }
+  }
 });
