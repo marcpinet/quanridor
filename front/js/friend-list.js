@@ -520,7 +520,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
       incrementNotificationCount();
     }
-    displaySideNotification(notification);
+    if (!isChatVisible) {
+      displaySideNotification(notification);
+    }
   });
 
   friendList.addEventListener("click", function (event) {
@@ -662,6 +664,8 @@ document.addEventListener("DOMContentLoaded", function () {
     friendChat.querySelector(".text").textContent =
       currentSelectedFriendContainer.querySelector(".text").textContent;
 
+    isChatVisible = true;
+
     // Marquer les messages comme lus
     const friendId =
       currentSelectedFriendContainer.getAttribute("data-friendid");
@@ -686,6 +690,16 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error marking messages as read:", error);
       });
+  });
+
+  const closeChatButton = document.getElementById("close-chat");
+
+  closeChatButton.addEventListener("click", function () {
+    friendChat.style.display = "none";
+    friendList.style.display = "block";
+
+    // Mettre à jour isChatVisible
+    isChatVisible = false;
   });
 
   function acceptFriendRequest(notificationId) {
