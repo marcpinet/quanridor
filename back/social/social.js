@@ -134,7 +134,10 @@ function createSocketSocial(io) {
           { from: new ObjectId(to), to: new ObjectId(from) },
         ],
       };
-      const messageDocs = await messages.find(query).toArray();
+      const messageDocs = await messages
+        .find(query)
+        .sort({ timestamp: 1 })
+        .toArray();
 
       // Envoyer les messages à l'utilisateur
       socket.emit("messageHistory", messageDocs);

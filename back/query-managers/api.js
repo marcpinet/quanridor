@@ -299,7 +299,11 @@ async function handleUsersGet(request, response, decodedToken) {
           _id: user._id.toString(),
           username: user.username,
           elo: user.elo,
-          friends: user.friends,
+          friends: user.friends.sort((a, b) => {
+            const friendA = friendIdToUsername[a.toString()];
+            const friendB = friendIdToUsername[b.toString()];
+            return friendA.localeCompare(friendB);
+          }),
           activity: user.activity,
         }),
       );
@@ -471,6 +475,7 @@ async function handleNotificationsGet(request, response, decodedToken) {
 
     const unreadNotifications = await notifications
       .find({ to: user._id, read: false })
+      .sort({ timestamp: -1 })
       .toArray();
 
     response.end(JSON.stringify(unreadNotifications));
