@@ -255,6 +255,8 @@ function computeMove(gameState, player, depth = 2) {
     opponent,
   );
 
+  const playerPosition = gameState.playerspositions[player - 1];
+
   if (playerPath.length === 0) {
     playerPath = getShortestPath(
       playerPosition,
