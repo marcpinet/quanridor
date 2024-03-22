@@ -155,8 +155,10 @@ document.addEventListener("DOMContentLoaded", function () {
               bigActivity.id = friendData.activity;
               const tooltipText = document.createElement("span");
               tooltipText.className = "tooltiptext";
+              // Set the tooltip text to the friend's activity, with a capital letter at the beginning
               tooltipText.textContent =
-                friendData.activity === "active" ? "Active" : "Inactive";
+                friendData.activity.charAt(0).toUpperCase() +
+                friendData.activity.slice(1);
               bigActivity.appendChild(tooltipText);
               userSvg.insertAdjacentElement("afterend", bigActivity);
             });
