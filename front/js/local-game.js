@@ -620,15 +620,13 @@ function displayPossibleMoves(player) {
 }
 
 function getReady() {
-  for (let element of anticheat) {
-    element.style.display = "block";
-  }
+  smoke.style.display = "block";
+  ready.style.display = "block";
 }
 
 function isReady() {
-  for (let element of anticheat) {
-    element.style.display = "none";
-  }
+  smoke.style.display = "none";
+  ready.style.display = "none";
 
   leftProfileBox.style.borderColor = tour % 2 == 0 ? colored : transparent;
   rightProfileBox.style.borderColor = tour % 2 == 1 ? colored : transparent;
