@@ -13,14 +13,14 @@ let selectedDialogue = null;
 
 const emoteDelay = 5000;
 
-function toggleEmotePopup(hide = false) {
-  if (hide) {
-    emotePopup.style.display = "none";
-    return;
-  }
+const socket = io("/api/social");
 
-  emotePopup.style.display =
-    emotePopup.style.display === "none" ? "block" : "none";
+function toggleEmotePopup(hide = false) {
+  if (hide || emotePopup.style.display === "block") {
+    emotePopup.style.display = "none";
+  } else {
+    emotePopup.style.display = "block";
+  }
 }
 
 crossEmotePopup.addEventListener("click", () => toggleEmotePopup(true));
@@ -42,7 +42,7 @@ emotePopup.addEventListener("click", (e) => {
 
 function showEmoji() {
   if (selectedEmoji) {
-    //socket.emit("emoji", selectedEmoji);
+    socket.emit("emoji", { player, message: selectedEmoji });
     if (player === 1) {
       leftEmojiPopup.innerHTML = selectedEmoji;
       leftEmojiPopup.style.display = "block";
@@ -63,7 +63,7 @@ function showEmoji() {
 
 function showDialogue() {
   if (selectedDialogue) {
-    //socket.emit("dialogue", selectedDialogue);
+    socket.emit("dialogue", { player, message: selectedDialogue });
     if (player === 1) {
       leftDialoguePopup.innerHTML = selectedDialogue;
       leftDialoguePopup.style.display = "block";
@@ -81,3 +81,39 @@ function showDialogue() {
     selectedDialogue = null;
   }
 }
+
+socket.on("dialogue", (data) => {
+  const { player, message } = data;
+  console.log("Received dialogue: ", message + " from player: " + player);
+  if (player === 1) {
+    leftDialoguePopup.innerHTML = message;
+    leftDialoguePopup.style.display = "block";
+    setTimeout(() => {
+      leftDialoguePopup.style.display = "none";
+    }, emoteDelay);
+  } else {
+    rightDialoguePopup.innerHTML = message;
+    rightDialoguePopup.style.display = "block";
+    setTimeout(() => {
+      rightDialoguePopup.style.display = "none";
+    }, emoteDelay);
+  }
+});
+
+socket.on("emoji", (data) => {
+  const { player, message: emoji } = data;
+  console.log("Received emoji: ", emoji + " from player: " + player);
+  if (player === 1) {
+    leftEmojiPopup.innerHTML = emoji;
+    leftEmojiPopup.style.display = "block";
+    setTimeout(() => {
+      leftEmojiPopup.style.display = "none";
+    }, emoteDelay);
+  } else {
+    rightEmojiPopup.innerHTML = emoji;
+    rightEmojiPopup.style.display = "block";
+    setTimeout(() => {
+      rightEmojiPopup.style.display = "none";
+    }, emoteDelay);
+  }
+});

@@ -169,6 +169,18 @@ function createSocketSocial(io) {
         callback(error);
       }
     });
+
+    socket.on("dialogue", (data) => {
+      const { player, message } = data;
+      console.log(`Received dialogue: ${message} from player: ${player}`);
+      socket.broadcast.emit("dialogue", { player, message });
+    });
+
+    socket.on("emoji", (data) => {
+      const { player, message } = data;
+      console.log(`Received emoji: ${message} from player: ${player}`);
+      socket.broadcast.emit("emoji", { player, message });
+    });
   });
 
   return io;
