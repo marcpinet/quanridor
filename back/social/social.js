@@ -1,10 +1,37 @@
 const { connectDB, getDB } = require("../query-managers/db.js");
 const { ObjectId } = require("mongodb");
 
+const requestCounts = {};
+
+function rateLimitSocket(socket, next) {
+  const ip = socket.handshake.address;
+  const currentTime = Date.now();
+
+  if (!requestCounts[ip]) {
+    requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+    next();
+  } else {
+    const { count, lastRequestTime } = requestCounts[ip];
+    const timeDiff = currentTime - lastRequestTime;
+
+    if (timeDiff > 600000) {
+      // 10 minutes have passed, reset the count
+      requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+      next();
+    } else if (count < 100) {
+      requestCounts[ip].count++;
+      next();
+    } else {
+      console.log(`Too many requests from IP: ${ip}`);
+      socket.disconnect();
+    }
+  }
+}
+
 function createSocketSocial(io) {
   const socialNamespace = io.of("/api/social");
 
-  socialNamespace.on("connection", (socket) => {
+  socialNamespace.use(rateLimitSocket).on("connection", (socket) => {
     let userId;
 
     socket.on("joinRoom", (id) => {

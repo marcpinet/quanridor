@@ -8,9 +8,11 @@ const { verifyToken, getJwtSecret } = require("../utils/jwt-utils");
 
 const apiPath = "/api";
 
-const saltRounds = 10;
+const saltRounds = 12;
 
 const DEFAULT_ELO = 800;
+
+const requestCounts = {};
 
 // ------------------------------ CORE HANDLING ------------------------------
 
@@ -38,106 +40,111 @@ async function manageRequest(request, response) {
     return;
   }
 
-  const parsedUrl = url.parse(request.url, true);
-  const path = parsedUrl.pathname;
-  let tmp = path.endsWith("/") ? path.slice(0, -1) : path;
-  const normalizedPath = tmp.split("?")[0];
+  rateLimit(request, response, async () => {
+    const parsedUrl = url.parse(request.url, true);
+    const path = parsedUrl.pathname;
+    let tmp = path.endsWith("/") ? path.slice(0, -1) : path;
+    const normalizedPath = tmp.split("?")[0];
 
-  console.log(`Normalized path: ${normalizedPath}`);
+    console.log(`Normalized path: ${normalizedPath}`);
 
-  const token = getTokenFromHeaders(request);
+    const token = getTokenFromHeaders(request);
 
-  if (!token) {
-    if (normalizedPath === `${apiPath}/signup` && request.method === "POST") {
-      handleSignup(request, response);
-    } else if (
-      normalizedPath === `${apiPath}/login` &&
-      request.method === "POST"
-    ) {
-      handleLogin(request, response);
+    if (!token) {
+      if (normalizedPath === `${apiPath}/signup` && request.method === "POST") {
+        handleSignup(request, response);
+      } else if (
+        normalizedPath === `${apiPath}/login` &&
+        request.method === "POST"
+      ) {
+        handleLogin(request, response);
+      } else {
+        console.log("No token found in headers");
+        response.writeHead(404, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({
+            message: "You need to be authenticated to access this endpoint",
+          }),
+        );
+      }
     } else {
-      console.log("No token found in headers");
-      response.writeHead(404, { "Content-Type": "application/json" });
-      response.end(
-        JSON.stringify({
-          message: "You need to be authenticated to access this endpoint",
-        }),
-      );
-    }
-  } else {
-    const decodedToken = await verifyToken(token);
-    if (!decodedToken) {
-      response.writeHead(403, { "Content-Type": "application/json" });
-      response.end(
-        JSON.stringify({ message: "Invalid token (maybe it has expired?)" }),
-      );
+      const decodedToken = await verifyToken(token);
+      if (!decodedToken) {
+        response.writeHead(403, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: "Invalid token (maybe it has expired?)" }),
+        );
 
-      return;
-    }
+        return;
+      }
 
-    // Social
-    if (
-      normalizedPath === `${apiPath}/notifications` &&
-      request.method === "GET"
-    ) {
-      handleNotificationsGet(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/notifications/markAsRead` &&
-      request.method === "PUT"
-    ) {
-      handleNotificationsMarkAsRead(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/unreadMessagesCount` &&
-      request.method === "GET"
-    ) {
-      handleUnreadMessagesCount(request, response, decodedToken);
-    } else if (
-      normalizedPath.startsWith(`${apiPath}/notifications/`) &&
-      request.method === "DELETE"
-    ) {
-      handleNotificationDelete(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/markMessagesAsRead` &&
-      request.method === "PUT"
-    ) {
-      handleMarkMessagesAsRead(request, response, decodedToken);
-    } else if (
-      normalizedPath.startsWith(`${apiPath}/friends`) &&
-      request.method === "DELETE"
-    ) {
-      handleFriendDelete(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/friendRequest` &&
-      request.method === "POST"
-    ) {
-      handleFriendRequestPost(request, response, decodedToken);
-    } else if (
-      normalizedPath.startsWith(`${apiPath}/friendRequest/`) &&
-      request.method === "PUT"
-    ) {
-      handleFriendRequestAccept(request, response, decodedToken);
-    }
+      // Social
+      if (
+        normalizedPath === `${apiPath}/notifications` &&
+        request.method === "GET"
+      ) {
+        handleNotificationsGet(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/notifications/markAsRead` &&
+        request.method === "PUT"
+      ) {
+        handleNotificationsMarkAsRead(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/unreadMessagesCount` &&
+        request.method === "GET"
+      ) {
+        handleUnreadMessagesCount(request, response, decodedToken);
+      } else if (
+        normalizedPath.startsWith(`${apiPath}/notifications/`) &&
+        request.method === "DELETE"
+      ) {
+        handleNotificationDelete(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/markMessagesAsRead` &&
+        request.method === "PUT"
+      ) {
+        handleMarkMessagesAsRead(request, response, decodedToken);
+      } else if (
+        normalizedPath.startsWith(`${apiPath}/friends`) &&
+        request.method === "DELETE"
+      ) {
+        handleFriendDelete(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/friendRequest` &&
+        request.method === "POST"
+      ) {
+        handleFriendRequestPost(request, response, decodedToken);
+      } else if (
+        normalizedPath.startsWith(`${apiPath}/friendRequest/`) &&
+        request.method === "PUT"
+      ) {
+        handleFriendRequestAccept(request, response, decodedToken);
+      }
 
-    // Game
-    else if (normalizedPath === `${apiPath}/game` && request.method === "GET") {
-      handleGameGet(request, response, decodedToken);
-    } else if (
-      normalizedPath === `${apiPath}/users` &&
-      request.method === "GET"
-    ) {
-      handleUsersGet(request, response, decodedToken);
-    } else if (
-      normalizedPath.startsWith(`${apiPath}/users/`) &&
-      request.method === "GET"
-    ) {
-      handleUserGet(request, response, decodedToken);
-    } else {
-      response.writeHead(404, { "Content-Type": "application/json" });
-      response.end(
-        JSON.stringify({ message: `Endpoint ${normalizedPath} not found` }),
-      );
+      // Game
+      else if (
+        normalizedPath === `${apiPath}/game` &&
+        request.method === "GET"
+      ) {
+        handleGameGet(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/users` &&
+        request.method === "GET"
+      ) {
+        handleUsersGet(request, response, decodedToken);
+      } else if (
+        normalizedPath.startsWith(`${apiPath}/users/`) &&
+        request.method === "GET"
+      ) {
+        handleUserGet(request, response, decodedToken);
+      } else {
+        response.writeHead(404, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: `Endpoint ${normalizedPath} not found` }),
+        );
+      }
     }
-  }
+  });
 }
 
 // ------------------------------ SIGN UP ------------------------------
@@ -153,8 +160,16 @@ async function handleSignup(request, response) {
       let { username, password } = JSON.parse(body);
       username = username.toLowerCase();
 
+      if (username.length > 50 || password.length > 100) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(
+          JSON.stringify({ message: "Username or password too long" }),
+        );
+        return;
+      }
+
       // If username is the form of "ai" + any number after, return an error
-      if (username.match(/^ai\d+$/)) {
+      if (username.match(/^ai\d+$/) || username === "draw") {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(
           JSON.stringify({
@@ -863,6 +878,35 @@ function getTokenFromHeaders(request) {
     return null;
   }
   return authorization.split(" ")[1];
+}
+
+function rateLimit(request, response, next) {
+  const ip = request.connection.remoteAddress;
+  const currentTime = Date.now();
+
+  if (!requestCounts[ip]) {
+    requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+    next();
+  } else {
+    const { count, lastRequestTime } = requestCounts[ip];
+    const timeDiff = currentTime - lastRequestTime;
+
+    if (timeDiff > 600000) {
+      // 10 minutes have passed, reset the count
+      requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+      next();
+    } else if (count < 100) {
+      requestCounts[ip].count++;
+      next();
+    } else {
+      response.writeHead(429, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({
+          message: "Too many requests, please try again later.",
+        }),
+      );
+    }
+  }
 }
 
 // ------------------------------ REST OF THE CODE ------------------------------

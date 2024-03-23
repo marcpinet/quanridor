@@ -17,13 +17,41 @@ const {
 } = require("./utils/game-checkers.js");
 
 function createSocket(server) {
+const requestCounts = {};
+
+function rateLimitSocket(socket, next) {
+  const ip = socket.handshake.address;
+  const currentTime = Date.now();
+
+  if (!requestCounts[ip]) {
+    requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+    next();
+  } else {
+    const { count, lastRequestTime } = requestCounts[ip];
+    const timeDiff = currentTime - lastRequestTime;
+
+    if (timeDiff > 600000) {
+      // 10 minutes have passed, reset the count
+      requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
+      next();
+    } else if (count < 100) {
+      requestCounts[ip].count++;
+      next();
+    } else {
+      console.log(`Too many requests from IP: ${ip}`);
+      socket.disconnect();
+    }
+  }
+}
+
+function createSocketGame(io) {
   let waitingPlayer = null;
   const rooms = {};
   const io = new Server(server);
 
 function createSocketGame(io) {
   const gameNamespace = io.of("/api/game");
-  gameNamespace.on("connection", (socket) => {
+  gameNamespace.use(rateLimitSocket).on("connection", (socket) => {
     socket.on("createGameAI", async (data) => {
       // Verify the token
       const decoded = await verifyToken(data.token);
@@ -455,7 +483,13 @@ function createSocketGame(io) {
         return;
       }
 
-      rooms[data.roomId][data.player - 1] = user;
+      // Sécurité par l'obscurité monsieur Arol90
+      const userInfos = {
+        username: user.username,
+        elo: user.elo,
+      };
+
+      rooms[data.roomId][data.player - 1] = userInfos;
 
       gameNamespace.to(data.roomId).emit("usersData", rooms[data.roomId]);
     });
