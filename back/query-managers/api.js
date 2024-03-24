@@ -881,7 +881,7 @@ function getTokenFromHeaders(request) {
 }
 
 function rateLimit(request, response, next) {
-  const ip = request.connection.remoteAddress;
+  const ip = request.headers["x-forwarded-for"];
   const currentTime = Date.now();
 
   if (!requestCounts[ip]) {
