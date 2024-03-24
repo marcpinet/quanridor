@@ -3,6 +3,7 @@ version: "3.8"
 services:
   app:
     build: .
+    container_name: quanridor
     ports:
       - "4200:4200"
       - "8000:8000"
@@ -18,6 +19,7 @@ services:
 
   db:
     image: mongo
+    container_name: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: quanridor
