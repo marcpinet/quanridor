@@ -437,6 +437,25 @@ function createSocketGame(io) {
       );
     });
 
+    socket.on("leaveQueue", async (data) => {
+      waitingPlayer = null;
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        return;
+      }
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ username: decoded.username });
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "inactive" } },
+      );
+    });
+
     socket.on("forcewin", async (data) => {
       const gameState = data.gameState;
       const userToken = data.token;

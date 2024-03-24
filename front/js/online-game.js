@@ -10,6 +10,14 @@ socket.emit("searchGame", {
 
 socket.on("waiting", () => {
   console.log("waiting");
+
+  const back_arrow = document.getElementById("back-arrow");
+
+  back_arrow.addEventListener("click", () => {
+    socket.emit("leaveQueue", {
+      token: localStorage.getItem("token"),
+    });
+  });
 });
 
 let gameId;

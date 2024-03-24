@@ -899,6 +899,7 @@ function rateLimit(request, response, next) {
       requestCounts[ip].count++;
       next();
     } else {
+      console.log("Rate limit exceeded for IP:", ip);
       response.writeHead(429, { "Content-Type": "application/json" });
       response.end(
         JSON.stringify({
