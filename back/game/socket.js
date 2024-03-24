@@ -389,6 +389,9 @@ function createSocketGame(io) {
         { _id: new ObjectId(userId) },
         { $set: { activity: "inactive" } },
       );
+
+      socket.emit("leaveSuccess");
+      socket.disconnect();
     });
 
     /*----------------------------------------------*/
@@ -434,25 +437,6 @@ function createSocketGame(io) {
       await users.updateOne(
         { _id: new ObjectId(userId) },
         { $set: { activity: "playing" } },
-      );
-    });
-
-    socket.on("leaveQueue", async (data) => {
-      waitingPlayer = null;
-      const decoded = await verifyToken(data.token);
-      if (!decoded) {
-        return;
-      }
-
-      const db = getDB();
-      const users = db.collection("users");
-
-      const user = await users.findOne({ username: decoded.username });
-
-      let userId = user._id;
-      await users.updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { activity: "inactive" } },
       );
     });
 
@@ -715,6 +699,7 @@ function createSocketGame(io) {
         { $set: { activity: "inactive" } },
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
+      socket.disconnect();
     });
 
     socket.on("player2Leave", async (data) => {
@@ -730,6 +715,7 @@ function createSocketGame(io) {
         { $set: { activity: "inactive" } },
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
+      socket.disconnect();
     });
 
     socket.on("leaveWhileSearching", async (data) => {
@@ -749,6 +735,9 @@ function createSocketGame(io) {
         { _id: new ObjectId(userId) },
         { $set: { activity: "inactive" } },
       );
+
+      socket.emit("leaveSuccess");
+      socket.disconnect();
     });
 
     socket.on("updatePlayerElo", async (data) => {

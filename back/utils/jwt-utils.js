@@ -26,7 +26,6 @@ async function getJwtSecret() {
     const secretDocument = await secrets.findOne({ name: "jwtSecret" });
 
     if (secretDocument) {
-      console.log("JWT Secret:", secretDocument.value);
       return secretDocument.value;
     } else {
       console.log("Secret not found");

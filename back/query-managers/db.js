@@ -10,7 +10,6 @@ let db = null;
 
 async function connectDB() {
   await client.connect();
-  console.log("Connected successfully to MongoDB server");
   db = client.db(dbName);
 }
 

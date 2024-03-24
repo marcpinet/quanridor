@@ -14,6 +14,8 @@ const DEFAULT_ELO = 800;
 
 const requestCounts = {};
 
+const MAX_REQUESTS_PER_TEN_MINUTES = 100000; // Cuz I badly optimized friend-list.js frontend file... (should've been 100)
+
 // ------------------------------ CORE HANDLING ------------------------------
 
 function addCors(
@@ -895,8 +897,9 @@ function rateLimit(request, response, next) {
       // 10 minutes have passed, reset the count
       requestCounts[ip] = { count: 1, lastRequestTime: currentTime };
       next();
-    } else if (count < 100) {
+    } else if (count < MAX_REQUESTS_PER_TEN_MINUTES) {
       requestCounts[ip].count++;
+      console.log(requestCounts[ip]);
       next();
     } else {
       console.log("Rate limit exceeded for IP:", ip);

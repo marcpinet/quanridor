@@ -10,14 +10,6 @@ socket.emit("searchGame", {
 
 socket.on("waiting", () => {
   console.log("waiting");
-
-  const back_arrow = document.getElementById("back-arrow");
-
-  back_arrow.addEventListener("click", () => {
-    socket.emit("leaveQueue", {
-      token: localStorage.getItem("token"),
-    });
-  });
 });
 
 let gameId;
@@ -34,6 +26,7 @@ let finished = false;
 let board_visibility = [];
 let lastMove = false;
 
+const back_arrow = document.getElementById("close");
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 const win = document.getElementById("win");
@@ -49,6 +42,13 @@ const waitingText = document.getElementById("waiting-text");
 
 const eloLost = document.getElementById("elo-score-lose");
 const eloWin = document.getElementById("elo-score-win");
+
+back_arrow.addEventListener("click", () => {
+  socket.emit("leaveWhileSearching", {
+    token: localStorage.getItem("token"),
+  });
+  console.log("leave");
+});
 
 let timeRemaining = timePerMove;
 let waiting = 1;
@@ -1482,6 +1482,10 @@ socket.on("draw", () => {
   } else {
     eloLost.textContent = "-" + eloText;
   }
+});
+
+socket.on("leaveSuccess", () => {
+  window.location.href = "game-choice.html";
 });
 
 socket.on("opponentLeave", () => {
