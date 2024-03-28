@@ -16,7 +16,6 @@ const {
   getPossibleWalls,
 } = require("./utils/game-checkers.js");
 
-function createSocket(server) {
 const requestCounts = {};
 
 function rateLimitSocket(socket, next) {
@@ -47,9 +46,6 @@ function rateLimitSocket(socket, next) {
 function createSocketGame(io) {
   let waitingPlayer = null;
   const rooms = {};
-  const io = new Server(server);
-
-function createSocketGame(io) {
   const gameNamespace = io.of("/api/game");
   gameNamespace.use(rateLimitSocket).on("connection", (socket) => {
     socket.on("createGameAI", async (data) => {
