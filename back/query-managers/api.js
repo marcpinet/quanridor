@@ -203,6 +203,8 @@ async function handleSignup(request, response) {
         admin: false,
         friends: [],
         activity: "inactive",
+        avatar: null,
+        achievements: [],
       });
 
       // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
