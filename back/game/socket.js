@@ -43,6 +43,29 @@ function rateLimitSocket(socket, next) {
   }
 }
 
+function checkAndUnlockAchievement(userId, achievement) {
+  const db = getDB();
+  const users = db.collection('users');
+
+  users.findOne({ _id: new ObjectId(userId) })
+    .then(user => {
+      if (!user.achievements.includes(achievement)) {
+        users.updateOne(
+          { _id: new ObjectId(userId) }, 
+          { $push: { achievements: achievement } }
+        ).then(() => {
+          const notifications = db.collection('notifications');
+          notifications.insertOne({
+            content: `You unlocked the achievement: ${achievement}`,
+            from: "[SYSTEM]",
+            to: new ObjectId(userId),
+            date: new Date(),
+          })
+        });
+      }
+    });
+}
+
 function createSocketGame(io) {
   let waitingPlayer = null;
   const rooms = {};
@@ -176,6 +199,7 @@ function createSocketGame(io) {
         socket.emit("legalMove", newCoord);
       } else {
         socket.emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       }
     });
 
@@ -353,6 +377,7 @@ function createSocketGame(io) {
         )
       ) {
         socket.emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       } else {
         socket.emit("legalWall");
       }
@@ -515,10 +540,20 @@ function createSocketGame(io) {
 
     socket.on("player1Wall", (data) => {
       gameNamespace.to(data.roomId).emit("updateAfterPayer1Wall", data.wall);
+
+      // Check if player1 has no more walls
+      if (rooms[data.roomId][0].p1walls === 0) {
+        checkAndUnlockAchievement(rooms[data.roomId][0].username, "Walls Master");
+      }
     });
 
     socket.on("player2Wall", (data) => {
       gameNamespace.to(data.roomId).emit("updateAfterPayer2Wall", data.wall);
+
+      // Check if player2 has no more walls
+      if (rooms[data.roomId][1].p2walls === 0) {
+        checkAndUnlockAchievement(rooms[data.roomId][1].username, "Walls Master");
+      }
     });
 
     socket.on("lastMoveToPlay", (data) => {
@@ -528,21 +563,33 @@ function createSocketGame(io) {
 
     socket.on("player1Win", (data) => {
       gameNamespace.to(data.roomId).emit("player1Win");
+
+      checkAndUnlockAchievement(rooms[data.roomId][0].username, "First Win");
+      checkAndUnlockAchievement(rooms[data.roomId][1].username, "First Loss");
     });
 
     socket.on("player2Win", (data) => {
       gameNamespace.to(data.roomId).emit("player2Win");
+
+      checkAndUnlockAchievement(rooms[data.roomId][1].username, "First Win");
+      checkAndUnlockAchievement(rooms[data.roomId][0].username, "First Loss");
     });
 
     socket.on("draw", (data) => {
       gameNamespace.to(data.roomId).emit("draw");
+
+      checkAndUnlockAchievement(rooms[data.roomId][0].username, "First Draw");
+      checkAndUnlockAchievement(rooms[data.roomId][1].username, "First Draw");
     });
 
     socket.on("timeIsUp", (data) => {
       gameNamespace.to(data.roomId).emit("timeIsUp");
+
     });
 
     socket.on("timeIsUpForPlayer2", (data) => {
+      checkAndUnlockAchievement(rooms[data.roomId][1].username, "Slow Brain");
+
       let gameState = data.gameState;
       let possibleMoves = getPossibleMoves(
         gameState,
@@ -563,6 +610,8 @@ function createSocketGame(io) {
     });
 
     socket.on("timeIsUpForPlayer1", (data) => {
+      checkAndUnlockAchievement(rooms[data.roomId][0].username, "Slow Brain");
+
       let gameState = data.gameState;
       let possibleMoves = getPossibleMoves(
         gameState,
@@ -606,6 +655,7 @@ function createSocketGame(io) {
         gameNamespace.to(data.roomId).emit("player1MoveIsLegal", newCoord);
       } else {
         gameNamespace.to(data.roomId).emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       }
     });
 
@@ -633,6 +683,7 @@ function createSocketGame(io) {
         gameNamespace.to(data.roomId).emit("player2MoveIsLegal", newCoord);
       } else {
         gameNamespace.to(data.roomId).emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       }
     });
 
@@ -654,6 +705,7 @@ function createSocketGame(io) {
         )
       ) {
         gameNamespace.to(data.roomId).emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       } else {
         gameNamespace.to(data.roomId).emit("player1WallIsLegal", data.wall);
       }
@@ -677,6 +729,7 @@ function createSocketGame(io) {
         )
       ) {
         gameNamespace.to(data.roomId).emit("illegal");
+        checkAndUnlockAchievement(data.userId, "Cheater!");
       } else {
         gameNamespace.to(data.roomId).emit("player2WallIsLegal", data.wall);
       }
