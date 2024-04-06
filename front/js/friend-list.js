@@ -473,7 +473,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 declineFriendRequest(notification._id);
               });
               buttonContainer.appendChild(declineButton);
-            } else {
+            } else if (notification.type === "battleRequest") {
               const notificationTitle = document.createElement("span");
               notificationTitle.classList.add("notification");
               notificationTitle.textContent = notification.title;
@@ -483,6 +483,13 @@ document.addEventListener("DOMContentLoaded", function () {
               notificationContent.classList.add("notification-content");
               notificationContent.textContent = notification.message;
               notificationContainer.appendChild(notificationContent);
+            } else if (notification.type === "achievement") {
+              const notificationTitle = document.createElement("span");
+              notificationTitle.classList.add("notification");
+              notificationTitle.textContent = notification.title;
+              notificationContainer.appendChild(notificationTitle);
+            } else {
+              console.error("Unknown notification type:", notification.type);
             }
 
             notificationsContainer.appendChild(notificationContainer);
@@ -518,7 +525,8 @@ document.addEventListener("DOMContentLoaded", function () {
   socket.on("newMessageNotification", function (notification) {
     if (
       notification.type === "friendRequest" ||
-      notification.type === "battleRequest"
+      notification.type === "battleRequest" ||
+      notification.type === "achievement"
     ) {
       incrementNotificationCount();
     }

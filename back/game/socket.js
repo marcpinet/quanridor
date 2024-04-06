@@ -44,28 +44,58 @@ function rateLimitSocket(socket, next) {
 }
 
 function checkAndUnlockAchievement(userId, achievement) {
+  console.log("Checking achievement", achievement + " for user", userId);
   try {
     const db = getDB();
     const users = db.collection("users");
 
-    users.findOne({ _id: new ObjectId(userId) }).then((user) => {
-      if (!user.achievements.includes(achievement)) {
-        users
-          .updateOne(
-            { _id: new ObjectId(userId) },
-            { $push: { achievements: achievement } }
-          )
-          .then(() => {
-            const notifications = db.collection("notifications");
-            notifications.insertOne({
-              content: `You unlocked the achievement: ${achievement}`,
-              from: "[SYSTEM]",
-              to: new ObjectId(userId),
-              date: new Date(),
+    try {
+      users.findOne({ _id: new ObjectId(userId) }).then((user) => {
+        if (!user.achievements.includes(achievement)) {
+          users
+            .updateOne(
+              { _id: new ObjectId(userId) },
+              { $push: { achievements: achievement } }
+            )
+            .then(() => {
+              const notifications = db.collection("notifications");
+              notifications.insertOne({
+                content: `You unlocked the achievement: ${achievement}`,
+                from: "[SYSTEM]",
+                to: user._id,
+                date: new Date(),
+                type: "achievement",
+                read: false,
+              });
             });
-          });
+        }
+      });
+    } catch (err) {
+      try {
+        users.findOne({ username: userId }).then((user) => {
+          if (!user.achievements.includes(achievement)) {
+            users
+              .updateOne(
+                { username: userId },
+                { $push: { achievements: achievement } }
+              )
+              .then(() => {
+                const notifications = db.collection("notifications");
+                notifications.insertOne({
+                  content: `You unlocked the achievement: ${achievement}`,
+                  from: "[SYSTEM]",
+                  to: user._id,
+                  date: new Date(),
+                  type: "achievement",
+                  read: false,
+                });
+              });
+          }
+        });
+      } catch (err) {
+        console.error(err);
       }
-    });
+    }
   } catch (err) {
     console.error(err);
   }
@@ -215,20 +245,24 @@ function createSocketGame(io) {
       if (checkWin(gameState, 1)) {
         const gameId = data.gameId;
 
-        // @arol90 c'est quoi cette merde
-        // const gameState = data.gameState;
-        // let newCoord = Rulebased.computeMove(gameState);
-        // gameState.playerspositions[1] = newCoord;
-
         // Tiens voilà mieux
         let newCoord = getNextMoveToFollowShortestPath(gameState, 2);
         gameState.playerspositions[1] = newCoord;
 
         const db = getDB();
         const games = db.collection("games");
+        const game = await games.findOne({ _id: new ObjectId(gameId) });
+
+        // Check if one of the user is an AI, if no, then add achievements
+        if (
+          !game.players[0].startsWith("AI") &&
+          !game.players[1].startsWith("AI")
+        ) {
+          checkAndUnlockAchievement(game.players[0], "First Win");
+          checkAndUnlockAchievement(game.players[1], "First Loss");
+        }
 
         // Check if the game is over
-        const game = await games.findOne({ _id: new ObjectId(gameId) });
         if (game.status === 2) {
           socket.emit("gameOver", game);
           return;
@@ -272,6 +306,15 @@ function createSocketGame(io) {
             }
           );
           const game = await games.findOne({ _id: new ObjectId(gameId) });
+
+          // Check if one of the user is an AI, if no, then add achievements
+          if (
+            !game.players[0].startsWith("AI") &&
+            !game.players[1].startsWith("AI")
+          ) {
+            checkAndUnlockAchievement(game.players[1], "First Win");
+            checkAndUnlockAchievement(game.players[0], "First Loss");
+          }
           socket.emit("draw", game);
         } else {
           const games = db.collection("games");
@@ -759,6 +802,8 @@ function createSocketGame(io) {
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
+
+      checkAndUnlockAchievement(data.username, "Rage Quitter");
     });
 
     socket.on("player2Leave", async (data) => {
@@ -775,6 +820,8 @@ function createSocketGame(io) {
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
+
+      checkAndUnlockAchievement(data.username, "Rage Quitter");
     });
 
     socket.on("leaveWhileSearching", async (data) => {

@@ -101,6 +101,11 @@ function displaySideNotification(notification) {
       declineFriendRequest(notification._id);
     });
     buttonContainer.appendChild(declineButton);
+  } else if (notification.type === "battleRequest") {
+    const notificationContent = document.createElement("div");
+    notificationContent.classList.add("notification-content");
+    notificationContent.textContent = notification.message;
+    sideNotification.appendChild(notificationContent);
   } else {
     const notificationContent = document.createElement("div");
     notificationContent.classList.add("notification-content");
