@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quanridor - Game</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+  </head>
+  <body>
+    <svg id="back-arrow" onclick="window.location.href = 'home.html';"></svg>
+    <div class="vertical-container" style="padding: 20px; ">
+      <a href="home.html"><div class="small-title"></div></a>
+      <span class="big-text">Achievements</span>
+      <div class="long-separator"></div>
+      <div class="horizontal-container" style="flex-wrap: wrap; justify-content: center;">
+        <div class="achievement-container">
+          <svg id="achievement1"></svg>
+          <div class="text">First Win</div>
+          <div class="small-text">Win your first online Quanridor game.</div>
+        </div>
+        <div class="achievement-container">
+          <svg id="achievement2"></svg>
+          <div class="text">First Lose</div>
+          <div class="small-text">Lose your first online Quanridor game.</div>
+        </div>
+        <div class="achievement-container">
+          <svg id="achievement3"></svg>
+          <div class="text">First Draw</div>
+          <div class="small-text">First draw on an online Quanridor game.</div>
+        </div>
+        <div class="achievement-container">
+          <svg id="achievement4"></svg>
+          <div class="text">Rage Quit</div>
+          <div class="small-text">Quit a game against an online opponent.</div>
+        </div>
+        <div class="achievement-container" id="to-achieve">
+          <svg id="unknown"></svg>
+        </div>
+        <div class="achievement-container" id="to-achieve">
+          <svg id="unknown"></svg>
+        </div>
+        <div class="achievement-container" id="to-achieve">
+          <svg id="unknown"></svg>
+        </div>
+        <div class="achievement-container" id="to-achieve">
+          <svg id="unknown"></svg>
+      </div>
+
+    <script src="js/auto-redirect-if-not-logged.js"></script>
+  </body>
+</html>
