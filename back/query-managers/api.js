@@ -20,13 +20,13 @@ const MAX_REQUESTS_PER_TEN_MINUTES = 100000; // Cuz I badly optimized friend-lis
 
 function addCors(
   response,
-  methods = ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
+  methods = ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]
 ) {
   response.setHeader("Access-Control-Allow-Origin", "*"); // TODO: REPLACE WITH FRONTEND URL WHEN DEPLOYED
   response.setHeader("Access-Control-Allow-Methods", methods.join(", "));
   response.setHeader(
     "Access-Control-Allow-Headers",
-    "X-Requested-With, Content-Type, Authorization",
+    "X-Requested-With, Content-Type, Authorization"
   );
   response.setHeader("Access-Control-Allow-Credentials", "true");
 }
@@ -66,7 +66,7 @@ async function manageRequest(request, response) {
         response.end(
           JSON.stringify({
             message: "You need to be authenticated to access this endpoint",
-          }),
+          })
         );
       }
     } else {
@@ -74,7 +74,7 @@ async function manageRequest(request, response) {
       if (!decodedToken) {
         response.writeHead(403, { "Content-Type": "application/json" });
         response.end(
-          JSON.stringify({ message: "Invalid token (maybe it has expired?)" }),
+          JSON.stringify({ message: "Invalid token (maybe it has expired?)" })
         );
 
         return;
@@ -123,6 +123,14 @@ async function manageRequest(request, response) {
         handleFriendRequestAccept(request, response, decodedToken);
       }
 
+      // Achievements
+      else if (
+        normalizedPath === `${apiPath}/achievements` &&
+        request.method === "GET"
+      ) {
+        handleAchievementsGet(request, response, decodedToken);
+      }
+
       // Game
       else if (
         normalizedPath === `${apiPath}/game` &&
@@ -142,7 +150,7 @@ async function manageRequest(request, response) {
       } else {
         response.writeHead(404, { "Content-Type": "application/json" });
         response.end(
-          JSON.stringify({ message: `Endpoint ${normalizedPath} not found` }),
+          JSON.stringify({ message: `Endpoint ${normalizedPath} not found` })
         );
       }
     }
@@ -165,7 +173,7 @@ async function handleSignup(request, response) {
       if (username.length > 50 || password.length > 100) {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(
-          JSON.stringify({ message: "Username or password too long" }),
+          JSON.stringify({ message: "Username or password too long" })
         );
         return;
       }
@@ -176,7 +184,7 @@ async function handleSignup(request, response) {
         response.end(
           JSON.stringify({
             message: "Username cannot be in the form of 'AI' + number",
-          }),
+          })
         );
         return;
       }
@@ -263,7 +271,7 @@ async function handleLogin(request, response) {
         JSON.stringify({
           token: token,
           banned: user.banned === undefined ? false : user.banned,
-        }),
+        })
       );
     } catch (e) {
       response.writeHead(400, { "Content-Type": "application/json" });
@@ -321,7 +329,7 @@ async function handleUsersGet(request, response, decodedToken) {
             elo: otherUser.elo,
             friends: otherUser.friends,
             activity: otherUser.activity,
-          }),
+          })
         );
         return;
       }
@@ -335,7 +343,7 @@ async function handleUsersGet(request, response, decodedToken) {
           elo: user.elo,
           friends: user.friends,
           activity: user.activity,
-        }),
+        })
       );
     } catch (e) {
       console.error("Error in handleUsersGet:", e);
@@ -378,7 +386,7 @@ async function handleUserGet(request, response, decodedToken) {
         username: otherUser.username,
         elo: otherUser.elo,
         activity: otherUser.activity,
-      }),
+      })
     );
   } catch (e) {
     console.error("Error in handleUserGet:", e);
@@ -413,7 +421,7 @@ async function handleFriendRequestPost(request, response, decodedToken) {
       if (!currentUser || !friendUser) {
         response.writeHead(404, { "Content-Type": "application/json" });
         response.end(
-          JSON.stringify({ message: "User not found", specific: 0 }),
+          JSON.stringify({ message: "User not found", specific: 0 })
         );
         return;
       }
@@ -424,17 +432,17 @@ async function handleFriendRequestPost(request, response, decodedToken) {
           JSON.stringify({
             message: "Cannot add yourself as a friend",
             specific: 1,
-          }),
+          })
         );
         return;
       }
 
       // Vérifier si les utilisateurs sont amis
       const userFriendsAsStrings = currentUser.friends.map((id) =>
-        id.toString(),
+        id.toString()
       );
       const friendFriendsAsStrings = friendUser.friends.map((id) =>
-        id.toString(),
+        id.toString()
       );
 
       if (
@@ -443,7 +451,7 @@ async function handleFriendRequestPost(request, response, decodedToken) {
       ) {
         response.writeHead(400, { "Content-Type": "application/json" });
         response.end(
-          JSON.stringify({ message: "Already friends", specific: 2 }),
+          JSON.stringify({ message: "Already friends", specific: 2 })
         );
         return;
       }
@@ -461,7 +469,7 @@ async function handleFriendRequestPost(request, response, decodedToken) {
           JSON.stringify({
             message: "Friend request already sent",
             specific: 3,
-          }),
+          })
         );
         return;
       }
@@ -519,7 +527,7 @@ async function handleNotificationsGet(request, response, decodedToken) {
     if (!response.headersSent) {
       response.writeHead(400, { "Content-Type": "application/json" });
       response.end(
-        JSON.stringify({ message: "Failed to retrieve notifications" }),
+        JSON.stringify({ message: "Failed to retrieve notifications" })
       );
     }
   }
@@ -556,7 +564,7 @@ async function handleUnreadMessagesCount(request, response, decodedToken) {
     if (!response.headersSent) {
       response.writeHead(400, { "Content-Type": "application/json" });
       response.end(
-        JSON.stringify({ message: "Failed to retrieve unread messages count" }),
+        JSON.stringify({ message: "Failed to retrieve unread messages count" })
       );
     }
   }
@@ -583,7 +591,7 @@ async function handleMarkMessagesAsRead(request, response, decodedToken) {
 
     await messages.updateMany(
       { from: new ObjectId(friendId), to: user._id, read: false },
-      { $set: { read: true } },
+      { $set: { read: true } }
     );
 
     response.writeHead(200, { "Content-Type": "application/json" });
@@ -592,7 +600,7 @@ async function handleMarkMessagesAsRead(request, response, decodedToken) {
     console.error("Error in handleMarkMessagesAsRead:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(
-      JSON.stringify({ message: "Failed to mark messages as read" }),
+      JSON.stringify({ message: "Failed to mark messages as read" })
     );
   }
 }
@@ -636,7 +644,7 @@ async function handleNotificationDelete(request, response, decodedToken) {
     console.error("Error in handleNotificationDelete:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(
-      JSON.stringify({ message: "Failed to decline friend request" }),
+      JSON.stringify({ message: "Failed to decline friend request" })
     );
   }
 }
@@ -659,7 +667,7 @@ async function handleNotificationsMarkAsRead(request, response, decodedToken) {
 
     await notifications.updateMany(
       { to: user._id, read: false },
-      { $set: { read: true } },
+      { $set: { read: true } }
     );
 
     response.writeHead(200, { "Content-Type": "application/json" });
@@ -669,7 +677,7 @@ async function handleNotificationsMarkAsRead(request, response, decodedToken) {
     if (!response.headersSent) {
       response.writeHead(400, { "Content-Type": "application/json" });
       response.end(
-        JSON.stringify({ message: "Failed to mark notifications as read" }),
+        JSON.stringify({ message: "Failed to mark notifications as read" })
       );
     }
   }
@@ -707,11 +715,11 @@ async function handleFriendRequestAccept(request, response, decodedToken) {
 
     await users.updateOne(
       { _id: currentUser._id },
-      { $addToSet: { friends: friendUser._id } },
+      { $addToSet: { friends: friendUser._id } }
     );
     await users.updateOne(
       { _id: friendUser._id },
-      { $addToSet: { friends: currentUser._id } },
+      { $addToSet: { friends: currentUser._id } }
     );
 
     await notifications.deleteOne({ _id: notification._id });
@@ -722,7 +730,7 @@ async function handleFriendRequestAccept(request, response, decodedToken) {
     console.error("Error in handleFriendRequestAccept:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(
-      JSON.stringify({ message: "Failed to accept friend request" }),
+      JSON.stringify({ message: "Failed to accept friend request" })
     );
   }
 }
@@ -769,11 +777,11 @@ async function handleFriendDelete(request, response, decodedToken) {
     // Supprimer les utilisateurs de leurs listes d'amis respectives
     await users.updateOne(
       { _id: user._id },
-      { $pull: { friends: new ObjectId(friendId) } },
+      { $pull: { friends: new ObjectId(friendId) } }
     );
     await users.updateOne(
       { _id: new ObjectId(friendId) },
-      { $pull: { friends: user._id } },
+      { $pull: { friends: user._id } }
     );
 
     response.writeHead(200, { "Content-Type": "application/json" });
@@ -802,7 +810,7 @@ async function handleGameGet(request, response, decodedToken) {
     ) {
       response.writeHead(400, { "Content-Type": "application/json" });
       response.end(
-        JSON.stringify({ message: "Invalid 'withStatus' query parameter" }),
+        JSON.stringify({ message: "Invalid 'withStatus' query parameter" })
       );
       return;
     }
@@ -846,12 +854,12 @@ async function handleGameGet(request, response, decodedToken) {
       if (withStatus) {
         queryResult = await games.findOne(
           { author: user.username, status: withStatus },
-          { sort: { date: -1 } },
+          { sort: { date: -1 } }
         );
       } else {
         queryResult = await games.findOne(
           { author: user.username },
-          { sort: { date: -1 } },
+          { sort: { date: -1 } }
         );
       }
     }
@@ -860,7 +868,7 @@ async function handleGameGet(request, response, decodedToken) {
       console.log("No games found for user " + username);
       response.writeHead(404, { "Content-Type": "application/json" });
       response.end(
-        JSON.stringify({ message: `No games found for user ${username}` }),
+        JSON.stringify({ message: `No games found for user ${username}` })
       );
       return;
     }
@@ -871,6 +879,34 @@ async function handleGameGet(request, response, decodedToken) {
     console.error("Error in handleGameGet:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(JSON.stringify({ message: "Failed to retrieve games" }));
+  }
+}
+
+// ------------------------------ ACHIEVEMENTS HANDLING ------------------------------
+
+async function handleAchievementsGet(request, response, decodedToken) {
+  addCors(response, ["GET"]);
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+    const username = decodedToken.username;
+
+    const user = await users.findOne({ username });
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify(user.achievements));
+  } catch (e) {
+    console.error("Error in handleAchievementsGet:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({ message: "Failed to retrieve achievements" })
+    );
   }
 }
 
@@ -909,7 +945,7 @@ function rateLimit(request, response, next) {
       response.end(
         JSON.stringify({
           message: "Too many requests, please try again later.",
-        }),
+        })
       );
     }
   }
@@ -935,7 +971,7 @@ async function startServer() {
 
     server.listen(PORT, () => {
       console.log(
-        `Server listening on port ${PORT} at http://localhost:${PORT}`,
+        `Server listening on port ${PORT} at http://localhost:${PORT}`
       );
       console.log(`Frontend accessible at http://localhost:8000`);
     });
