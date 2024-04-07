@@ -803,7 +803,7 @@ function createSocketGame(io) {
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
 
-      checkAndUnlockAchievement(data.username, "Rage Quitter");
+      checkAndUnlockAchievement(data.username, "Rage Quit");
     });
 
     socket.on("player2Leave", async (data) => {
@@ -821,7 +821,7 @@ function createSocketGame(io) {
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
 
-      checkAndUnlockAchievement(data.username, "Rage Quitter");
+      checkAndUnlockAchievement(data.username, "Rage Quit");
     });
 
     socket.on("leaveWhileSearching", async (data) => {
