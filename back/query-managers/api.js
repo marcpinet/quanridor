@@ -891,8 +891,8 @@ async function handleAchievementsGet(request, response, decodedToken) {
     const db = getDB();
     const users = db.collection("users");
     const username = decodedToken.username;
-
     const user = await users.findOne({ username });
+
     if (!user) {
       response.writeHead(401, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ message: "User not authenticated" }));
@@ -900,13 +900,12 @@ async function handleAchievementsGet(request, response, decodedToken) {
     }
 
     response.writeHead(200, { "Content-Type": "application/json" });
-    response.end(JSON.stringify(user.achievements));
+    response.end(JSON.stringify({ achievements: user.achievements || [] }));
+    console.log("Achievements:", user.achievements);
   } catch (e) {
     console.error("Error in handleAchievementsGet:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
-    response.end(
-      JSON.stringify({ message: "Failed to retrieve achievements" })
-    );
+    response.end(JSON.stringify({ message: "Failed to retrieve achievements" }));
   }
 }
 

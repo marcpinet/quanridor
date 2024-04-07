@@ -1491,6 +1491,12 @@ svg#close-arrow {
   background: url("../assets/rage-quit.svg") center/100px no-repeat;
 }
 
+#achievement5{
+  width: 100px;
+  height: 100px;
+  background: url("../assets/brain.svg") center/100px no-repeat;
+}
+
 #to-achieve{
   background-color: rgba(70, 80, 168, 0.164);
   pointer-events: none;
