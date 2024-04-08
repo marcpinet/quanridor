@@ -71,7 +71,7 @@
             <div class="friend-footer">
               <div class="horizontal-small-container">
                 <svg id="unfriend"></svg> <svg id="chat"></svg>
-                <svg id="play"></svg>
+                <a id="play-button"><svg id="play"></svg></a>
               </div>
             </div>
           </div>
@@ -141,7 +141,17 @@
       </p>
     </div>-->
     <div id="side-notification">
-      <!-- Les side notifications seront insérées ici dynamiquement -->
+      <!-- Les side notifications seront insérées ici dynamiquement
+      <div class="notification-container">
+        <div class="notification">Game request</div>
+        <div class="vertical-small-container">
+          <span class="text">Friend's Name</span>
+          <div class="horizontal-small-container">
+            <button class="choice-button" id="accept-button">Play</button>
+            <button class="choice-button" id="decline-button">Decline</button>
+          </div>
+        </div>
+      </div> -->
     </div>
     <script src="js/socket.io.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>

@@ -27,6 +27,17 @@ const addFriendButton = document.getElementById("add-friend");
 
 let notificationCount = 0;
 
+socket2.on("connect", async () => {
+  console.log("Connected to server.");
+  const token = localStorage.getItem("token");
+  socket2.emit("setSocket", { token: token, socketId: socket2.id });
+  console.log(socket2.id);
+});
+
+socket2.on("redirectToGame", (roomId) => {
+  window.location.href = `online-game.html?roomId=${roomId}`;
+});
+
 function incrementNotificationCount() {
   notificationCount++;
   updateNotificationDisplay();
@@ -102,10 +113,37 @@ function displaySideNotification(notification) {
     });
     buttonContainer.appendChild(declineButton);
   } else if (notification.type === "battleRequest") {
-    const notificationContent = document.createElement("div");
-    notificationContent.classList.add("notification-content");
-    notificationContent.textContent = notification.message;
-    sideNotification.appendChild(notificationContent);
+    const verticalContainer = document.createElement("div");
+    verticalContainer.classList.add("vertical-small-container");
+    sideNotification.appendChild(verticalContainer);
+
+    const friendName = document.createElement("span");
+    friendName.classList.add("text");
+    friendName.id = "friend-name";
+    friendName.textContent = notification.message.split(" ")[0];
+    verticalContainer.appendChild(friendName);
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("horizontal-small-container");
+    verticalContainer.appendChild(buttonContainer);
+
+    const acceptButton = document.createElement("button");
+    acceptButton.classList.add("choice-button");
+    acceptButton.id = "accept-button";
+    acceptButton.textContent = "Play";
+    acceptButton.addEventListener("click", () => {
+      acceptBattleRequest(notification._id);
+    });
+    buttonContainer.appendChild(acceptButton);
+
+    const declineButton = document.createElement("button");
+    declineButton.classList.add("choice-button");
+    declineButton.id = "decline-button";
+    declineButton.textContent = "Decline";
+    declineButton.addEventListener("click", () => {
+      declineBattleRequest(notification._id);
+    });
+    buttonContainer.appendChild(declineButton);
   } else {
     const notificationContent = document.createElement("div");
     notificationContent.classList.add("notification-content");

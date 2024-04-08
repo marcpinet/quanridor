@@ -87,6 +87,11 @@ async function manageRequest(request, response) {
       ) {
         handleNotificationsGet(request, response, decodedToken);
       } else if (
+        normalizedPath.startsWith(`${apiPath}/notifications/`) &&
+        request.method === "GET"
+      ) {
+        handleNotificationGet(request, response, decodedToken);
+      } else if (
         normalizedPath === `${apiPath}/notifications/markAsRead` &&
         request.method === "PUT"
       ) {
@@ -121,6 +126,16 @@ async function manageRequest(request, response) {
         request.method === "PUT"
       ) {
         handleFriendRequestAccept(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/battleRequest` &&
+        request.method === "POST"
+      ) {
+        handleBattleRequestPost(request, response, decodedToken);
+      } else if (
+        normalizedPath.startsWith(`${apiPath}/battleRequest/`) &&
+        request.method === "PUT"
+      ) {
+        handleBattleRequestAccept(request, response, decodedToken);
       }
 
       // Achievements
@@ -137,6 +152,12 @@ async function manageRequest(request, response) {
         request.method === "GET"
       ) {
         handleGameGet(request, response, decodedToken);
+      } else if (
+        normalizedPath === `${apiPath}/users` &&
+        request.method === "GET" &&
+        parsedUrl.query.username
+      ) {
+        handleUserWithUsernameGet(request, response, decodedToken);
       } else if (
         normalizedPath === `${apiPath}/users` &&
         request.method === "GET"
@@ -213,6 +234,7 @@ async function handleSignup(request, response) {
         activity: "inactive",
         avatar: null,
         achievements: [],
+        socketId: null,
       });
 
       // Get secret from secrets collection in MongoDB where the field "jwt" is the secret
@@ -329,6 +351,7 @@ async function handleUsersGet(request, response, decodedToken) {
             elo: otherUser.elo,
             friends: otherUser.friends,
             activity: otherUser.activity,
+            socketId: otherUser.socketId,
           })
         );
         return;
@@ -343,6 +366,7 @@ async function handleUsersGet(request, response, decodedToken) {
           elo: user.elo,
           friends: user.friends,
           activity: user.activity,
+          socketId: user.socketId,
         })
       );
     } catch (e) {
@@ -386,10 +410,54 @@ async function handleUserGet(request, response, decodedToken) {
         username: otherUser.username,
         elo: otherUser.elo,
         activity: otherUser.activity,
+        socketId: otherUser.socketId,
       })
     );
   } catch (e) {
     console.error("Error in handleUserGet:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Failed to retrieve user" }));
+  }
+}
+
+async function handleUserWithUsernameGet(request, response, decodedToken) {
+  console.log("OUI C MOI");
+  addCors(response, ["GET"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const username = parsedUrl.query.username;
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+    const authenticatedUser = await users.findOne({ username: username });
+
+    if (!authenticatedUser) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const otherUser = await users.findOne({ username });
+
+    if (!otherUser) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not found" }));
+      return;
+    }
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(
+      JSON.stringify({
+        _id: otherUser._id.toString(),
+        username: otherUser.username,
+        elo: otherUser.elo,
+        activity: otherUser.activity,
+        socketId: otherUser.socketId,
+      }),
+    );
+  } catch (e) {
+    console.error("Error in handleUserWithUsernameGet:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(JSON.stringify({ message: "Failed to retrieve user" }));
   }
@@ -533,6 +601,49 @@ async function handleNotificationsGet(request, response, decodedToken) {
   }
 }
 
+
+async function handleNotificationGet(request, response, decodedToken) {
+  addCors(response, ["GET"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const notificationId = parsedUrl.pathname.split("/").pop();
+
+  try {
+    const db = getDB();
+    const notifications = db.collection("notifications");
+    const username = decodedToken.username;
+    const users = db.collection("users");
+    const user = await users.findOne({ username });
+
+    if (!user) {
+      response.writeHead(401, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not authenticated" }));
+      return;
+    }
+
+    const notification = await notifications.findOne({
+      _id: new ObjectId(notificationId),
+      to: user._id,
+    });
+
+    if (!notification) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Notification not found" }));
+      return;
+    }
+
+    response.end(JSON.stringify(notification));
+  } catch (e) {
+    console.error("Error in handleNotificationGet:", e);
+    if (!response.headersSent) {
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(
+        JSON.stringify({ message: "Failed to retrieve notification" }),
+      );
+    }
+  }
+}
+
 async function handleUnreadMessagesCount(request, response, decodedToken) {
   addCors(response, ["GET"]);
 
@@ -611,6 +722,12 @@ async function handleNotificationDelete(request, response, decodedToken) {
   const parsedUrl = url.parse(request.url, true);
   const notificationId = parsedUrl.pathname.split("/").pop();
 
+  let body = "";
+
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
   try {
     const db = getDB();
     const notifications = db.collection("notifications");
@@ -624,10 +741,12 @@ async function handleNotificationDelete(request, response, decodedToken) {
       return;
     }
 
+    const notificationType = JSON.parse(body).type;
+
     const notification = await notifications.findOne({
       _id: new ObjectId(notificationId),
       to: user._id,
-      type: "friendRequest",
+      type: notificationType,
     });
 
     if (!notification) {
@@ -790,6 +909,112 @@ async function handleFriendDelete(request, response, decodedToken) {
     console.error("Error in handleFriendDelete:", e);
     response.writeHead(400, { "Content-Type": "application/json" });
     response.end(JSON.stringify({ message: "Failed to remove friend" }));
+  }
+}
+
+// ------------------------------ BATTLE REQUEST HANDLING ------------------------------
+
+async function handleBattleRequestPost(request, response, decodedToken) {
+  addCors(response, ["POST"]);
+
+  let body = "";
+  request.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  request.on("end", async () => {
+    try {
+      const { friendId } = JSON.parse(body);
+
+      const db = getDB();
+      const users = db.collection("users");
+      const notifications = db.collection("notifications");
+
+      const currentUser = await users.findOne({
+        username: decodedToken.username,
+      });
+      const friendUser = await users.findOne({ _id: new ObjectId(friendId) });
+
+      if (!currentUser || !friendUser) {
+        response.writeHead(404, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "User not found" }));
+        return;
+      }
+
+      // Check if an existing battle request is already sent
+      const existingNotification = await notifications.findOne({
+        from: currentUser._id,
+        to: friendUser._id,
+        type: "battleRequest",
+      });
+
+      if (existingNotification) {
+        response.writeHead(400, { "Content-Type": "application/json" });
+        response.end(JSON.stringify({ message: "Battle request already sent" }));
+        return;
+      }
+
+      const notification = {
+        title: "Battle Request",
+        message: `${currentUser.username} sent you a battle request`,
+        from: currentUser._id,
+        to: friendUser._id,
+        read: false,
+        type: "battleRequest",
+      };
+
+      await notifications.insertOne(notification);
+
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Battle request sent" }));
+    } catch (e) {
+      console.error("Error in handleBattleRequestPost:", e);
+      response.writeHead(400, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Invalid JSON" }));
+    }
+  });
+}
+
+async function handleBattleRequestAccept(request, response, decodedToken) {
+  addCors(response, ["PUT"]);
+
+  const parsedUrl = url.parse(request.url, true);
+  const notificationId = parsedUrl.pathname.split("/").pop();
+
+  try {
+    const db = getDB();
+    const users = db.collection("users");
+    const notifications = db.collection("notifications");
+
+    const notification = await notifications.findOne({
+      _id: new ObjectId(notificationId),
+    });
+
+    if (!notification) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "Notification not found" }));
+      return;
+    }
+
+    const currentUser = await users.findOne({ _id: notification.to });
+    const friendUser = await users.findOne({ _id: notification.from });
+
+    if (!currentUser || !friendUser) {
+      response.writeHead(404, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({ message: "User not found" }));
+      return;
+    }
+
+    // IDK WHAT TO DO HERE
+
+    await notifications.deleteOne({ _id: notification._id });
+
+    response.writeHead(200, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Battle request accepted", roomId }));
+  } catch (e) {
+    console.error("Error in handleBattleRequestAccept:", e);
+    response.writeHead(400, { "Content-Type": "application/json" });
+    response.end(JSON.stringify({ message: "Failed to accept battle request" }));
   }
 }
 

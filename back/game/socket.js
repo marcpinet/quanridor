@@ -104,6 +104,8 @@ function checkAndUnlockAchievement(userId, achievement) {
 function createSocketGame(io) {
   let waitingPlayer = null;
   const rooms = {};
+  let waitingPlayerForBattle = null;
+  const battleRooms = {};
   const gameNamespace = io.of("/api/game");
   gameNamespace.use(rateLimitSocket).on("connection", (socket) => {
     socket.on("createGameAI", async (data) => {
@@ -160,7 +162,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "playing" } }
+        { $set: { activity: "playing" } },
       );
     });
 
@@ -464,6 +466,73 @@ function createSocketGame(io) {
     });
 
     /*----------------------------------------------*/
+
+    socket.on("setSocket", async (data) => {
+      const db = getDB();
+      const users = db.collection("users");
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+      await users.updateOne(
+        { username: decoded.username },
+        { $set: { socketId: data.socketId } },
+      );
+      const user = await users.findOne({ username: decoded.username });
+      console.log(user);
+    });
+
+    socket.on("redirectToGame", (data) => {
+      gameNamespace.to(data.friendSocketId).emit("redirectToGame", data.roomId);
+    });
+
+    socket.on("joinRoom", async (data) => {
+      console.log("search game");
+      const decoded = await verifyToken(data.token);
+      if (!decoded) {
+        socket.emit("error", "Invalid token");
+        return;
+      }
+
+      const db = getDB();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ username: decoded.username });
+      if (!user) {
+        socket.emit("error", "User not found");
+        return;
+      }
+
+      if (waitingPlayerForBattle) {
+        console.log("find game");
+        const roomId = data.roomId;
+        const socketPlayerRole = Math.random() < 0.5 ? 1 : 2;
+
+        socket.join(roomId);
+        socket.emit("assignedPlayer", socketPlayerRole);
+
+        waitingPlayerForBattle.join(roomId);
+        waitingPlayerForBattle.emit(
+          "assignedPlayer",
+          (socketPlayerRole % 2) + 1,
+        );
+
+        rooms[roomId] = [null, null];
+        gameNamespace.to(roomId).emit("startGame", roomId);
+
+        waitingPlayerForBattle = null;
+      } else {
+        waitingPlayerForBattle = socket;
+        socket.emit("waiting");
+      }
+
+      let userId = user._id;
+      await users.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { activity: "playing" } },
+      );
+    });
 
     socket.on("searchGame", async (data) => {
       console.log("search game");
