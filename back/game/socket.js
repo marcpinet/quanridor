@@ -667,15 +667,15 @@ function createSocketGame(io) {
     });
 
     socket.on("movePlayer1", (data) => {
-      gameNamespace.to(data.roomId).emit("updateAfterPayer1Move", data.coord);
+      gameNamespace.to(data.roomId).emit("updateAfterPlayer1Move", data.coord);
     });
 
     socket.on("movePlayer2", (data) => {
-      gameNamespace.to(data.roomId).emit("updateAfterPayer2Move", data.coord);
+      gameNamespace.to(data.roomId).emit("updateAfterPlayer2Move", data.coord);
     });
 
     socket.on("player1Wall", (data) => {
-      gameNamespace.to(data.roomId).emit("updateAfterPayer1Wall", data.wall);
+      gameNamespace.to(data.roomId).emit("updateAfterPlayer1Wall", data.wall);
 
       // Check if player1 has no more walls
       if (rooms[data.roomId][0].p1walls === 0) {
@@ -687,7 +687,7 @@ function createSocketGame(io) {
     });
 
     socket.on("player2Wall", (data) => {
-      gameNamespace.to(data.roomId).emit("updateAfterPayer2Wall", data.wall);
+      gameNamespace.to(data.roomId).emit("updateAfterPlayer2Wall", data.wall);
 
       // Check if player2 has no more walls
       if (rooms[data.roomId][1].p2walls === 0) {
@@ -699,7 +699,6 @@ function createSocketGame(io) {
     });
 
     socket.on("lastMoveToPlay", (data) => {
-      console.log("caca");
       gameNamespace.to(data.roomId).emit("player2LastMove", data.coord);
     });
 
