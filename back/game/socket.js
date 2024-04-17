@@ -55,7 +55,7 @@ function checkAndUnlockAchievement(userId, achievement) {
           users
             .updateOne(
               { _id: new ObjectId(userId) },
-              { $push: { achievements: achievement } }
+              { $push: { achievements: achievement } },
             )
             .then(() => {
               const notifications = db.collection("notifications");
@@ -77,7 +77,7 @@ function checkAndUnlockAchievement(userId, achievement) {
             users
               .updateOne(
                 { username: userId },
-                { $push: { achievements: achievement } }
+                { $push: { achievements: achievement } },
               )
               .then(() => {
                 const notifications = db.collection("notifications");
@@ -208,7 +208,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "playing" } }
+        { $set: { activity: "playing" } },
       );
     });
 
@@ -220,7 +220,7 @@ function createSocketGame(io) {
         gameState.playerspositions[0],
         gameState.playerspositions[1],
         gameState.vwalls,
-        gameState.hwalls
+        gameState.hwalls,
       );
       if (
         isLegal(
@@ -229,7 +229,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         ) ||
         (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
       ) {
@@ -272,7 +272,7 @@ function createSocketGame(io) {
 
         let res = await games.updateOne(
           { _id: new ObjectId(gameId) },
-          { $set: gameState }
+          { $set: gameState },
         );
 
         socket.emit("aiLastMove", newCoord);
@@ -293,7 +293,7 @@ function createSocketGame(io) {
 
         let res1 = await games.updateOne(
           { _id: new ObjectId(gameId) },
-          { $set: gameState }
+          { $set: gameState },
         );
 
         if (checkWin(gameState, 2)) {
@@ -305,7 +305,7 @@ function createSocketGame(io) {
                 status: 2,
                 winner: "draw",
               },
-            }
+            },
           );
           const game = await games.findOne({ _id: new ObjectId(gameId) });
 
@@ -327,7 +327,7 @@ function createSocketGame(io) {
                 status: 2,
                 winner: gameState.players[0],
               },
-            }
+            },
           );
 
           const game = await games.findOne({ _id: new ObjectId(gameId) });
@@ -354,7 +354,7 @@ function createSocketGame(io) {
 
         let res1 = await games.updateOne(
           { _id: new ObjectId(gameId) },
-          { $set: gameState }
+          { $set: gameState },
         );
 
         let res2 = await games.updateOne(
@@ -364,7 +364,7 @@ function createSocketGame(io) {
               status: 2,
               winner: gameState.players[1],
             },
-          }
+          },
         );
 
         const game = await games.findOne({ _id: new ObjectId(gameId) });
@@ -403,7 +403,7 @@ function createSocketGame(io) {
 
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
-        { $set: gameState }
+        { $set: gameState },
       );
 
       socket.emit("aiMove", newCoord);
@@ -423,7 +423,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         )
       ) {
         socket.emit("illegal");
@@ -448,7 +448,7 @@ function createSocketGame(io) {
 
       let res = await games.updateOne(
         { _id: new ObjectId(gameId) },
-        { $set: gameState }
+        { $set: gameState },
       );
 
       let username = gameState.players[0];
@@ -458,11 +458,30 @@ function createSocketGame(io) {
 
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "inactive" } }
+        { $set: { activity: "inactive" } },
       );
 
       socket.emit("leaveSuccess");
       socket.disconnect();
+    });
+
+    socket.on("updateGameState", async (data) => {
+      const gameId = data.gameId;
+      const gameState = data.gameState;
+      const db = getDB();
+      const games = db.collection("games");
+
+      // Check if the game is over
+      const game = await games.findOne({ _id: new ObjectId(gameId) });
+      if (game.status === 2) {
+        socket.emit("gameOver", game);
+        return;
+      }
+
+      let res = await games.updateOne(
+        { _id: new ObjectId(gameId) },
+        { $set: gameState },
+      );
     });
 
     /*----------------------------------------------*/
@@ -574,7 +593,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "playing" } }
+        { $set: { activity: "playing" } },
       );
     });
 
@@ -662,7 +681,7 @@ function createSocketGame(io) {
       if (rooms[data.roomId][0].p1walls === 0) {
         checkAndUnlockAchievement(
           rooms[data.roomId][0].username,
-          "Walls Master"
+          "Walls Master",
         );
       }
     });
@@ -674,7 +693,7 @@ function createSocketGame(io) {
       if (rooms[data.roomId][1].p2walls === 0) {
         checkAndUnlockAchievement(
           rooms[data.roomId][1].username,
-          "Walls Master"
+          "Walls Master",
         );
       }
     });
@@ -716,7 +735,7 @@ function createSocketGame(io) {
       let possibleMoves = getPossibleMoves(
         gameState,
         gameState.playerspositions[1],
-        2
+        2,
       );
       let possibleWalls = getPossibleWalls(gameState, 2);
       possibleMoves = possibleMoves.concat(possibleWalls);
@@ -738,7 +757,7 @@ function createSocketGame(io) {
       let possibleMoves = getPossibleMoves(
         gameState,
         gameState.playerspositions[0],
-        1
+        1,
       );
       let possibleWalls = getPossibleWalls(gameState, 1);
       possibleMoves = possibleMoves.concat(possibleWalls);
@@ -761,7 +780,7 @@ function createSocketGame(io) {
         gameState.playerspositions[0],
         gameState.playerspositions[1],
         gameState.vwalls,
-        gameState.hwalls
+        gameState.hwalls,
       );
       if (
         isLegal(
@@ -770,7 +789,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         ) ||
         (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
       ) {
@@ -789,7 +808,7 @@ function createSocketGame(io) {
         gameState.playerspositions[0],
         gameState.playerspositions[1],
         gameState.vwalls,
-        gameState.hwalls
+        gameState.hwalls,
       );
       if (
         isLegal(
@@ -798,7 +817,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         ) ||
         (jump_coord[0] == newCoord[0] && jump_coord[1] == newCoord[1])
       ) {
@@ -823,7 +842,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         )
       ) {
         gameNamespace.to(data.roomId).emit("illegal");
@@ -847,7 +866,7 @@ function createSocketGame(io) {
           gameState.vwalls,
           gameState.hwalls,
           gameState.playerspositions[0],
-          gameState.playerspositions[1]
+          gameState.playerspositions[1],
         )
       ) {
         gameNamespace.to(data.roomId).emit("illegal");
@@ -867,7 +886,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "inactive" } }
+        { $set: { activity: "inactive" } },
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
@@ -885,7 +904,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "inactive" } }
+        { $set: { activity: "inactive" } },
       );
       gameNamespace.to(data.roomId).emit("opponentLeave");
       socket.disconnect();
@@ -908,7 +927,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { activity: "inactive" } }
+        { $set: { activity: "inactive" } },
       );
 
       socket.emit("leaveSuccess");
@@ -923,7 +942,7 @@ function createSocketGame(io) {
       let userId = user._id;
       await users.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { elo: data.newElo } }
+        { $set: { elo: data.newElo } },
       );
     });
   });

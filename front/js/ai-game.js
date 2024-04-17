@@ -564,7 +564,10 @@ function getMouseCoordOnCanvas(event) {
     playing = true;
     drawBoard();
     canvas.removeEventListener("mousemove", handleMouseOverCanvas);
-    socket.emit("leave", { gameId: gameId, gameState: getGameState() });
+    socket.emit("updateGameState", {
+      gameId: gameId,
+      gameState: getGameState(),
+    });
     return;
   }
   if (!playing) return;
