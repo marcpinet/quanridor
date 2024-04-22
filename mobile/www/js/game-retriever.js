@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to retrieve games and update the UI
   async function retrieveGamesInProgress() {
     try {
-      const baseUrl = window.location.origin;
+      const baseUrl = "https://quanridor.ps8.academy";
       const response = await fetch(
         `${baseUrl}/api/game?multiple=true&withStatus=1`,
         {
