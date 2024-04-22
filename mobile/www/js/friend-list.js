@@ -1,4 +1,5 @@
 // -------------------------- FRIENDS --------------------------
+
 const socket2 = io("/api/game");
 const friendIdToUsername = {};
 let currentSelectedFriendId = null;

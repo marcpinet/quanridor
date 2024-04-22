@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quanridor - Leaderboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito&display=swap" />
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+<body>
+  <svg id="back-arrow" onclick="window.location.href = 'home.html';"></svg>
+  <div class="leaderboard-container">
+    <div class="leaderboard-column">
+      <div class="text-title">Global Leaderboard</div>
+      <div class="leaderboard" id="global-leaderboard"></div>
+    </div>
+    <div class="leaderboard-column">
+      <div class="text-title">Friends Leaderboard</div>
+      <div class="leaderboard" id="friends-leaderboard"></div>
+    </div>
+  </div>
+  <script src="js/auto-redirect-if-not-logged.js"></script>
+  <script src="js/leaderboard.js" type="module"></script>
+</body>
+</html>
