@@ -16,6 +16,7 @@
     "cordova-android": "^12.0.1",
     "cordova-plugin-device": "^2.1.0",
     "cordova-plugin-file": "^8.0.1",
+    "cordova-plugin-file-transfer": "^2.0.0",
     "cordova-plugin-inappbrowser": "^6.0.0",
     "cordova-plugin-secure-storage": "^3.0.2"
   },
@@ -25,11 +26,10 @@
     ],
     "plugins": {
       "cordova-plugin-device": {},
-      "cordova-plugin-file": {
-        "ANDROIDX_WEBKIT_VERSION": "1.4.0"
-      },
+      "cordova-plugin-file": {},
       "cordova-plugin-secure-storage": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-file-transfer": {}
     }
   }
 }
