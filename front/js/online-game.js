@@ -735,16 +735,32 @@ socket.on("player2MoveIsLegal", (data) => {
 
 socket.on("player2LastMove", (data) => {
   lastMove = true;
+  p1Timer.textContent = `Timer: ${timePerMove} sec`;
+  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  timeRemaining = timePerMove;
   playing = !playing;
+  clearInterval(timerInterval);
   if (player == 2) {
     updateFogOfWar(1);
     movePlayer(1, data);
     updateFogOfWarReverse(1);
+
+    timer = setTimeout(() => {
+      clearTimeout(timer);
+      clearInterval(timerInterval);
+      clearTempWall();
+      drawBoard();
+      socket.emit("player1Win", {
+        roomId: roomId,
+      });
+    }, timePerMove * 1000);
   }
+
   drawBoard();
+  timerInterval = setInterval(updateTimer, 1000);
 });
 
-socket.on("updateAfterPayer1Move", (data) => {
+socket.on("updateAfterPlayer1Move", (data) => {
   p1Timer.textContent = `Timer: ${timePerMove} sec`;
   p2Timer.textContent = `Timer: ${timePerMove} sec`;
   timeRemaining = timePerMove;
@@ -771,7 +787,7 @@ socket.on("updateAfterPayer1Move", (data) => {
   timerInterval = setInterval(updateTimer, 1000);
 });
 
-socket.on("updateAfterPayer2Move", (data) => {
+socket.on("updateAfterPlayer2Move", (data) => {
   p1Timer.textContent = `Timer: ${timePerMove} sec`;
   p2Timer.textContent = `Timer: ${timePerMove} sec`;
   timeRemaining = timePerMove;
@@ -1065,7 +1081,7 @@ socket.on("player2WallIsLegal", (data) => {
   }
 });
 
-socket.on("updateAfterPayer1Wall", (data) => {
+socket.on("updateAfterPlayer1Wall", (data) => {
   p1Timer.textContent = `Timer: ${timePerMove} sec`;
   p2Timer.textContent = `Timer: ${timePerMove} sec`;
   timeRemaining = timePerMove;
@@ -1098,7 +1114,7 @@ socket.on("updateAfterPayer1Wall", (data) => {
   timerInterval = setInterval(updateTimer, 1000);
 });
 
-socket.on("updateAfterPayer2Wall", (data) => {
+socket.on("updateAfterPlayer2Wall", (data) => {
   p1Timer.textContent = `Timer: ${timePerMove} sec`;
   p2Timer.textContent = `Timer: ${timePerMove} sec`;
   timeRemaining = timePerMove;
