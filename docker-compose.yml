@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-      - ./front:/usr/src/app/front
+      - ./mobile/www:/usr/src/app/mobile/www
     depends_on:
       - db
     networks:

@@ -56,7 +56,7 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
    docker compose up --build
    ```
 
-4. Run the frontend by opening the [index.html](front/index.html) file in your browser.
+4. Run the frontend by opening the [index.html](mobile/www/index.html) file in your browser.
 
 5. **Play**!
 
