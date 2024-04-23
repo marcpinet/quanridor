@@ -34,7 +34,11 @@ const server = http.createServer(function (request, response) {
 });
 
 // We need to create a socket server to handle real-time communication.
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 createSocketGame(io);
 // For social
 createSocketSocial(io);
