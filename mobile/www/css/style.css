@@ -130,10 +130,6 @@ button.small-button {
     height 0.3s ease;
 }
 
-button.small-button:hover {
-  width: 200px;
-  height: 11vh;
-}
 
 .vertical-container {
   display: flex;
@@ -566,12 +562,12 @@ canvas {
   margin: 5px 5px;
   rotate: 15deg;
   border-radius: 5px;
-  transition: opacity 1s; /* Transition de l'opacité prenant 1 seconde */
+  transition: opacity 1s; /* Transition de l'opacitÃ© prenant 1 seconde */
   opacity: 1;
 }
 
 .transparent {
-  opacity: 0; /* Classe pour rendre le carré transparent */
+  opacity: 0; /* Classe pour rendre le carrÃ© transparent */
 }
 
 .timer {
@@ -1407,18 +1403,18 @@ canvas {
 
 #right-emoji,#left-emoji{
   display: block;
-  font-size: 50px;
+  font-size: 100px;
 }
 
 #right-dialogue,#left-dialogue{
   display: none;
   flex-direction: column;
   align-items: center;
-  font-size: 20px;
+  font-size: 32px;
   background-color: #ffffff;
   color: rgba(1,5,37,1);
   border-radius: 15px;
-  padding: 10px;
+  padding: 20px;
   width: fit-content;
   text-align: center;
   height: fit-content;
@@ -1507,4 +1503,49 @@ svg#close-arrow {
   width: 100px;
   height: 100px;
   background: url("../assets/unknown-achievement.svg") center/60px no-repeat;
+}
+
+.mute{
+  background: url("../assets/mute.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transform: scaleX(-1);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.unmute{
+  background: url("../assets/unmute.svg") center/50px no-repeat;
+  width: 50px;
+  height: 50px;
+  filter: none;
+  cursor: pointer;
+  transform: scaleX(-1);
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+button:disabled{
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.temporary-text{
+  display: none;
+  animation: fadeOut 3s;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
