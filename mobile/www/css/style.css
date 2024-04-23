@@ -1549,3 +1549,72 @@ button:disabled{
     opacity: 0;
   }
 }
+
+@media (max-width: 700px) {
+  .title {
+    display: flex;
+    background: url("../assets/quanridor-title.svg") center/contain no-repeat; /* Adjusted background-size */
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+  }
+  button {
+    box-shadow: 0px 15px 20px #111430;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+    color: #111430;
+    font-size: 38px;
+    border-radius: 38px;
+    width: 100%;
+    height: 70%;
+    border: none;
+  }
+
+  button.big-button{
+    font-size: 48px;
+    max-width: 35vh;
+    max-height: 25vh;
+  }
+
+  button.medium-button{
+    font-size: 32px;
+    max-width: 30vh;
+    max-height: 20vh;
+  }
+
+  #back-arrow{
+    display: none;
+  }
+
+  form{
+    display: flex; /* Set form to flex */
+    flex-direction: column; /* Align form items vertically */
+    align-items: center; /* Center form items horizontally */
+    justify-content: center; /* Center form items vertically */
+    height: 100%;
+  }
+
+  .bold-text{
+    text-shadow: 6px 6px 4px #111430;
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  input {
+    box-shadow: 0px 15px 10px #111430;
+    color: white;
+    font-family: "Nunito", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    border-radius: 15px;
+    width: 80%;
+    height: 40px;
+    border: none;
+    text-align: center;
+    margin-bottom: 6%;
+    margin-top: 2%;
+    background-color: #4650a8;
+    padding: 5px;
+  }
+}
