@@ -354,13 +354,11 @@ canvas {
   height: 10vh;
   cursor: pointer;
   padding: 50px;
-  transition:
-    width 0.3s ease,
-    height 0.3s ease;
+  transition: transform 0.3s ease; /* Transition uniquement pour la transformation */
 }
 
 #back-arrow:hover {
-  height: 12vh;
+  transform: scale(1.2); /* Mise à l'échelle de 20% au survol */
 }
 
 #home {
@@ -1497,4 +1495,98 @@ svg#close-arrow {
   width: 100px;
   height: 100px;
   background: url("../assets/unknown-achievement.svg") center/60px no-repeat;
+}
+
+.leaderboard-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Style des colonnes de classement */
+.leaderboard-column {
+  flex: 1;
+  margin: 15px;
+  margin-right: 20px;
+  width: 50%; /* Espacement entre les colonnes */
+  overflow-y: auto;
+  text-align: center;
+}
+
+/* Style du titre de la colonne */
+.leaderboard-title {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Style de la liste de classement */
+.leaderboard {
+  margin-top: 40px;
+  background-color: rgba(100, 100, 150, 0.75); /* Couleur de fond de la liste */
+  border-radius: 8px; /* Coins arrondis */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  padding: 20px;
+  height: 80%; /* Hauteur maximale de la liste avec défilement */
+  overflow-y: auto; /* Activation du défilement vertical si nécessaire */
+  text-align: center; /* Centrage horizontal des éléments */
+  overflow-y: auto;
+}
+
+/* Style des éléments de la liste */
+.leaderboard-item {
+  font-size: 20px;
+  margin-bottom: 10px; /* Espacement entre les éléments */
+  padding: 10px;
+  border-radius: 5px; /* Coins arrondis */
+  background-color: rgba(150, 150, 150, 0.75); /* Couleur de fond des éléments */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  display: block; /* Pour que les éléments soient alignés horizontalement */; /* Pour que les éléments soient alignés horizontalement */
+  font-family: 'Nunito', sans-serif; /* Police de caractères */
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Style pour le survol des éléments de la liste */
+.leaderboard-item:hover {
+  background-color: #5b818f; /* Changement de couleur au survol */
+}
+
+/* Style pour les éléments du classement avec un rang d'or */
+.leaderboard-item.gold {
+  background-color: gold; /* Or pour le rang 1 */
+  color: black; /* Couleur du texte */
+}
+
+/* Style pour les éléments du classement avec un rang d'argent */
+.leaderboard-item.silver {
+  background-color: silver; /* Argent pour le rang 2 */
+  color: black; /* Couleur du texte */
+}
+
+/* Style pour les éléments du classement avec un rang de bronze */
+.leaderboard-item.bronze {
+  background-color: #cd7f32; /* Bronze pour le rang 3 */
+  color: black; /* Couleur du texte */
+}
+
+
+.leaderboard-item.gold:hover {
+  transform: scale(1.1); /* Mise à l'échelle de 1.1 */
+  transition: transform 0.3s ease;
+}
+
+/* Style pour le survol des éléments du classement avec un rang d'argent */
+.leaderboard-item.silver:hover {
+  transform: scale(1.1); /* Mise à l'échelle de 1.1 */
+  transition: transform 0.3s ease;
+}
+
+/* Style pour le survol des éléments du classement avec un rang de bronze */
+.leaderboard-item.bronze:hover {
+  transform: scale(1.1); /* Mise à l'échelle de 1.1 */
+  transition: transform 0.3s ease;
 }

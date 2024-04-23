@@ -65,11 +65,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     leaderboard.forEach((user, index) => {
       const userItemElement = document.createElement("div");
-      userItemElement.className = "user-item";
+      userItemElement.className = "leaderboard-item";
+
+      if (index === 0) {
+        userItemElement.classList.add("gold"); // Or pour le rang 1
+      } else if (index === 1) {
+        userItemElement.classList.add("silver"); // Argent pour le rang 2
+      } else if (index === 2) {
+        userItemElement.classList.add("bronze"); // Bronze pour le rang 3
+      }
 
       const rankElement = document.createElement("span");
       rankElement.className = "rank";
-      rankElement.textContent = `${index + 1}.`;
+      rankElement.textContent = `${index + 1}. `;
       userItemElement.appendChild(rankElement);
 
       const usernameElement = document.createElement("span");
@@ -79,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const eloElement = document.createElement("span");
       eloElement.className = "elo";
-      eloElement.textContent = `ELO: ${user.elo}`;
+      eloElement.textContent = ` : ${user.elo}`;
       userItemElement.appendChild(eloElement);
 
       leaderboardElement.appendChild(userItemElement);
