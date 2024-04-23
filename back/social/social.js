@@ -2,6 +2,7 @@ const { connectDB, getDB } = require("../query-managers/db.js");
 const { ObjectId } = require("mongodb");
 
 const requestCounts = {};
+let dateLastLaunchServ = new Date();
 
 function rateLimitSocket(socket, next) {
   const ip = socket.handshake.address;
@@ -47,6 +48,8 @@ function createSocketSocial(io) {
         { _id: new ObjectId(userId) },
         { $set: { activity: "active" } },
       );
+      // Convert dateLastLaunchServ to string to avoid errors
+      socialNamespace.emit("lastLaunchServ", dateLastLaunchServ.toString());
     });
 
     socket.on("disconnect", async () => {

@@ -304,6 +304,8 @@ document.addEventListener("DOMContentLoaded", function () {
     window.location.href = `online-game.html?roomId=${roomId}`;
   });
 
+  socket.on("lastLaunchServ", (data) => { console.log(data); });
+
   socket.on("newMessage", function (message) {
     addMessageToChat(message, message.from !== currentUserId);
 
