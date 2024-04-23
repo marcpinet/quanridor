@@ -1434,13 +1434,13 @@ svg#close-arrow {
   background-color: #4650a8;
 }
 
-.achievement-container{
+.achievement-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background-color: #010525;
+  background-color: rgba(155, 85, 255, 0.75);
   border-radius: 38px;
   width: 210px;
   height: 280px;
@@ -1448,17 +1448,13 @@ svg#close-arrow {
   border-style: solid;
   border-width: 10px;
   padding: 15px;
-  transition:
-    width 0.3s ease,
-    height 0.3s ease,
-    background-color 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
-.achievement-container:hover{
+.achievement-container:hover {
   cursor: pointer;
-  width: 220px;
-  height: 280px;
-  border-color: #4650a8;
+  transform: scale(1.05);
+  background-color: rgba(200, 100, 255, 0.75);
 }
 
 #achievement1{
@@ -1492,7 +1488,7 @@ svg#close-arrow {
 }
 
 #to-achieve{
-  background-color: rgba(70, 80, 168, 0.164);
+  background-color: rgba(155, 155, 155, 0.4);
   pointer-events: none;
   border: none;
 }
