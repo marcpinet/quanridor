@@ -1,4 +1,4 @@
-const socket = io("/api/game");
+const socket = io("https://quanridor.ps8.academy/api/game");
 
 socket.on("connect", () => {
   console.log("Connected to server.");

@@ -1,6 +1,6 @@
 // -------------------------- FRIENDS --------------------------
 
-const socket2 = io("/api/game");
+const socket2 = io("https://quanridor.ps8.academy/api/game");
 const friendIdToUsername = {};
 let currentSelectedFriendId = null;
 
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 let currentUserId;
 
 document.addEventListener("DOMContentLoaded", function () {
-  const socket = io("/api/social");
+  const socket = io("https://quanridor.ps8.academy/api/social");
 
   const sendMessageButton = document.getElementById("send");
   const messageInput = document.getElementById("message-input");
