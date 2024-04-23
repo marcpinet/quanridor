@@ -1589,7 +1589,7 @@ svg#close-arrow {
 .leaderboard-item.bronze:hover {
   transform: scale(1.1); /* Mise à l'échelle de 1.1 */
   transition: transform 0.3s ease;
-=======
+}
 .mute{
   background: url("../assets/mute.svg") center/50px no-repeat;
   width: 50px;
