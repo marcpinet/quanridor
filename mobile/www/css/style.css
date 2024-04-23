@@ -1635,7 +1635,7 @@ button:disabled{
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1000px) {
   .title {
     display: flex;
     background: url("../assets/quanridor-title.svg") center/contain no-repeat; /* Adjusted background-size */
