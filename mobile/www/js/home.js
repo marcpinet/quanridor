@@ -157,6 +157,44 @@ function displaySideNotification(notification) {
 
   console.log("Side Notification shown");
   sideNotification.style.display = "block";
+
+  if (
+    notification.type === "friendRequest" ||
+    notification.type === "battleRequest"
+  ) {
+    cordova.plugins.notification.local.schedule(
+      {
+        title: notification.title,
+        text: notification.message,
+        foreground: true,
+        actions: [
+          { id: "accept", title: "Accept" },
+          { id: "decline", title: "Decline" },
+        ],
+      },
+      (notification) => {
+        if (notification.action === "accept") {
+          if (notification.type === "friendRequest") {
+            acceptFriendRequest(notification._id);
+          } else if (notification.type === "battleRequest") {
+            acceptBattleRequest(notification._id);
+          }
+        } else if (notification.action === "decline") {
+          if (notification.type === "friendRequest") {
+            declineFriendRequest(notification._id);
+          } else if (notification.type === "battleRequest") {
+            declineBattleRequest(notification._id);
+          }
+        }
+      }
+    );
+  } else {
+    cordova.plugins.notification.local.schedule({
+      title: notification.title,
+      text: notification.message,
+      foreground: true,
+    });
+  }
 }
 
 closeSearchButton.addEventListener("click", function () {
