@@ -26,6 +26,8 @@ const addFriendPopup = document.getElementById("add-friend-container");
 const addFriendButton = document.getElementById("add-friend");
 const userMobile = document.getElementById("user-mobile");
 const profileBox = document.getElementsByClassName("profile-box")[0];
+const friendsMobile = document.getElementById("friends");
+const friendSideBar = document.getElementById("friend-side-bar");
 
 let notificationCount = 0;
 
@@ -208,6 +210,19 @@ window.addEventListener("click", (event) => {
     friendProfile.style.display = "none";
   }
 
+  if(
+    !event.target.matches("#friend-side-bar") &&
+    !event.target.matches("#friends") &&
+    !friendSideBar.contains(event.target) &&
+    !event.target.matches(".friend-container") &&
+    !event.target.matches("#friend-profile") &&
+    !friendProfile.contains(event.target) &&
+    !friendsContainer.contains(event.target)
+  )
+  {
+    friendSideBar.style.display = "none";
+  }
+
   if (
     !event.target.matches("#add-friend-container") &&
     !addFriendPopup.contains(event.target) &&
@@ -357,4 +372,14 @@ if(userMobile != null){
 
 function toggleUserMobile() {
   profileBox.style.display = profileBox.style.display === "block" ? "none" : "block";
+}
+
+if(friendsMobile != null){
+  friendsMobile.addEventListener("click", function () {
+    toggleFriendSideBar();
+  });
+}
+
+function toggleFriendSideBar(){
+  friendSideBar.style.display = friendSideBar.style.display === "block" ? "none" : "block";
 }

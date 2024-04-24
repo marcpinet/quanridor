@@ -878,6 +878,7 @@ canvas {
   position: absolute;
   left: 22%;
   padding-top: 50px;
+  z-index: 2;
 }
 
 #profile-container{
@@ -1708,6 +1709,11 @@ button:disabled{
     transition: transform 0.3s ease;
   }
 
+  #friend-side-bar{
+    display: none;
+    z-index: 1;
+  }
+
   input {
     box-shadow: 0px 15px 10px #111430;
     color: white;
@@ -1735,10 +1741,6 @@ button:disabled{
     height: 15vw;
     min-height: fit-content;
     max-height: 30vh;
-  }
-
-  #left-container{
-    display: none;
   }
 
   #mobile-hide{
@@ -1807,6 +1809,17 @@ button:disabled{
     border-radius: 38px;
     border-style: solid;
     border-width: 10px;
+  }
+
+  #friend-side-bar{
+    display: none;
+    position: absolute;
+    top: 70%;
+    left: 63%;
+    justify-content: center;
+    align-items: center;
+    transform: translate(-50%, -50%);
+    width: 100%;
   }
 }
 
