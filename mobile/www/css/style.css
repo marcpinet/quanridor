@@ -1181,8 +1181,8 @@ canvas {
 #add-friend-container{
   display: none;
   position: absolute;
-  width: 500px;
-  height: 140px;
+  width: 25vw;
+  height: auto;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -1195,6 +1195,7 @@ canvas {
   box-shadow: 0px 15px 20px #111430;
   border: 5px solid #4650A8;
   justify-content: center; 
+  z-index: 3;
 }
 
 #add-friend-input{
@@ -1819,6 +1820,10 @@ button:disabled{
     justify-content: center;
     align-items: center;
     transform: translate(-50%, -50%);
+    width: 100%;
+  }
+
+  #add-friend-container{
     width: 100%;
   }
 }

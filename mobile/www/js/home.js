@@ -217,7 +217,7 @@ window.addEventListener("click", (event) => {
     !event.target.matches(".friend-container") &&
     !event.target.matches("#friend-profile") &&
     !friendProfile.contains(event.target) &&
-    !friendsContainer.contains(event.target)
+    !friendsContainer.contains(event.target) || event.target.matches("#add-friend")
   )
   {
     friendSideBar.style.display = "none";
