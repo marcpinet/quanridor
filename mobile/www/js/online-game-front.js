@@ -16,7 +16,7 @@ let selectedDialogue = null;
 
 const emoteDelay = 5000;
 
-const socket = io("/api/social");
+const socket = io("https://quanridor.ps8.academy/api/social");
 
 function toggleEmotePopup(hide = false) {
   if (hide || emotePopup.style.display === "block") {
