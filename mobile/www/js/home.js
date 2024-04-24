@@ -24,6 +24,8 @@ const removeFriendButton = document.getElementById("careful-button");
 const addFriendPopupCross = document.getElementById("cross");
 const addFriendPopup = document.getElementById("add-friend-container");
 const addFriendButton = document.getElementById("add-friend");
+const userMobile = document.getElementById("user-mobile");
+const profileBox = document.getElementsByClassName("profile-box")[0];
 
 let notificationCount = 0;
 
@@ -170,6 +172,8 @@ bellIcon.addEventListener("click", () => {
   togglePopup();
 });
 
+
+
 window.addEventListener("click", (event) => {
   if (
     !event.target.matches("#bell") &&
@@ -179,6 +183,15 @@ window.addEventListener("click", (event) => {
     !sideNotification.contains(event.target)
   ) {
     popup.style.display = "none";
+  }
+
+  if (
+    !event.target.matches(".profile-box") &&
+    !profileBox.contains(event.target) &&
+    userMobile != null &&
+    !event.target.matches("#user-mobile")
+  ) {
+    profileBox.style.display = "none";
   }
 
   if (
@@ -251,6 +264,7 @@ const acceptRequestButton = document.getElementById("accept-button");
 const declineRequestButton = document.getElementById("decline-button");
 
 function togglePopup(toggle = true) {
+  console.log("Toggling popup");
   if (toggle) {
     popup.style.display = popup.style.display === "block" ? "none" : "block";
   } else {
@@ -334,3 +348,13 @@ addFriendInput.addEventListener("keydown", function (event) {
     sendFriendRequestButton.click();
   }
 });
+
+if(userMobile != null){
+  userMobile.addEventListener("click", function () {
+    toggleUserMobile();
+  });
+}
+
+function toggleUserMobile() {
+  profileBox.style.display = profileBox.style.display === "block" ? "none" : "block";
+}

@@ -19,10 +19,15 @@ body {
 .title {
   display: flex;
   background: url("../assets/quanridor-title.svg") center/900px no-repeat;
+  max-width: 100%;
+  min-width: fit-content;
   width: 100%;
   justify-content: center;
   align-items: center;
-  height: 30vh;
+  height: 30vw;
+  min-height: fit-content;
+  max-height: 30vh;
+
 }
 
 .title:hover {
@@ -71,13 +76,22 @@ svg {
 .small-title {
   display: flex;
   background: url("../assets/quanridor-title.svg") center/650px no-repeat;
+  min-width: fit-content;
   width: 100vh;
   justify-content: center;
   align-items: center;
-  height: 20vh;
+  height: 10vw;
+  min-height: fit-content;
+  max-height: 30vh;
 }
 
 button {
+  text-wrap: nowrap;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  align-self: center;
   box-shadow: 0px 15px 20px #111430;
   font-weight: 700;
   font-family: "Nunito", sans-serif;
@@ -95,8 +109,10 @@ button {
 
 button.big-button {
   font-size: 52px;
-  width: 375px;
-  height: 130px;
+  min-width: fit-content;
+  min-height: fit-content;
+  max-width: 50vh;
+  max-height: 20vh;
   transition: transform 0.3s ease;
 }
 
@@ -106,31 +122,40 @@ button.big-button:hover {
 
 button.medium-button {
   font-size: 48px;
-  width: 300px;
-  height: 13vh;
+  min-width: fit-content;
+  min-height: fit-content;
+  max-width: 30vh;
+  max-height: 15vh;
   transition: transform 0.3s ease;
 }
 
 button.medium-button:hover {
-  transform: scaleY(1.15); /* Augmente la hauteur du bouton de 15% */
+  transform: scale(1.07); /* Augmente la hauteur du bouton de 15% */
 }
 
 button.small-button {
   font-size: 32px;
-  width: 200px;
-  height: 10vh;
+  min-width: fit-content;
+  min-height: fit-content;
+  text-wrap: nowrap;
+  box-sizing: border-box;
+  max-width: 20vh;
+  max-height: 10vh;
   transition: transform 0.3s ease; /* Ajout de la transition pour transform */
 }
 
 button.small-button:hover {
-  transform: scaleY(1.1); /* Augmente la hauteur du bouton de 10% */
+  transform: scale(1.1); /* Augmente la hauteur du bouton de 10% */
 }
 
 .vertical-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   flex-direction: column;
+  min-width: fit-content;
+  min-height: fit-content;
   gap: 50px;
 }
 
@@ -730,7 +755,7 @@ canvas {
 .bell-container:hover #bell {
   cursor: pointer;
   filter: none;
-  transform: scaleY(1.2); /* Augmente la hauteur de la cloche de 10% */
+  transform: scale(1.2); /* Augmente la hauteur de la cloche de 10% */
 }
 
 #side-notification{
@@ -1644,39 +1669,16 @@ button:disabled{
     align-items: center;
     height: 20vh;
   }
-  button {
-    box-shadow: 0px 15px 20px #111430;
-    font-weight: 700;
-    font-family: "Nunito", sans-serif;
-    color: #111430;
-    font-size: 38px;
-    border-radius: 38px;
-    width: 100%;
-    height: 70%;
-    border: none;
-  }
-
-  button.big-button{
-    font-size: 48px;
-    max-width: 35vh;
-    max-height: 25vh;
-  }
-
-  button.medium-button{
-    font-size: 32px;
-    max-width: 30vh;
-    max-height: 20vh;
-  }
 
   #back-arrow{
     display: none;
   }
 
   form{
-    display: flex; /* Set form to flex */
-    flex-direction: column; /* Align form items vertically */
-    align-items: center; /* Center form items horizontally */
-    justify-content: center; /* Center form items vertically */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     height: 100%;
   }
 
@@ -1684,6 +1686,15 @@ button:disabled{
     text-shadow: 6px 6px 4px #111430;
     font-size: 32px;
     font-weight: 700;
+  }
+
+  button.big-button{
+    font-size: 42px;
+    min-width: fit-content;
+    min-height: fit-content;
+    max-width: 40vh;
+    max-height: 15vh;
+    transition: transform 0.3s ease;
   }
 
   input {
@@ -1702,4 +1713,95 @@ button:disabled{
     background-color: #4650a8;
     padding: 5px;
   }
+
+  .small-title{
+    display: flex;
+    background: url("../assets/quanridor-title.svg") center/250px no-repeat;
+    min-width: fit-content;
+    width: 40vh;
+    justify-content: center;
+    align-items: center;
+    height: 15vw;
+    min-height: fit-content;
+    max-height: 30vh;
+  }
+
+  #left-container{
+    display: none;
+  }
+
+  #mobile-hide{
+    display: none;
+  }
+
+  #logout{
+    background: url("../assets/logout.svg") center/60px no-repeat;
+    width: 100px;
+    height: 10vh;
+  }
+
+  #friends{
+    background: url("../assets/friends.svg") center/60px no-repeat;
+    width: 100px;
+    height: 10vh;
+  }
+
+  #bell{
+    background: url("../assets/bell.svg") center/50px no-repeat;
+    width: 100px;
+    height: 10vh;
+  }
+
+  #user-mobile{
+    background: url("../assets/user.svg") center/50% no-repeat;
+    width: 90px;
+    height: 10vh;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  #user-mobile:hover{
+    cursor: pointer;
+    transform: scale(1.3);
+  }
+
+  .horizontal-small-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+  }
+
+  .popup {
+    display: none;
+    position: absolute;
+    width: 35vh;
+    height: 70vh;
+    top: 62%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(1, 5, 37, 1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 30px;
+  }
+
+  .profile-box {
+    display: none;
+    position: absolute;
+    top: 54%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(1,5,37,1);
+    border-color: rgba(70, 80, 168, 0);
+    border-radius: 38px;
+    border-style: solid;
+    border-width: 10px;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

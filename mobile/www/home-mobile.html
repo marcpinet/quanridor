@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Quanridor - Home</title>
+    <title>Quanridor - Mobile</title>
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
@@ -12,9 +12,8 @@
   </head>
   <body>
     <script>
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = "home-mobile.html";
-      }
+      // Execute this line of code once when the page loads
+      if(window.screen.width >= 1000) window.location.href = "home.html";
     </script>
     <div class="horizontal-container">
       <div class="vertical-container" id="left-container">
@@ -92,7 +91,20 @@
       
       <div class="vertical-container">
         <div>
-        <a href="home.html"><div class="small-title"></div></a>
+          <div class="small-vertical-container">
+            <div class="horizontal-small-container">
+              <a href="home.html"><div class="small-title"></div></a>
+              <a href="index.html"
+              ><svg id="logout" onclick="logout()">Log out</svg></a>
+            </div>
+            <div class="horizontal-container">
+              <svg id="friends"></svg>
+              <svg id="user-mobile"></svg>
+              <div class="bell-container">
+                <svg id="bell"></svg> <span id="unread-count">0</span>
+              </div>
+            </div>
+          </div>
         </div>
         <a href="play-menu.html"><button class="big-button">Play</button></a>
         <a href="achievements.html"><button class="big-button">Achievements</button></a>
@@ -111,34 +123,24 @@
           <input id="add-friend-input" type="text" placeholder="Type a username..." />
           <button disabled class="choice-button" id="add-friend-button">Send request</button>
         </div>
-        </div>
-      <div class="vertical-container">
-        <div class="horizontal-container">
-          <div class="vertical-container">
-            <div class="bell-container">
-              <svg id="bell"></svg> <span id="unread-count">0</span>
-            </div>
-            <div id="popup" class="popup">
-              <div class="popup-header">Notifications</div>
-              <div class="scrollbar-content">
-                <div class="notifications">
-                  <!-- Les notifications seront insérées ici dynamiquement -->
-                </div>
-              </div>
-            </div>
+      </div>
+      <div id="popup" class="popup">
+        <div class="popup-header">Notifications</div>
+        <div class="scrollbar-content">
+          <div class="notifications">
+            <!-- Les notifications seront insérées ici dynamiquement -->
           </div>
-          <a href="index.html"
-            ><button class="small-button" onclick="logout()">Log out</button></a
-          >
         </div>
-        <div class="profile-box"  id="right-container">
-          <div class="vertical-small-container">
-            <br />
-            <svg id="user"></svg>
-            <h1 class="text" id="username"></h1>
-            <div id="separator"></div>
-            <h1 class="text" id="player1-elo"></h1>
-          </div>
+      </div>
+    </div>
+    <div class="vertical-container">
+      <div class="profile-box">
+        <div class="vertical-small-container">
+          <br />
+          <svg id="user"></svg>
+          <h1 class="text" id="username"></h1>
+          <div id="separator"></div>
+          <h1 class="text" id="player1-elo"></h1>
         </div>
       </div>
     </div>
