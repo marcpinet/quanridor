@@ -31,6 +31,9 @@ const friendSideBar = document.getElementById("friend-side-bar");
 
 let notificationCount = 0;
 
+document.addEventListener('deviceready', onDeviceReady, false);
+
+function onDeviceReady() {
 socket2.on("connect", async () => {
   console.log("Connected to server.");
   const token = localStorage.getItem("token");
@@ -189,6 +192,7 @@ function displaySideNotification(notification) {
       }
     );
   } else {
+    console.log("Scheduling chat notification");
     cordova.plugins.notification.local.schedule({
       title: notification.title,
       text: notification.message,
@@ -420,4 +424,5 @@ if(friendsMobile != null){
 
 function toggleFriendSideBar(){
   friendSideBar.style.display = friendSideBar.style.display === "block" ? "none" : "block";
+}
 }

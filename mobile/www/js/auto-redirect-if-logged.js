@@ -14,10 +14,10 @@ let errorCallback = function(status) {
 document.addEventListener('deviceready', () => {
   var permissions = cordova.plugins.permissions;
   if(permissions.checkPermission(permissions.POST_NOTIFICATIONS, successCallback, errorCallback)) {
-    console.log("Yes :D ");
+    console.log("PERMISSIONS GRANTED!");
   }
   else {
-    console.warn("No :( ");
+    console.warn("PERMISSIONS NOT GRANTED!");
     permissions.requestPermission(permissions.POST_NOTIFICATIONS, successCallback, errorCallback);
   }
 }, false);

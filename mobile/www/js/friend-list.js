@@ -3,7 +3,7 @@
 const socket2 = io("https://quanridor.ps8.academy/api/game");
 const friendIdToUsername = {};
 let currentSelectedFriendId = null;
-
+let isChatVisible = false;
 document.addEventListener("DOMContentLoaded", function () {
   const token = localStorage.getItem("token");
 
