@@ -1530,7 +1530,6 @@ svg#close-arrow {
   justify-content: space-around;
   padding: 20px;
   max-height: 90vh;
-  overflow-y: auto;
 }
 
 /* Style des colonnes de classement */
@@ -1539,7 +1538,6 @@ svg#close-arrow {
   margin: 15px;
   margin-right: 20px;
   width: 50%; /* Espacement entre les colonnes */
-  overflow-y: auto;
   text-align: center;
 }
 
@@ -1558,9 +1556,7 @@ svg#close-arrow {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
   padding: 20px;
   height: 80%; /* Hauteur maximale de la liste avec défilement */
-  overflow-y: auto; /* Activation du défilement vertical si nécessaire */
   text-align: center; /* Centrage horizontal des éléments */
-  overflow-y: auto;
 }
 
 /* Style des éléments de la liste */
@@ -1571,11 +1567,31 @@ svg#close-arrow {
   border-radius: 5px; /* Coins arrondis */
   background-color: rgba(150, 150, 150, 0.75); /* Couleur de fond des éléments */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
-  display: block; /* Pour que les éléments soient alignés horizontalement */; /* Pour que les éléments soient alignés horizontalement */
+  display: flex; /* Pour que les éléments soient alignés horizontalement */; /* Pour que les éléments soient alignés horizontalement */
   font-family: 'Nunito', sans-serif; /* Police de caractères */
   max-width: 80%;
   margin-left: auto;
   margin-right: auto;
+  align-items: center;
+}
+
+.rank {
+  width: 30px; /* Largeur fixe pour le rang */
+  text-align: left; /* Aligner le texte à gauche */
+}
+
+.username {
+  flex: 1; /* Utiliser tout l'espace restant */
+  text-align: center; /* Centrer le texte horizontalement */
+  font-size: 24px; /* Taille de police plus grande */
+  text-transform: uppercase; /* Mettre le texte en majuscules */
+  margin-right: 5px; /* Réduire l'espace à droite */
+}
+
+.elo {
+  text-align: center;
+  font-size: 24px; /* Taille de police de l'elo */
+  margin-left: 5px; /* Réduire l'espace à gauche */
 }
 
 /* Style pour le survol des éléments de la liste */
@@ -1583,40 +1599,67 @@ svg#close-arrow {
   background-color: #5b818f; /* Changement de couleur au survol */
 }
 
+@keyframes shine {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.70;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% { transform: translateX(-1px) rotate(-0.1deg); }
+  15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { transform: translateX(1px) rotate(0.1deg); }
+  100% { animation-timing-function: cubic-bezier(0.36, 1.33, 0.43, 0.97); } /* Définir la fonction de temporisation */
+}
+
 /* Style pour les éléments du classement avec un rang d'or */
 .leaderboard-item.gold {
   background-color: gold; /* Or pour le rang 1 */
   color: black; /* Couleur du texte */
+  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */  
 }
 
 /* Style pour les éléments du classement avec un rang d'argent */
 .leaderboard-item.silver {
   background-color: silver; /* Argent pour le rang 2 */
   color: black; /* Couleur du texte */
+  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
+  animation-delay: 0.25s;
 }
 
 /* Style pour les éléments du classement avec un rang de bronze */
 .leaderboard-item.bronze {
   background-color: #cd7f32; /* Bronze pour le rang 3 */
   color: black; /* Couleur du texte */
+  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
+  animation-delay: 0.5s;
+  
 }
-
 
 .leaderboard-item.gold:hover {
   transform: scale(1.1); /* Mise à l'échelle de 1.1 */
   transition: transform 0.3s ease;
+  animation: shake 1s ease-in-out infinite;
 }
 
 /* Style pour le survol des éléments du classement avec un rang d'argent */
 .leaderboard-item.silver:hover {
   transform: scale(1.1); /* Mise à l'échelle de 1.1 */
   transition: transform 0.3s ease;
+  animation: shake 1s ease-in-out infinite;
 }
 
 /* Style pour le survol des éléments du classement avec un rang de bronze */
 .leaderboard-item.bronze:hover {
   transform: scale(1.1); /* Mise à l'échelle de 1.1 */
   transition: transform 0.3s ease;
+  animation: shake 1s ease-in-out infinite;
 }
 .mute{
   background: url("../assets/mute.svg") center/50px no-repeat;
