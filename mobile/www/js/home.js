@@ -46,7 +46,11 @@ socket2.on("connect", async () => {
 });
 
 socket2.on("redirectToGame", (roomId) => {
-  window.location.href = `online-game.html?roomId=${roomId}`;
+  if(/Mobi|Android/i.test(navigator.userAgent)) {
+    window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+  } else {
+    window.location.href = `online-game.html?roomId=${roomId}`;
+  }
 });
 
 function incrementNotificationCount() {
