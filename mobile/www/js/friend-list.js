@@ -1002,8 +1002,7 @@ function addMessageToChat(message, isFromFriend) {
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
     messageElement.style.marginRight = "auto";
-    messageContainer.style.backgroundColor = "#f3f2f2"
-    messageContent.style.color = "black"
+    messageContainer.style.backgroundColor = "#1D2358"
   } else {
     messageElement.style.flexDirection = "row";
     messageElement.style.marginLeft = "auto";
