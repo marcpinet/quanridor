@@ -8,15 +8,22 @@
   <link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 <body>
-  <svg id="back-arrow" style="position: absolute; top: 0px; left: 5px;" onclick="window.location.href = 'home.html'"></svg>
+  <svg id="back-arrow" onclick="window.location.href = 'home.html'"></svg>
+  <div class="vertical-container">
+  <div>
+    <a href="home.html"><div class="small-title"></div></a>
+    </div>
+  </div>
   <div class="leaderboard-container">
     <div class="leaderboard-column">
-      <div class="leaderboard-title">Global Leaderboard</div>
+      <div class="leaderboard-title">Global</div>
       <div class="leaderboard scrollbar-content" id="global-leaderboard"></div>
     </div>
     <div class="leaderboard-column">
-      <div class="leaderboard-title">Friends Leaderboard</div>
+      <div class="leaderboard-title">Friends</div>
+      
       <div class="leaderboard scrollbar-content" id="friends-leaderboard"></div>
+    
     </div>
   </div>
   <script src="cordova.js"></script>
