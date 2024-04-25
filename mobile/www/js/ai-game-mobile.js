@@ -72,8 +72,8 @@ let players;
 document.addEventListener("DOMContentLoaded", async () => {
   winPopup.style.display = "none";
   const urlParams = new URLSearchParams(window.location.search);
+  const difficulty = urlParams.get("difficulty");
   gameId = urlParams.get("id");
-  difficulty = urlParams.get("difficulty");
   difficulty = parseInt(difficulty);
 
   if (gameId) {
