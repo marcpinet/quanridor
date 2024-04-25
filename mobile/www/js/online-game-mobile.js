@@ -751,8 +751,8 @@ socket.on("player2MoveIsLegal", (data) => {
 
 socket.on("player2LastMove", (data) => {
   lastMove = true;
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = `${timePerMove} sec`;
   timeRemaining = timePerMove;
   playing = !playing;
   clearInterval(timerInterval);
@@ -777,8 +777,8 @@ socket.on("player2LastMove", (data) => {
 });
 
 socket.on("updateAfterPlayer1Move", (data) => {
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = `${timePerMove} sec`;
   timeRemaining = timePerMove;
   playing = !playing;
   clearInterval(timerInterval);
@@ -804,8 +804,8 @@ socket.on("updateAfterPlayer1Move", (data) => {
 });
 
 socket.on("updateAfterPlayer2Move", (data) => {
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = `${timePerMove} sec`;
   timeRemaining = timePerMove;
   playing = !playing;
   clearInterval(timerInterval);
@@ -831,8 +831,8 @@ socket.on("updateAfterPlayer2Move", (data) => {
 });
 
 socket.on("timeIsUp", () => {
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = ` ${timePerMove} sec`;
   timeRemaining = timePerMove;
   clearInterval(timerInterval);
   clearTimeout(timer);
@@ -869,11 +869,11 @@ socket.on("timeIsUp", () => {
 
 function updateTimer() {
   if (tour % 2 == 0) {
-    p1Timer.textContent = `Timer: ${timeRemaining - 1} sec`;
-    p2Timer.textContent = `Timer: ${timePerMove} sec`;
+    p1Timer.textContent = `${timeRemaining - 1} sec`;
+    p2Timer.textContent = `${timePerMove} sec`;
   } else {
-    p2Timer.textContent = `Timer: ${timeRemaining - 1} sec`;
-    p1Timer.textContent = `Timer: ${timePerMove} sec`;
+    p2Timer.textContent = `${timeRemaining - 1} sec`;
+    p1Timer.textContent = `${timePerMove} sec`;
   }
 
   timeRemaining--;
@@ -1098,8 +1098,8 @@ socket.on("player2WallIsLegal", (data) => {
 });
 
 socket.on("updateAfterPlayer1Wall", (data) => {
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = `${timePerMove} sec`;
   timeRemaining = timePerMove;
   playing = !playing;
   clearInterval(timerInterval);
@@ -1131,8 +1131,8 @@ socket.on("updateAfterPlayer1Wall", (data) => {
 });
 
 socket.on("updateAfterPlayer2Wall", (data) => {
-  p1Timer.textContent = `Timer: ${timePerMove} sec`;
-  p2Timer.textContent = `Timer: ${timePerMove} sec`;
+  p1Timer.textContent = `${timePerMove} sec`;
+  p2Timer.textContent = `${timePerMove} sec`;
   timeRemaining = timePerMove;
   playing = !playing;
   clearInterval(timerInterval);
