@@ -1914,6 +1914,23 @@ button:disabled{
     gap: 40px;
   }
 
+  #bot-choice-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .bento-box {
+    height: fit-content;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  #bot {
+    height: 30%;
+  }
+
 }
 
 form {
