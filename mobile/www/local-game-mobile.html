@@ -7,21 +7,12 @@
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
   </head>
   <body id="game">
-    <div class="horizontal-container">
-      <div class="vertical-small-container">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+    <div class="vertical-small-container" style="margin-top: 5vh;">
+      <div class="horizontal-container">
         <div class="profile-box" id="left-player">
-          <div class="vertical-small-container" style="height: 100%">
-            <br />
+          <div class="vertical-small-container">
             <svg id="user"></svg>
-            <h1 class="text">Player 1</h1>
-            <div id="separator"></div>
-            <h1 class="text">ELO : 100</h1>
+            <span class="text">Player 1</span>
             <div class="wall-bar-container">
               <div class="small-text">Walls</div>
               <div id="wall-bar-1" class="wall-bar">
@@ -39,34 +30,10 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="vertical-small-container">
-        <canvas></canvas>
-        <div class="horizontal-small-container">
-          <button class="small-button" id="confirm">
-            Put Wall
-          </button>
-          <a href="home.html"
-            ><button class="small-button" id="leave">
-              Leave
-            </button></a
-          >
-        </div>
-      </div>
-      <div class="vertical-small-container">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
         <div class="profile-box" id="right-player">
-          <div class="vertical-small-container" style="height: 100%">
-            <br />
+          <div class="vertical-small-container">
             <svg id="user"></svg>
-            <h1 class="text">Player 2</h1>
-            <div id="separator"></div>
-            <h1 class="text">ELO : 100</h1>
+            <span class="text">Player 2</span>
             <div class="wall-bar-container">
               <div class="small-text">Walls</div>
               <div id="wall-bar-2" class="wall-bar">
@@ -85,13 +52,25 @@
           </div>
         </div>
       </div>
+      <div class="vertical-small-container">
+        <canvas></canvas>
+        <div class="horizontal-small-container">
+          <button class="small-button" id="confirm">
+            Put Wall
+          </button>
+          <a href="home.html"
+            ><button class="small-button" id="leave">
+              Leave
+            </button></a
+          >
+        </div>
+      </div>
     </div>
-
 
     <div id="result-popup">
       <div class="vertical-small-container">
-        <h1 id="win-text" class="big-text"></h1>
-        <h2 class="text" id="elo-scores">NO ELO SCORE IN LOCAL</h2>
+        <span id="win-text"></span>
+        <span id="elo-scores">NO ELO SCORE IN LOCAL</span>
         <a href="local-game.html"><svg id="replay"></svg></a>
         <a href="home.html"><svg id="home"></svg></a>
       </div>
