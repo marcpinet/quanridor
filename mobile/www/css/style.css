@@ -1934,13 +1934,14 @@ button:disabled{
   }
 
   .game-item {
-    width: 80%;
+    width: 50%;
+    max-width: 80vh;
     flex-wrap: wrap;
     gap: 15px;
   }
 
   #game-list-page-container {
-    width: 90%;
+    width: fit-content;
     margin: auto;
   }
 
