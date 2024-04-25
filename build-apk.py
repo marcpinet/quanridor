@@ -30,7 +30,7 @@ def process_files(root_dir, website_url):
                 replace_in_file(file_path, search_replace_pairs)
 
 def build_android():
-    os.chdir('mobile')
+    os.chdir('front')
     subprocess.run(['cordova', 'platform', 'rm', 'android'], shell=True)
     subprocess.run(['cordova', 'platform', 'add', 'android@12.0.1'], shell=True)
     subprocess.run(['cordova', 'build', 'android'], shell=True)
@@ -50,8 +50,8 @@ def main():
     else:
         website_url = input("Veuillez saisir l'URL du site web (localhost ne fonctionnera pas) : ").rstrip('/')
     
-    root_dir = 'mobile/www'
-    backup_dir = 'mobile/www_backup'
+    root_dir = 'front/www'
+    backup_dir = 'front/www_backup'
     
     shutil.copytree(root_dir, backup_dir)
     process_files(root_dir, website_url)
