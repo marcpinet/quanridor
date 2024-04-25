@@ -1780,6 +1780,7 @@ button:disabled{
   .small-title{
     display: flex;
     background: url("../assets/quanridor-title.svg") center/250px no-repeat;
+    min-width: fit-content;
     width: 30vh;
     justify-content: center;
     align-items: center;
@@ -1898,6 +1899,21 @@ button:disabled{
     scrollbar-color: #EE4F3A rgba(1,5,37,1);
     scroll-behavior: smooth;
   }
+
+  #play-menu-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  #play-menu-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
 }
 
 form {
