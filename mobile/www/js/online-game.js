@@ -1599,8 +1599,6 @@ function toggleEmotePopup(hide = false) {
 
 function showEmoji() {
   if (selectedEmoji) {
-    let data = { player, message: selectedEmoji, roomId: roomId };
-    console.log(data);
     socket.emit("emoji", { player, message: selectedEmoji, roomId: roomId });
     if (player === 1) {
       leftEmojiPopup.innerHTML = selectedEmoji;
@@ -1642,10 +1640,9 @@ function showDialogue() {
 }
 
 socket.on("dialogue", (data) => {
-  console.log("azeazeazeaze");
-  const { playerSend, message } = data;
-  console.log("Received dialogue: ", message + " from player: " + playerSend);
-  if (playerSend === 1) {
+  const { player, message } = data;
+  console.log("Received dialogue: ", message + " from player: " + player);
+  if (player === 1) {
     leftDialoguePopup.innerHTML = message;
     leftDialoguePopup.style.display = "block";
     setTimeout(() => {
@@ -1661,10 +1658,9 @@ socket.on("dialogue", (data) => {
 });
 
 socket.on("emoji", (data) => {
-  console.log("azeazeazeaze");
-  const { playerSend, message: emoji } = data;
-  console.log("Received emoji: ", emoji + " from player: " + playerSend);
-  if (playerSend === 1) {
+  const { player, message: emoji } = data;
+  console.log("Received emoji: ", emoji + " from player: " + player);
+  if (player === 1) {
     leftEmojiPopup.innerHTML = emoji;
     leftEmojiPopup.style.display = "block";
     setTimeout(() => {
