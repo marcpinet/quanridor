@@ -122,7 +122,7 @@ button.big-button:hover {
 }
 
 button.medium-button {
-  font-size: 48px;
+  font-size: 42px;
   min-width: fit-content;
   min-height: fit-content;
   max-width: 30vh;
@@ -1004,6 +1004,7 @@ canvas {
   background-color: #4650A8;
   border-radius: 20px;
   padding: 10px;
+  min-width: 200px;
   max-width: 200px;
   word-wrap: break-word;
 }
@@ -1269,7 +1270,7 @@ canvas {
 }
 
 #cross{
-  background: url("../assets/cross.svg") center/25px no-repeat;
+  background: url("../assets/cross.svg") center/20px no-repeat;
   width: 50px;
   height: 50px;
   position: absolute;
@@ -1778,11 +1779,10 @@ button:disabled{
   .small-title{
     display: flex;
     background: url("../assets/quanridor-title.svg") center/250px no-repeat;
-    min-width: fit-content;
-    width: 40vh;
+    width: 30vh;
     justify-content: center;
     align-items: center;
-    height: 15vw;
+    height: 20vw;
     min-height: fit-content;
     max-height: 30vh;
   }
@@ -1791,8 +1791,15 @@ button:disabled{
     display: none;
   }
 
+  #close-friends{
+    display: flex;
+    background: url("../assets/cross.svg") center/40px no-repeat;
+    width: 50px;
+    height: 50px;
+  }
+
   #logout{
-    background: url("../assets/logout.svg") center/60px no-repeat;
+    background: url("../assets/logout.svg") center/50px no-repeat;
     width: 100px;
     height: 10vh;
   }
@@ -1826,7 +1833,14 @@ button:disabled{
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 0px;
+  }
+
+  #home-footer{
+    margin-top: 2vh;
+  }
+
+  #home-body{
+    width: fit-content;
   }
 
   .popup {
@@ -1857,17 +1871,30 @@ button:disabled{
 
   #friend-side-bar{
     display: none;
-    position: absolute;
-    top: 70%;
-    left: 63%;
-    justify-content: center;
-    align-items: center;
-    transform: translate(-50%, -50%);
     width: 100%;
+    margin-top: 5vh;
+    margin-right: 2vh;
   }
 
   #add-friend-container{
+    width: 90%;
+  }
+
+  #friend-profile-buttons{
+    gap: 5vw;
+  }
+
+  .friend-box{
     width: 100%;
+    height: 100%;
+  }
+
+  .scrollbar-friend-content {
+    padding: 10px;
+    height: 76vh;
+    overflow-y: auto;
+    scrollbar-color: #EE4F3A rgba(1,5,37,1);
+    scroll-behavior: smooth;
   }
 }
 

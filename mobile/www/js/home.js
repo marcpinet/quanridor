@@ -28,6 +28,7 @@ const userMobile = document.getElementById("user-mobile");
 const profileBox = document.getElementsByClassName("profile-box")[0];
 const friendsMobile = document.getElementById("friends");
 const friendSideBar = document.getElementById("friend-side-bar");
+const closeFriends = document.getElementById("close-friends");
 
 let notificationCount = 0;
 
@@ -201,10 +202,12 @@ function displaySideNotification(notification) {
 closeSearchButton.addEventListener("click", function () {
   searchHeader.style.display = "none";
   friendButtons.style.display = "flex";
+  closeFriends.style.display = "flex";
 });
 
 searchButton.addEventListener("click", function () {
   friendButtons.style.display = "none";
+  closeFriends.style.display = "none";
   searchHeader.style.display = "flex";
   friendSearchBar.focus();
 });
@@ -413,8 +416,12 @@ function toggleUserMobile() {
   profileBox.style.display = profileBox.style.display === "block" ? "none" : "block";
 }
 
-if(friendsMobile != null){
+if(friendsMobile != null && closeFriends != null){
   friendsMobile.addEventListener("click", function () {
+    toggleFriendSideBar();
+  });
+
+  closeFriends.addEventListener("click", function () {
     toggleFriendSideBar();
   });
 }
