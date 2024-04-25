@@ -995,13 +995,15 @@ function addMessageToChat(message, isFromFriend) {
   const messageList = document.getElementById("message-list");
   const messageElement = document.createElement("div");
   const messageContainer = document.createElement("div");
+  const messageContent = document.createElement("div");
 
   messageElement.classList.add("friend-text-container");
 
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
     messageElement.style.marginRight = "auto";
-    messageContainer.style.backgroundColor = "#ec7982"
+    messageContainer.style.backgroundColor = "#f3f2f2"
+    messageContent.style.color = "black"
   } else {
     messageElement.style.flexDirection = "row";
     messageElement.style.marginLeft = "auto";
@@ -1011,7 +1013,6 @@ function addMessageToChat(message, isFromFriend) {
   messageContainer.classList.add("message-container");
   messageElement.appendChild(messageContainer);
 
-  const messageContent = document.createElement("div");
   messageContent.classList.add("message-content");
   messageContent.textContent = message.content;
   messageContainer.appendChild(messageContent);
