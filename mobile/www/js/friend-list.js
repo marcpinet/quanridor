@@ -309,13 +309,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("newMessage", function (message) {
-    addMessageToChat(message, message.from !== currentUserId);
+    // si y'a heja remettre addMessageToChat(message, message.from !== currentUserId); ici et mettre la même vérif de check qu'en dessous
 
     if (message.from !== currentUserId) {
       const friendId = message.from;
 
       // Vérifier si le message provient de l'ami actuellement sélectionné
       if (friendId === currentSelectedFriendId) {
+        addMessageToChat(message, message.from !== currentUserId);
         // Marquer les messages comme lus
         fetch(`${baseUrl}/api/markMessagesAsRead?friendId=${friendId}`, {
           method: "PUT",
