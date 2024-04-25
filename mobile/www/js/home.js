@@ -15,7 +15,7 @@ const searchButton = document.getElementById("search");
 const friendSearchBar = document.getElementById("search-input");
 const closeSearchButton = document.getElementById("close-search");
 const messageCountList = document.getElementsByClassName(
-  "unread-message-count",
+  "unread-message-count"
 );
 const unfriendIcon = document.getElementById("unfriend");
 const removeFriendContainer = document.getElementById("remove-friend");
@@ -29,7 +29,6 @@ const profileBox = document.getElementsByClassName("profile-box")[0];
 const friendsMobile = document.getElementById("friends");
 const friendSideBar = document.getElementById("friend-side-bar");
 const closeFriends = document.getElementById("close-friends");
-
 
 let notificationCount = 0;
 
@@ -161,8 +160,9 @@ function displaySideNotification(notification) {
   sideNotification.style.display = "block";
 
   if (
-    notification.type === "friendRequest" ||
-    notification.type === "battleRequest"
+    /Mobi|Android/i.test(navigator.userAgent) &&
+    (notification.type === "friendRequest" ||
+      notification.type === "battleRequest")
   ) {
     cordova.plugins.notification.local.schedule(
       {
@@ -188,9 +188,9 @@ function displaySideNotification(notification) {
             declineBattleRequest(notification._id);
           }
         }
-      },
+      }
     );
-  } else {
+  } else if (/Mobi|Android/i.test(navigator.userAgent)) {
     console.log("Scheduling chat notification");
     cordova.plugins.notification.local.schedule({
       title: notification.title,
@@ -203,12 +203,12 @@ function displaySideNotification(notification) {
 closeSearchButton.addEventListener("click", function () {
   searchHeader.style.display = "none";
   friendButtons.style.display = "flex";
-  if(closeFriends != null) closeFriends.style.display = "flex";
+  if (closeFriends != null) closeFriends.style.display = "flex";
 });
 
 searchButton.addEventListener("click", function () {
   friendButtons.style.display = "none";
-  if(closeFriends != null) closeFriends.style.display = "none";
+  if (closeFriends != null) closeFriends.style.display = "none";
   searchHeader.style.display = "flex";
   friendSearchBar.focus();
 });
@@ -254,6 +254,7 @@ window.addEventListener("click", (event) => {
   if (
     (!event.target.matches("#friend-side-bar") &&
       !event.target.matches("#friends") &&
+      friendSideBar !== null &&
       !friendSideBar.contains(event.target) &&
       !event.target.matches(".friend-container") &&
       !event.target.matches("#friend-profile") &&
@@ -349,10 +350,10 @@ closeChatButton.addEventListener("click", function () {
 
   if (currentSelectedFriendContainer !== null) {
     currentSelectedFriendContainer.querySelector(
-      ".unread-message-count",
+      ".unread-message-count"
     ).style.display = "none";
     currentSelectedFriendContainer.querySelector(
-      ".unread-message-count",
+      ".unread-message-count"
     ).textContent = "0";
   }
 
@@ -416,7 +417,7 @@ function toggleUserMobile() {
     profileBox.style.display === "block" ? "none" : "block";
 }
 
-if(friendsMobile != null && closeFriends != null){
+if (friendsMobile != null && closeFriends != null) {
   friendsMobile.addEventListener("click", function () {
     toggleFriendSideBar();
   });
@@ -427,6 +428,7 @@ if(friendsMobile != null && closeFriends != null){
 }
 
 function toggleFriendSideBar() {
+  if(friendSideBar === null) return;
   friendSideBar.style.display =
     friendSideBar.style.display === "block" ? "none" : "block";
 }
