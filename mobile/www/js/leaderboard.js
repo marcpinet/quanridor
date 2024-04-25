@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
       const eloElement = document.createElement("span");
       eloElement.className = "elo";
-      eloElement.textContent = ` : ${user.elo}`;
+      eloElement.textContent = `${user.elo}`;
       userItemElement.appendChild(eloElement);
     
       leaderboardElement.appendChild(userItemElement);
