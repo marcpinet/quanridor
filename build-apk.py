@@ -14,13 +14,13 @@ def replace_in_file(file_path, search_replace_pairs):
 
 def process_files(root_dir, website_url):
     search_replace_pairs = [
-        (re.compile(r'const baseUrl = window\.location\.origin;'), f'const baseUrl = "{re.escape(website_url)}";'),
-        (re.compile(r'const socket = io\("/api/game"\);'), f'const socket = io("{re.escape(website_url)}/api/game");'),
-        (re.compile(r'const socket = io\("/api/social"\);'), f'const socket = io("{re.escape(website_url)}/api/social");'),
-        (re.compile(r'const socket2 = io\("/api/social"\);'), f'const socket2 = io("{re.escape(website_url)}/api/social");'),
-        (re.compile(r'const socket2 = io\("/api/game"\);'), f'const socket2 = io("{re.escape(website_url)}/api/game");'),
-        (re.compile(r'const permanent_socket2 = io\("/api/game"\);'), f'const permanent_socket2 = io("{re.escape(website_url)}/api/game");'),
-        (re.compile(r'const permanent_socket = io\("/api/social"\);'), f'const permanent_socket = io("{re.escape(website_url)}/api/social");'),
+        (re.compile(r'const baseUrl = window\.location\.origin;'), f'const baseUrl = "{website_url}";'),
+        (re.compile(r'const socket = io\("/api/game"\);'), f'const socket = io("{website_url}/api/game");'),
+        (re.compile(r'const socket = io\("/api/social"\);'), f'const socket = io("{website_url}/api/social");'),
+        (re.compile(r'const socket2 = io\("/api/social"\);'), f'const socket2 = io("{website_url}/api/social");'),
+        (re.compile(r'const socket2 = io\("/api/game"\);'), f'const socket2 = io("{website_url}/api/game");'),
+        (re.compile(r'const permanent_socket2 = io\("/api/game"\);'), f'const permanent_socket2 = io("{website_url}/api/game");'),
+        (re.compile(r'const permanent_socket = io\("/api/social"\);'), f'const permanent_socket = io("{website_url}/api/social");'),
     ]
 
     for root, dirs, files in os.walk(root_dir):

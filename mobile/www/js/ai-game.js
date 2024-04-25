@@ -1,4 +1,4 @@
-const socket = io("/api/game");
+const socket = io("https://quanridor.ps8.academy/api/game");
 
 socket.on("connect", () => {
   console.log("Connected to server.");
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     socket.on("gameCreated", (game) => {
       gameId = game._id;
       initializeGame(game);
-      //const baseUrl = window.location.origin;
+      //const baseUrl = "https://quanridor.ps8.academy";
       //window.location.href = `${baseUrl}/ai-game.html?id=` + gameId;
 
       // Setting the game info display

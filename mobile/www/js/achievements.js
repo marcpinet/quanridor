@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const baseUrl = window.location.origin;
+  const baseUrl = "https://quanridor.ps8.academy";
   fetch(`${baseUrl}/api/achievements`, {
     method: "GET",
     headers: {
