@@ -10,4 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment webhook
-        run: curl -X POST http://quanridor.ps8.academy:5000/webhook
+        run: "echo 'Triggering deployment webhook'"
+        #run: curl -X POST http://quanridor.ps8.academy:5000/webhook
