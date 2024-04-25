@@ -1934,8 +1934,8 @@ button:disabled{
   }
 
   .game-item {
-    width: 50%;
-    max-width: 80vh;
+    width: 80%;
+    height: max-content;
     flex-wrap: wrap;
     gap: 15px;
   }
