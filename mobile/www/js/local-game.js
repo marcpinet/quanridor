@@ -17,8 +17,10 @@ const rightProfileBox = document.getElementById("right-player");
 leftProfileBox.style.borderColor = colored;
 rightProfileBox.style.borderColor = transparent;
 
-canvas.width = 703;
-canvas.height = 703;
+let canvasWidth = 703;
+let canvasHeight = 703;
+canvas.width = canvasWidth;
+canvas.height = canvasHeight;
 
 const winPopup = document.getElementById("result-popup");
 winPopup.style.display = "none";
@@ -337,7 +339,6 @@ function drawTempWall(coord, direction) {
 }
 
 function drawBoard() {
-  console.log(board_visibility);
   context.clearRect(0, 0, canvas.width, canvas.height);
   let gradient = context.createLinearGradient(0, 0, 0, canvas.height);
 
@@ -414,7 +415,10 @@ function drawBoard() {
 drawBoard();
 
 function getCaseFromCoord(x, y) {
-  return [Math.floor(x / 77), Math.floor(y / 77)];
+  let size = canvas.clientWidth;
+  let space = Math.round(10*size/703);
+  let caseSize = (67*size/703);
+  return [Math.floor(x / (caseSize + space)), Math.floor(y / (caseSize + space))];
 }
 
 function movePlayer(player, coord) {
@@ -433,7 +437,10 @@ function movePlayer(player, coord) {
 }
 
 function getWallFromCoord(x, y) {
-  return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
+  let size = canvas.clientWidth;
+  let space = Math.round(10*size/703);
+  let caseSize = (67*size/703);
+  return [Math.floor((x - caseSize / 2) / (caseSize + space)), Math.floor((y - caseSize / 2) / (caseSize + space))];
 }
 
 function sleep(ms) {

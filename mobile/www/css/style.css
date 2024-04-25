@@ -122,7 +122,7 @@ button.big-button:hover {
 }
 
 button.medium-button {
-  font-size: 48px;
+  font-size: 42px;
   min-width: fit-content;
   min-height: fit-content;
   max-width: 30vh;
@@ -1004,6 +1004,7 @@ canvas {
   background-color: #4650A8;
   border-radius: 20px;
   padding: 10px;
+  min-width: 200px;
   max-width: 200px;
   word-wrap: break-word;
 }
@@ -1269,7 +1270,7 @@ canvas {
 }
 
 #cross{
-  background: url("../assets/cross.svg") center/25px no-repeat;
+  background: url("../assets/cross.svg") center/20px no-repeat;
   width: 50px;
   height: 50px;
   position: absolute;
@@ -1514,7 +1515,7 @@ svg#close-arrow {
 }
 
 #to-achieve{
-  background-color: rgba(155, 155, 155, 0.4);
+  background-color: rgba(155, 155, 155, 0.276);
   pointer-events: none;
   border: none;
 }
@@ -1529,7 +1530,7 @@ svg#close-arrow {
   display: flex;
   justify-content: space-around;
   padding: 20px;
-  max-height: 90vh;
+  max-height: 70vh;
 }
 
 /* Style des colonnes de classement */
@@ -1543,7 +1544,7 @@ svg#close-arrow {
 
 /* Style du titre de la colonne */
 .leaderboard-title {
-  font-size: 50px;
+  font-size: 42px;
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -1551,12 +1552,12 @@ svg#close-arrow {
 /* Style de la liste de classement */
 .leaderboard {
   margin-top: 40px;
-  background-color: rgba(100, 100, 150, 0.75); /* Couleur de fond de la liste */
-  border-radius: 8px; /* Coins arrondis */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  background-color: rgba(1,5,37,1);  /* Couleur de fond de la liste */
+  border-radius: 30px; /* Coins arrondis */ /* Ombre légère */
   padding: 20px;
   height: 80%; /* Hauteur maximale de la liste avec défilement */
   text-align: center; /* Centrage horizontal des éléments */
+  font-size: large;
 }
 
 /* Style des éléments de la liste */
@@ -1564,15 +1565,13 @@ svg#close-arrow {
   font-size: 20px;
   margin-bottom: 10px; /* Espacement entre les éléments */
   padding: 10px;
-  border-radius: 5px; /* Coins arrondis */
-  background-color: rgba(150, 150, 150, 0.75); /* Couleur de fond des éléments */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+  border-radius: 20px; /* Coins arrondis */
+  background-color: rgba(1,5,37,1); /* Couleur de fond des éléments */
   display: flex; /* Pour que les éléments soient alignés horizontalement */; /* Pour que les éléments soient alignés horizontalement */
   font-family: 'Nunito', sans-serif; /* Police de caractères */
-  max-width: 80%;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
   align-items: center;
+  font-size: large;
 }
 
 .rank {
@@ -1596,7 +1595,7 @@ svg#close-arrow {
 
 /* Style pour le survol des éléments de la liste */
 .leaderboard-item:hover {
-  background-color: #5b818f; /* Changement de couleur au survol */
+  background-color: rgba(155, 85, 255, 0.75); /* Changement de couleur au survol */
 }
 
 @keyframes shine {
@@ -1620,25 +1619,28 @@ svg#close-arrow {
 
 /* Style pour les éléments du classement avec un rang d'or */
 .leaderboard-item.gold {
-  background-color: gold; /* Or pour le rang 1 */
-  color: black; /* Couleur du texte */
-  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */  
+  background-color: rgb(255, 219, 102); /* Or pour le rang 1 */
+  color: rgba(1,5,37,1); /* Couleur du texte */
+  font-size: large;
 }
+  
 
 /* Style pour les éléments du classement avec un rang d'argent */
 .leaderboard-item.silver {
-  background-color: silver; /* Argent pour le rang 2 */
-  color: black; /* Couleur du texte */
-  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
-  animation-delay: 0.25s;
+  background-color: #ddc2e3; /* Argent pour le rang 2 */
+  color: rgba(1,5,37,1); /* Couleur du texte */
+  animation: shine 2s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
+  animation-delay: 1.5s;
+  font-size: large;
 }
 
 /* Style pour les éléments du classement avec un rang de bronze */
 .leaderboard-item.bronze {
-  background-color: #cd7f32; /* Bronze pour le rang 3 */
-  color: black; /* Couleur du texte */
+  background-color: #e48e55; /* Bronze pour le rang 3 */
+  color: rgba(1,5,37,1); /* Couleur du texte */
   animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
-  animation-delay: 0.5s;
+  animation-delay: 0.25s;
+  font-size: large;
   
 }
 
@@ -1722,8 +1724,8 @@ button:disabled{
     width: 3vh; /* Adjust the width to make the arrow small */
     height: 3vh; /* Adjust the height to make the arrow small */
     position: absolute;
-    top: -10px;
-    left: -25px;
+    top: 2vh;
+    left: -2vh;
     transform: none; /* Use transform property to adjust position */
     filter: none;
     cursor: pointer;
@@ -1782,17 +1784,25 @@ button:disabled{
     width: 30vh;
     justify-content: center;
     align-items: center;
-    height: 15vw;
+    height: 20vw;
     min-height: fit-content;
     max-height: 30vh;
+    margin-top: 3vh;
   }
 
   #mobile-hide{
     display: none;
   }
 
+  #close-friends{
+    display: flex;
+    background: url("../assets/cross.svg") center/40px no-repeat;
+    width: 50px;
+    height: 50px;
+  }
+
   #logout{
-    background: url("../assets/logout.svg") center/60px no-repeat;
+    background: url("../assets/logout.svg") center/50px no-repeat;
     width: 100px;
     height: 10vh;
   }
@@ -1826,7 +1836,14 @@ button:disabled{
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 0px;
+  }
+
+  #home-footer{
+    margin-top: 2vh;
+  }
+
+  #home-body{
+    width: fit-content;
   }
 
   .popup {
@@ -1857,17 +1874,37 @@ button:disabled{
 
   #friend-side-bar{
     display: none;
-    position: absolute;
-    top: 70%;
-    left: 63%;
-    justify-content: center;
-    align-items: center;
-    transform: translate(-50%, -50%);
     width: 100%;
+    margin-top: 5vh;
+    margin-right: 2vh;
   }
 
   #add-friend-container{
+    width: 90%;
+  }
+
+  #friend-profile-buttons{
+    gap: 5vw;
+  }
+
+  .friend-box{
     width: 100%;
+    height: 100%;
+  }
+
+  .scrollbar-friend-content {
+    padding: 10px;
+    height: 76vh;
+    overflow-y: auto;
+    scrollbar-color: #EE4F3A rgba(1,5,37,1);
+    scroll-behavior: smooth;
+  }
+
+  #play-menu-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
   }
 
   #play-menu-button-container {

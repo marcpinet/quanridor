@@ -15,7 +15,7 @@ const searchButton = document.getElementById("search");
 const friendSearchBar = document.getElementById("search-input");
 const closeSearchButton = document.getElementById("close-search");
 const messageCountList = document.getElementsByClassName(
-  "unread-message-count",
+  "unread-message-count"
 );
 const unfriendIcon = document.getElementById("unfriend");
 const removeFriendContainer = document.getElementById("remove-friend");
@@ -28,6 +28,7 @@ const userMobile = document.getElementById("user-mobile");
 const profileBox = document.getElementsByClassName("profile-box")[0];
 const friendsMobile = document.getElementById("friends");
 const friendSideBar = document.getElementById("friend-side-bar");
+const closeFriends = document.getElementById("close-friends");
 
 let notificationCount = 0;
 
@@ -159,8 +160,9 @@ function displaySideNotification(notification) {
   sideNotification.style.display = "block";
 
   if (
-    notification.type === "friendRequest" ||
-    notification.type === "battleRequest"
+    /Mobi|Android/i.test(navigator.userAgent) &&
+    (notification.type === "friendRequest" ||
+      notification.type === "battleRequest")
   ) {
     cordova.plugins.notification.local.schedule(
       {
@@ -188,7 +190,7 @@ function displaySideNotification(notification) {
         }
       }
     );
-  } else {
+  } else if (/Mobi|Android/i.test(navigator.userAgent)) {
     console.log("Scheduling chat notification");
     cordova.plugins.notification.local.schedule({
       title: notification.title,
@@ -201,10 +203,12 @@ function displaySideNotification(notification) {
 closeSearchButton.addEventListener("click", function () {
   searchHeader.style.display = "none";
   friendButtons.style.display = "flex";
+  if (closeFriends != null) closeFriends.style.display = "flex";
 });
 
 searchButton.addEventListener("click", function () {
   friendButtons.style.display = "none";
+  if (closeFriends != null) closeFriends.style.display = "none";
   searchHeader.style.display = "flex";
   friendSearchBar.focus();
 });
@@ -212,8 +216,6 @@ searchButton.addEventListener("click", function () {
 bellIcon.addEventListener("click", () => {
   togglePopup();
 });
-
-
 
 window.addEventListener("click", (event) => {
   if (
@@ -249,16 +251,17 @@ window.addEventListener("click", (event) => {
     friendProfile.style.display = "none";
   }
 
-  if(
-    !event.target.matches("#friend-side-bar") &&
-    !event.target.matches("#friends") &&
-    !friendSideBar.contains(event.target) &&
-    !event.target.matches(".friend-container") &&
-    !event.target.matches("#friend-profile") &&
-    !friendProfile.contains(event.target) &&
-    !friendsContainer.contains(event.target) || event.target.matches("#add-friend")
-  )
-  {
+  if (
+    (!event.target.matches("#friend-side-bar") &&
+      !event.target.matches("#friends") &&
+      friendSideBar !== null &&
+      !friendSideBar.contains(event.target) &&
+      !event.target.matches(".friend-container") &&
+      !event.target.matches("#friend-profile") &&
+      !friendProfile.contains(event.target) &&
+      !friendsContainer.contains(event.target)) ||
+    event.target.matches("#add-friend")
+  ) {
     friendSideBar.style.display = "none";
   }
 
@@ -347,10 +350,10 @@ closeChatButton.addEventListener("click", function () {
 
   if (currentSelectedFriendContainer !== null) {
     currentSelectedFriendContainer.querySelector(
-      ".unread-message-count",
+      ".unread-message-count"
     ).style.display = "none";
     currentSelectedFriendContainer.querySelector(
-      ".unread-message-count",
+      ".unread-message-count"
     ).textContent = "0";
   }
 
@@ -403,22 +406,29 @@ addFriendInput.addEventListener("keydown", function (event) {
   }
 });
 
-if(userMobile != null){
+if (userMobile != null) {
   userMobile.addEventListener("click", function () {
     toggleUserMobile();
   });
 }
 
 function toggleUserMobile() {
-  profileBox.style.display = profileBox.style.display === "block" ? "none" : "block";
+  profileBox.style.display =
+    profileBox.style.display === "block" ? "none" : "block";
 }
 
-if(friendsMobile != null){
+if (friendsMobile != null && closeFriends != null) {
   friendsMobile.addEventListener("click", function () {
+    toggleFriendSideBar();
+  });
+
+  closeFriends.addEventListener("click", function () {
     toggleFriendSideBar();
   });
 }
 
-function toggleFriendSideBar(){
-  friendSideBar.style.display = friendSideBar.style.display === "block" ? "none" : "block";
+function toggleFriendSideBar() {
+  if(friendSideBar === null) return;
+  friendSideBar.style.display =
+    friendSideBar.style.display === "block" ? "none" : "block";
 }

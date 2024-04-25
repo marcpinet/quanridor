@@ -477,7 +477,10 @@ function drawBoard() {
 drawBoard();
 
 function getCaseFromCoord(x, y) {
-  return [Math.floor(x / 77), Math.floor(y / 77)];
+  let size = canvas.clientWidth;
+  let space = Math.round(10*size/703);
+  let caseSize = (67*size/703);
+  return [Math.floor(x / (caseSize + space)), Math.floor(y / (caseSize + space))];
 }
 
 function clearAfterWin() {
@@ -531,7 +534,10 @@ socket.on("draw", () => {
 });
 
 function getWallFromCoord(x, y) {
-  return [Math.floor((x - 67 / 2) / 77), Math.floor((y - 67 / 2) / 77)];
+  let size = canvas.clientWidth;
+  let space = Math.round(10*size/703);
+  let caseSize = (67*size/703);
+  return [Math.floor((x - caseSize / 2) / (caseSize + space)), Math.floor((y - caseSize / 2) / (caseSize + space))];
 }
 
 let checking = false;
