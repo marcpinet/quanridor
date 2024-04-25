@@ -6,6 +6,8 @@
 
 You can access the project by visiting: [http://quanridor.ps8.academy/](http://quanridor.ps8.academy/)
 
+_Unless I forgot to pay the bill, in which case you can still run the project locally by following the instructions below_
+
 ## 📝 Description
 
 Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still _very_ limited).
@@ -27,7 +29,9 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 - Leaving a game? No problem, it's in our database, waiting for you to join back! 📂
 - Multiplayer online games with friends or random people 🌐
 - Social system (friends, chat, emotes, notifications, etc.) 📱
+- Challenge your friends to a duel! 🤺
 - Leaderboard with elo 🏆
+- Compatibility with mobile devices 📱
 
 ## ⚙️ Local installation
 
@@ -35,8 +39,11 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 
 - Node.js 18+
 - Docker
+- Cordova (only if you want to run the mobile version)
 
 ### Setup
+
+#### For PC
 
 1. **Clone** the repository to your local machine.
 
@@ -53,16 +60,36 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 3. **Build and run** the backend using Docker.
 
    ```bash
-   docker compose up --build
+   docker compose up -d
    ```
 
-4. Run the frontend by opening the [index.html](mobile/www/index.html) file in your browser.
+4. Run the frontend by going to [http://localhost:8000](http://localhost:8000) in your browser.
 
 5. **Play**!
 
 > [!NOTE]  
 > The only libraries required for the backend to work are `mongodb`, `nodemon`, `socket.io`, `jsonwebtoken` and `bcrypt`.
 > There's also `husky` to enforce the use of `prettier` on every commit (and also for DevOps purposes)
+
+#### For mobile
+
+1. Make sure you have Cordova correctly installed and configured (see [Cordova's documentation](https://cordova.apache.org/docs/en/11.x/guide/platforms/android/)).
+
+2. **Navigate** to the `mobile` folder.
+
+   ```bash
+   cd mobile
+   ```
+
+3. Run `build.bat`
+
+4. **Run** the app on your mobile device.
+
+   ```bash
+   cordova run android
+   ```
+
+5. **Play**!
 
 ## 💡 How to use
 
