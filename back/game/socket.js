@@ -944,6 +944,21 @@ function createSocketGame(io) {
         { $set: { elo: data.newElo } },
       );
     });
+
+    socket.on("dialogue", (data) => {
+      const player = data.player;
+      const message = data.message;
+      console.log(`Received dialogue: ${message} from player: ${player}`);
+      gameNamespace.to(data.roomId).emit("dialogue", { player, message });
+    });
+
+    socket.on("emoji", (data) => {
+      console.log("zadazeaz");
+      const player = data.player;
+      const message = data.message;
+      console.log(`Received emoji: ${message} from player: ${player}`);
+      gameNamespace.to(data.roomId).emit("emoji", { player, message });
+    });
   });
 
   return io;

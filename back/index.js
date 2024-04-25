@@ -33,6 +33,16 @@ const server = http.createServer(function (request, response) {
   // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
 });
 
+// Add cors to the server
+server.on("request", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, X-Requested-With"
+  );
+});
+
 // We need to create a socket server to handle real-time communication.
 const io = new Server(server, {
   cors: {

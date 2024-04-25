@@ -22,7 +22,7 @@ if (roomId) {
 
 let gameId;
 let difficulty;
-let player;
+export let player;
 let timer;
 let timerInterval;
 let waitingTimerInterval;
@@ -1704,5 +1704,3 @@ function muteEmote(mute) {
     leftEmotes.style.display = mute ? "none" : "flex";
     emoteButton.disabled = mute;
 }
-
-

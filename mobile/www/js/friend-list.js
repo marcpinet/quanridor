@@ -301,7 +301,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("redirectToGame", (roomId) => {
-    window.location.href = `online-game.html?roomId=${roomId}`;
+    if(/Mobi|Android/i.test(navigator.userAgent)) {
+      window.location.href = `online-game.html?roomId=${roomId}`;
+    }
+    else {
+      window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+    }
   });
 
   socket.on("lastLaunchServ", (data) => {
@@ -906,7 +911,12 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ type: "battleRequest" }),
       });
 
-      window.location.href = `online-game.html?roomId=${roomId}`;
+      if(/Mobi|Android/i.test(navigator.userAgent)) {
+        window.location.href = `online-game.html?roomId=${roomId}`;
+      }
+      else {
+        window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+      }
     } catch (error) {
       console.error("Error accepting battle request:", error);
     }
