@@ -1861,7 +1861,7 @@ button:disabled{
     border-radius: 30px;
   }
 
-  .profile-box {
+  .profile-box-mobile {
     display: none;
     position: absolute;
     top: 54%;

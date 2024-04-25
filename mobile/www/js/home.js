@@ -25,7 +25,10 @@ const addFriendPopupCross = document.getElementById("cross");
 const addFriendPopup = document.getElementById("add-friend-container");
 const addFriendButton = document.getElementById("add-friend");
 const userMobile = document.getElementById("user-mobile");
-const profileBox = document.getElementsByClassName("profile-box")[0];
+let profileBox = document.getElementsByClassName("profile-box")[0];
+
+profileBox = profileBox === undefined ? document.getElementsByClassName("profile-box-mobile")[0] : profileBox;
+
 const friendsMobile = document.getElementById("friends");
 const friendSideBar = document.getElementById("friend-side-bar");
 const closeFriends = document.getElementById("close-friends");
@@ -229,7 +232,7 @@ window.addEventListener("click", (event) => {
   }
 
   if (
-    !event.target.matches(".profile-box") &&
+    !event.target.matches(".profile-box-mobile") &&
     !profileBox.contains(event.target) &&
     userMobile != null &&
     !event.target.matches("#user-mobile")
