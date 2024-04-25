@@ -1723,8 +1723,8 @@ button:disabled{
     width: 3vh; /* Adjust the width to make the arrow small */
     height: 3vh; /* Adjust the height to make the arrow small */
     position: absolute;
-    top: -10px;
-    left: -25px;
+    top: 2vh;
+    left: -2vh;
     transform: none; /* Use transform property to adjust position */
     filter: none;
     cursor: pointer;
