@@ -78,7 +78,6 @@ function displaySideNotification(notification) {
   const notificationTitle = document.createElement("div");
   notificationTitle.classList.add("notification");
   notificationTitle.textContent = notification.title;
-  sideNotification.appendChild(notificationTitle);
 
   const closeArrow = document.createElement("svg");
   closeArrow.id = "close-arrow";
@@ -88,6 +87,9 @@ function displaySideNotification(notification) {
     sideNotification.style.display = "none";
   });
   sideNotification.appendChild(closeArrow);
+
+  sideNotification.appendChild(notificationTitle);
+
 
   if (notification.type === "friendRequest") {
     const verticalContainer = document.createElement("div");
