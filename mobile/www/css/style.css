@@ -1621,6 +1621,8 @@ svg#close-arrow {
 .leaderboard-item.gold {
   background-color: rgb(255, 219, 102); /* Or pour le rang 1 */
   color: rgba(1,5,37,1); /* Couleur du texte */
+  animation: shine 2s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
+  animation-delay: 1.5s;
   font-size: large;
 }
   
@@ -1638,8 +1640,8 @@ svg#close-arrow {
 .leaderboard-item.bronze {
   background-color: #e48e55; /* Bronze pour le rang 3 */
   color: rgba(1,5,37,1); /* Couleur du texte */
-  animation: shine 1.5s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
-  animation-delay: 0.25s;
+  animation: shine 2s infinite ease-in-out; /* Animation de brillance infinie pendant 1.5 secondes */
+  animation-delay: 1.5s;
   font-size: large;
   
 }
