@@ -211,6 +211,13 @@ button:hover {
   font-size: 32px;
 }
 
+.friends .text{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
 .small-text {
   text-align: center; 
   font-size: medium; 
@@ -1733,6 +1740,25 @@ button:disabled{
     cursor: pointer;
   }
   
+  #result-popup{
+    display: none;
+    position: absolute;
+    width: 80%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    border-radius: 30px;
+    background-color: rgba(1,5,37,1);
+    box-shadow: 0px 15px 20px #111430;
+    border: 5px solid #4650A8;
+    justify-content: center; 
+    z-index: 3;
+  }
 
   form{
     display: flex;
@@ -1933,6 +1959,49 @@ button:disabled{
     height: 30%;
   }
 
+  .profile-box{
+    display: flex;
+    background-color: rgba(1,5,37,1);
+    border-color: rgba(70, 80, 168, 0);
+    border-radius: 38px;
+    border-style: solid;
+    border-width: 10px;
+    height: 30%;
+    width: 80%;
+  }
+
+  .text{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .big-text{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  #replay{
+    position: absolute;
+    bottom: -100px;
+    right: 100px;
+    justify-content: flex-end;
+    background: url("../assets/replay.svg") center/150px no-repeat;
+    width: 200px;
+    height: 10vh;
+    cursor: pointer;
+    filter: none;
+    padding: 50px;
+    rotate: 5deg;
+  }
+
+  body#game #user{
+    width: 100px;
+    height: 100px;
+  }
+
+  
 }
 
 form {
