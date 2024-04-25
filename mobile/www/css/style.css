@@ -2002,6 +2002,35 @@ button:disabled{
   }
 
   
+
+  .game-item {
+    width: 70%;
+    height: max-content;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  #game-list-page-container {
+    width: fit-content;
+    margin: auto;
+  }
+
+  #game-list-container {
+    margin: auto;
+  }
+
+  #game-choice-title {
+    font-size: 40px;
+  }
+
+  .game-item:hover {
+    border: 6px solid #4650a8;
+    width: 70%;
+    height: max-content;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
 }
 
 form {
