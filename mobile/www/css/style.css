@@ -1933,6 +1933,11 @@ button:disabled{
     height: 30%;
   }
 
+  .game-item {
+    width: 70%;
+    flex-wrap: wrap;
+  }
+
 }
 
 form {
