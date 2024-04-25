@@ -953,6 +953,7 @@ function createSocketGame(io) {
     });
 
     socket.on("emoji", (data) => {
+      console.log("zadazeaz");
       const player = data.player;
       const message = data.message;
       console.log(`Received emoji: ${message} from player: ${player}`);

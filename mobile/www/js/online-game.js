@@ -1642,9 +1642,10 @@ function showDialogue() {
 }
 
 socket.on("dialogue", (data) => {
-  const { player, message } = data;
-  console.log("Received dialogue: ", message + " from player: " + player);
-  if (player === 1) {
+  console.log("azeazeazeaze");
+  const { playerSend, message } = data;
+  console.log("Received dialogue: ", message + " from player: " + playerSend);
+  if (playerSend === 1) {
     leftDialoguePopup.innerHTML = message;
     leftDialoguePopup.style.display = "block";
     setTimeout(() => {
@@ -1660,9 +1661,10 @@ socket.on("dialogue", (data) => {
 });
 
 socket.on("emoji", (data) => {
-  const { player, message: emoji } = data;
-  console.log("Received emoji: ", emoji + " from player: " + player);
-  if (player === 1) {
+  console.log("azeazeazeaze");
+  const { playerSend, message: emoji } = data;
+  console.log("Received emoji: ", emoji + " from player: " + playerSend);
+  if (playerSend === 1) {
     leftEmojiPopup.innerHTML = emoji;
     leftEmojiPopup.style.display = "block";
     setTimeout(() => {
