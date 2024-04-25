@@ -27,11 +27,7 @@ const addFriendButton = document.getElementById("add-friend");
 const userMobile = document.getElementById("user-mobile");
 const profileBox = document.getElementsByClassName("profile-box")[0];
 const friendsMobile = document.getElementById("friends");
-const friendSideBar = document.getElementById(
-  /Mobi|Android/i.test(navigator.userAgent)
-    ? "friend-side-bar"
-    : "left-container",
-);
+const friendSideBar = document.getElementById("friend-side-bar"); // marcus idiot
 
 let notificationCount = 0;
 
