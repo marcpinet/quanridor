@@ -22,7 +22,7 @@ if (roomId) {
 
 let gameId;
 let difficulty;
-export let player;
+let player;
 let timer;
 let timerInterval;
 let waitingTimerInterval;
@@ -1599,6 +1599,8 @@ function toggleEmotePopup(hide = false) {
 
 function showEmoji() {
   if (selectedEmoji) {
+    let data = { player, message: selectedEmoji, roomId: roomId };
+    console.log(data);
     socket.emit("emoji", { player, message: selectedEmoji, roomId: roomId });
     if (player === 1) {
       leftEmojiPopup.innerHTML = selectedEmoji;
@@ -1638,6 +1640,42 @@ function showDialogue() {
     selectedDialogue = null;
   }
 }
+
+socket.on("dialogue", (data) => {
+  const { player, message } = data;
+  console.log("Received dialogue: ", message + " from player: " + player);
+  if (player === 1) {
+    leftDialoguePopup.innerHTML = message;
+    leftDialoguePopup.style.display = "block";
+    setTimeout(() => {
+      leftDialoguePopup.style.display = "none";
+    }, emoteDelay);
+  } else {
+    rightDialoguePopup.innerHTML = message;
+    rightDialoguePopup.style.display = "block";
+    setTimeout(() => {
+      rightDialoguePopup.style.display = "none";
+    }, emoteDelay);
+  }
+});
+
+socket.on("emoji", (data) => {
+  const { player, message: emoji } = data;
+  console.log("Received emoji: ", emoji + " from player: " + player);
+  if (player === 1) {
+    leftEmojiPopup.innerHTML = emoji;
+    leftEmojiPopup.style.display = "block";
+    setTimeout(() => {
+      leftEmojiPopup.style.display = "none";
+    }, emoteDelay);
+  } else {
+    rightEmojiPopup.innerHTML = emoji;
+    rightEmojiPopup.style.display = "block";
+    setTimeout(() => {
+      rightEmojiPopup.style.display = "none";
+    }, emoteDelay);
+  }
+});
 
 crossEmotePopup.addEventListener("click", () => toggleEmotePopup(true));
 emoteButton.addEventListener("click", () => toggleEmotePopup());
