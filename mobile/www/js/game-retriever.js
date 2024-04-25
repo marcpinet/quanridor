@@ -82,9 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
         gameItemElement.addEventListener("click", () => {
 
           if (/Mobi|Android/i.test(navigator.userAgent)) {
-            window.location.href = "ai-game-mobile.html";
+            window.location.href = `ai-game-mobile.html?id=${game._id}`;
           } else {
-            window.location.href = "ai-game.html";
+            window.location.href = `ai-game.html?id=${game._id}`;
           }
         });
       });
