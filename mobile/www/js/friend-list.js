@@ -994,17 +994,20 @@ document.addEventListener("DOMContentLoaded", function () {
 function addMessageToChat(message, isFromFriend) {
   const messageList = document.getElementById("message-list");
   const messageElement = document.createElement("div");
+  const messageContainer = document.createElement("div");
+
   messageElement.classList.add("friend-text-container");
 
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
     messageElement.style.marginRight = "auto";
+    messageContainer.style.backgroundColor = "#ec7982"
   } else {
     messageElement.style.flexDirection = "row";
     messageElement.style.marginLeft = "auto";
   }
 
-  const messageContainer = document.createElement("div");
+  
   messageContainer.classList.add("message-container");
   messageElement.appendChild(messageContainer);
 
