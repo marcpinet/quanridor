@@ -27,7 +27,11 @@ const addFriendButton = document.getElementById("add-friend");
 const userMobile = document.getElementById("user-mobile");
 const profileBox = document.getElementsByClassName("profile-box")[0];
 const friendsMobile = document.getElementById("friends");
-const friendSideBar = document.getElementById("friend-side-bar");
+const friendSideBar = document.getElementById(
+  /Mobi|Android/i.test(navigator.userAgent)
+    ? "friend-side-bar"
+    : "left-container",
+);
 
 let notificationCount = 0;
 
@@ -186,7 +190,7 @@ function displaySideNotification(notification) {
             declineBattleRequest(notification._id);
           }
         }
-      }
+      },
     );
   } else {
     console.log("Scheduling chat notification");
@@ -212,8 +216,6 @@ searchButton.addEventListener("click", function () {
 bellIcon.addEventListener("click", () => {
   togglePopup();
 });
-
-
 
 window.addEventListener("click", (event) => {
   if (
@@ -249,16 +251,16 @@ window.addEventListener("click", (event) => {
     friendProfile.style.display = "none";
   }
 
-  if(
-    !event.target.matches("#friend-side-bar") &&
-    !event.target.matches("#friends") &&
-    !friendSideBar.contains(event.target) &&
-    !event.target.matches(".friend-container") &&
-    !event.target.matches("#friend-profile") &&
-    !friendProfile.contains(event.target) &&
-    !friendsContainer.contains(event.target) || event.target.matches("#add-friend")
-  )
-  {
+  if (
+    (!event.target.matches("#friend-side-bar") &&
+      !event.target.matches("#friends") &&
+      !friendSideBar.contains(event.target) &&
+      !event.target.matches(".friend-container") &&
+      !event.target.matches("#friend-profile") &&
+      !friendProfile.contains(event.target) &&
+      !friendsContainer.contains(event.target)) ||
+    event.target.matches("#add-friend")
+  ) {
     friendSideBar.style.display = "none";
   }
 
@@ -403,22 +405,24 @@ addFriendInput.addEventListener("keydown", function (event) {
   }
 });
 
-if(userMobile != null){
+if (userMobile != null) {
   userMobile.addEventListener("click", function () {
     toggleUserMobile();
   });
 }
 
 function toggleUserMobile() {
-  profileBox.style.display = profileBox.style.display === "block" ? "none" : "block";
+  profileBox.style.display =
+    profileBox.style.display === "block" ? "none" : "block";
 }
 
-if(friendsMobile != null){
+if (friendsMobile != null) {
   friendsMobile.addEventListener("click", function () {
     toggleFriendSideBar();
   });
 }
 
-function toggleFriendSideBar(){
-  friendSideBar.style.display = friendSideBar.style.display === "block" ? "none" : "block";
+function toggleFriendSideBar() {
+  friendSideBar.style.display =
+    friendSideBar.style.display === "block" ? "none" : "block";
 }
