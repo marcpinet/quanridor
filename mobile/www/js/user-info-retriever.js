@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("No token found in local storage.");
     return;
   }
-  const baseUrl = "https://quanridor\.ps8\.academy";
+  const baseUrl = "https://quanridor.ps8.academy";
   fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {

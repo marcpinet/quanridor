@@ -1,4 +1,4 @@
-const baseUrl = "https://quanridor\.ps8\.academy";
+const baseUrl = "https://quanridor.ps8.academy";
 
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector("form");

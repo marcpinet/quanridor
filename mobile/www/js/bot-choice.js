@@ -1,4 +1,4 @@
-const socket = io("https://quanridor\.ps8\.academy/api/game");
+const socket = io("https://quanridor.ps8.academy/api/game");
 
 const AI0 = document.getElementById("AI0");
 const AI1 = document.getElementById("AI1");

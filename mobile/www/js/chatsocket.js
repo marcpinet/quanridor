@@ -1,10 +1,10 @@
 if (/Mobi|Android/i.test(navigator.userAgent)) {
   document.addEventListener("DOMContentLoaded", function () {
-    const permanent_socket = io("https://quanridor\.ps8\.academy/api/social");
-    const permanent_socket2 = io("https://quanridor\.ps8\.academy/api/game");
+    const permanent_socket = io("https://quanridor.ps8.academy/api/social");
+    const permanent_socket2 = io("https://quanridor.ps8.academy/api/game");
 
     const token = localStorage.getItem("token");
-    const baseUrl = "https://quanridor\.ps8\.academy";
+    const baseUrl = "https://quanridor.ps8.academy";
     fetch(`${baseUrl}/api/users`, {
       method: "GET",
       headers: {

@@ -1,6 +1,6 @@
 // -------------------------- FRIENDS --------------------------
 
-const socket2 = io("https://quanridor\.ps8\.academy/api/game");
+const socket2 = io("https://quanridor.ps8.academy/api/game");
 const friendIdToUsername = {};
 let currentSelectedFriendId = null;
 let isChatVisible = false;
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const baseUrl = "https://quanridor\.ps8\.academy";
+  const baseUrl = "https://quanridor.ps8.academy";
   fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 let currentUserId;
 
 document.addEventListener("DOMContentLoaded", function () {
-  const socket = io("https://quanridor\.ps8\.academy/api/social");
+  const socket = io("https://quanridor.ps8.academy/api/social");
 
   const sendMessageButton = document.getElementById("send");
   const messageInput = document.getElementById("message-input");
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const baseUrl = "https://quanridor\.ps8\.academy";
+  const baseUrl = "https://quanridor.ps8.academy";
 
   const fetchFriendDetails = (friendId) => {
     return fetch(`${baseUrl}/api/users/${friendId}`, {
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const baseUrl = "https://quanridor\.ps8\.academy";
+    const baseUrl = "https://quanridor.ps8.academy";
     fetch(`${baseUrl}/api/users`, {
       method: "GET",
       headers: {
