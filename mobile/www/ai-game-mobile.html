@@ -2,14 +2,9 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Quanridor - AI</title>
+    <title>Quanridor - AI Game</title>
     <link rel="stylesheet" href="css/style.css" type="text/css" />
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-    <script>
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = "local-game-mobile.html";
-      }
-    </script>
   </head>
   <body id="game">
     <div class="horizontal-container">
@@ -20,13 +15,13 @@
         <br />
         <br />
         <br />
-        <div class="profile-box" id="left-player">
-          <div class="vertical-small-container" style="height: 100%">
+        <div id="left-player" class="profile-box">
+          <div class="vertical-small-container">
             <br />
             <svg id="user"></svg>
-            <h1 class="text">Player 1</h1>
+            <h1 class="text" id="player1-name">Player</h1>
             <div id="separator"></div>
-            <h1 class="text">ELO : 100</h1>
+            <h1 class="text" id="player1-elo">ELO : N/A</h1>
             <div class="wall-bar-container">
               <div class="small-text">Walls</div>
               <div id="wall-bar-1" class="wall-bar">
@@ -48,13 +43,9 @@
       <div class="vertical-small-container">
         <canvas></canvas>
         <div class="horizontal-small-container">
-          <button class="small-button" id="confirm">
-            Put Wall
-          </button>
+          <button class="small-button" id="confirm">Put Wall</button>
           <a href="home.html"
-            ><button class="small-button" id="leave">
-              Leave
-            </button></a
+            ><button class="small-button" id="leave">Leave</button></a
           >
         </div>
       </div>
@@ -65,13 +56,13 @@
         <br />
         <br />
         <br />
-        <div class="profile-box" id="right-player">
-          <div class="vertical-small-container" style="height: 100%">
+        <div id="right-player" class="profile-box">
+          <div class="vertical-small-container">
             <br />
             <svg id="user"></svg>
-            <h1 class="text">Player 2</h1>
+            <h1 class="text" id="player2-name">AI</h1>
             <div id="separator"></div>
-            <h1 class="text">ELO : 100</h1>
+            <h1 class="text" id="player2-elo">ELO : N/A</h1>
             <div class="wall-bar-container">
               <div class="small-text">Walls</div>
               <div id="wall-bar-2" class="wall-bar">
@@ -91,22 +82,19 @@
         </div>
       </div>
     </div>
-
+    <div id="smoke" class="anticheat"></div>
 
     <div id="result-popup">
       <div class="vertical-small-container">
         <h1 id="win-text" class="big-text"></h1>
-        <h2 class="text" id="elo-scores">NO ELO SCORE IN LOCAL</h2>
-        <a href="local-game.html"><svg id="replay"></svg></a>
+        <h2 class="text" id="elo-scores">NO ELO SCORE AGAINST BOTS</h2>
+        <a><svg id="replay"></svg></a>
         <a href="home.html"><svg id="home"></svg></a>
       </div>
     </div>
 
-    <div id="smoke" class="anticheat"><button id="ready" class="big-button">Ready?</button></div>
-    <script src="cordova.js"></script>
     <script src="js/socket.io.js"></script>
-    <script src="js/chatsocket.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
-    <script src="js/local-game.js" type="module"></script>
+    <script src="js/ai-game-mobile.js" type="module"></script>
   </body>
 </html>

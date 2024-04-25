@@ -301,7 +301,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("redirectToGame", (roomId) => {
-    window.location.href = `online-game.html?roomId=${roomId}`;
+    if(/Mobi|Android/i.test(navigator.userAgent)) {
+      window.location.href = `online-game.html?roomId=${roomId}`;
+    }
+    else {
+      window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+    }
   });
 
   socket.on("lastLaunchServ", (data) => {
@@ -309,13 +314,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("newMessage", function (message) {
-    addMessageToChat(message, message.from !== currentUserId);
+    // si y'a heja remettre addMessageToChat(message, message.from !== currentUserId); ici et mettre la même vérif de check qu'en dessous
 
     if (message.from !== currentUserId) {
       const friendId = message.from;
 
       // Vérifier si le message provient de l'ami actuellement sélectionné
       if (friendId === currentSelectedFriendId) {
+        addMessageToChat(message, message.from !== currentUserId);
         // Marquer les messages comme lus
         fetch(`${baseUrl}/api/markMessagesAsRead?friendId=${friendId}`, {
           method: "PUT",
@@ -905,7 +911,12 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ type: "battleRequest" }),
       });
 
-      window.location.href = `online-game.html?roomId=${roomId}`;
+      if(/Mobi|Android/i.test(navigator.userAgent)) {
+        window.location.href = `online-game.html?roomId=${roomId}`;
+      }
+      else {
+        window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+      }
     } catch (error) {
       console.error("Error accepting battle request:", error);
     }
@@ -1002,8 +1013,7 @@ function addMessageToChat(message, isFromFriend) {
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
     messageElement.style.marginRight = "auto";
-    messageContainer.style.backgroundColor = "#f3f2f2"
-    messageContent.style.color = "black"
+    messageContainer.style.backgroundColor = "#1D2358"
   } else {
     messageElement.style.flexDirection = "row";
     messageElement.style.marginLeft = "auto";

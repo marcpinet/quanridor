@@ -80,8 +80,12 @@ document.addEventListener("DOMContentLoaded", function () {
         gamesListElement.appendChild(gameItemElement);
 
         gameItemElement.addEventListener("click", () => {
-          // TODO: Add a check if it was a game against AI or not and adapt the redirection
-          window.location.href = `ai-game.html?id=${game._id}`; // Safe cuz the jwt token is checked on the server side
+
+          if (/Mobi|Android/i.test(navigator.userAgent)) {
+            window.location.href = `ai-game-mobile.html?id=${game._id}`;
+          } else {
+            window.location.href = `ai-game.html?id=${game._id}`;
+          }
         });
       });
     } catch (error) {

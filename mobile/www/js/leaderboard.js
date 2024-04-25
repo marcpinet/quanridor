@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usernameElement.style.alignItems = "center";
         usernameElement.style.justifyContent = "center";
         usernameElement.appendChild(iconWrapper);
-        usernameElement.innerHTML += ` <b>>${user.username}<</b>`;
+        usernameElement.innerHTML += ` <b>> ${user.username} <</b>`;
       } else {
         usernameElement.textContent = user.username;
       }
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
       const eloElement = document.createElement("span");
       eloElement.className = "elo";
-      eloElement.textContent = ` : ${user.elo}`;
+      eloElement.textContent = `${user.elo}`;
       userItemElement.appendChild(eloElement);
     
       leaderboardElement.appendChild(userItemElement);

@@ -9,11 +9,6 @@
     />
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="stylesheet" href="css/style.css" type="text/css" />
-    <script>
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = "bot-choice-mobile.html";
-      }
-    </script>
   </head>
   <body>
     <svg
@@ -23,21 +18,21 @@
     <div class="vertical-container" style="padding: 20px">
       <a href="home.html"><div class="small-title"></div></a>
       <div id="bot-choice-button-container" class="horizontal-container">
-        <div class="bento-box" id="AI0">
+        <div class="bento-box" id="AI0" data-difficulty="0">
           <div class="vertical-small-container">
             <svg id="bot"></svg>
             <h1 class="text">Rulebased</h1>
             <div class="bold-text" id="easy">Easy</div>
           </div>
         </div>
-        <div class="bento-box" id="AI1">
+        <div class="bento-box" id="AI1" data-difficulty="1">
           <div class="vertical-small-container">
             <svg id="bot"></svg>
             <h1 class="text">Minimax</h1>
             <div class="bold-text" id="medium">Medium</div>
           </div>
         </div>
-        <div class="bento-box" id="AI2">
+        <div class="bento-box" id="AI2" data-difficulty="2">
           <div class="vertical-small-container">
             <svg id="bot"></svg>
             <h1 class="text">MCTS</h1>
@@ -50,6 +45,6 @@
     <script src="js/socket.io.js"></script>
     <script src="js/chatsocket.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
-    <script src="js/bot-choice.js"></script>
+    <script src="js/bot-choice-mobile.js"></script>
   </body>
 </html>
