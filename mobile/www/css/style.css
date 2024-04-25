@@ -1934,8 +1934,18 @@ button:disabled{
   }
 
   .game-item {
-    width: 70%;
+    width: 80%;
     flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  #game-list-page-container {
+    width: 90%;
+    margin: auto;
+  }
+
+  #game-list-container {
+    margin: auto;
   }
 
 }
