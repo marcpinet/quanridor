@@ -1900,7 +1900,7 @@ button:disabled{
     scroll-behavior: smooth;
   }
 
-  #play-menu-button-container {
+  #game-choice-button-container {
     display: flex;
     flex-direction: column;
     align-items: center;
