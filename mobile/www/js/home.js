@@ -203,12 +203,12 @@ function displaySideNotification(notification) {
 closeSearchButton.addEventListener("click", function () {
   searchHeader.style.display = "none";
   friendButtons.style.display = "flex";
-  closeFriends.style.display = "flex";
+  if(closeFriends != null) closeFriends.style.display = "flex";
 });
 
 searchButton.addEventListener("click", function () {
   friendButtons.style.display = "none";
-  closeFriends.style.display = "none";
+  if(closeFriends != null) closeFriends.style.display = "none";
   searchHeader.style.display = "flex";
   friendSearchBar.focus();
 });
