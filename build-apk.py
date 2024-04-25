@@ -55,8 +55,8 @@ def main():
     
     shutil.copytree(root_dir, backup_dir)
     process_files(root_dir, website_url)
-    build_android()
-    restore_files(backup_dir, root_dir)
+    #build_android()
+    #restore_files(backup_dir, root_dir)
 
 if __name__ == '__main__':
     main()
