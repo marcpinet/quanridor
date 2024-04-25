@@ -14,13 +14,13 @@ def replace_in_file(file_path, search_replace_pairs):
 
 def process_files(root_dir, website_url):
     search_replace_pairs = [
-        (r'const baseUrl = window\.location\.origin;', f'const baseUrl = "{website_url}";'),
-        (r'const socket = io\("/api/game"\);', f'const socket = io("{website_url}/api/game");'),
-        (r'const socket = io\("/api/social"\);', f'const socket = io("{website_url}/api/social");'),
-        (r'const socket2 = io\("/api/social"\);', f'const socket2 = io("{website_url}/api/social");'),
-        (r'const socket2 = io\("/api/game"\);', f'const socket2 = io("{website_url}/api/game");'),
-        (r'const permanent_socket2 = io\("/api/game"\);', f'const permanent_socket2 = io("{website_url}/api/game");'),
-        (r'const permanent_socket = io\("/api/social"\);', f'const permanent_socket = io("{website_url}/api/social");'),
+        (re.compile(r'const baseUrl = window\.location\.origin;'), f'const baseUrl = "{re.escape(website_url)}";'),
+        (re.compile(r'const socket = io\("/api/game"\);'), f'const socket = io("{re.escape(website_url)}/api/game");'),
+        (re.compile(r'const socket = io\("/api/social"\);'), f'const socket = io("{re.escape(website_url)}/api/social");'),
+        (re.compile(r'const socket2 = io\("/api/social"\);'), f'const socket2 = io("{re.escape(website_url)}/api/social");'),
+        (re.compile(r'const socket2 = io\("/api/game"\);'), f'const socket2 = io("{re.escape(website_url)}/api/game");'),
+        (re.compile(r'const permanent_socket2 = io\("/api/game"\);'), f'const permanent_socket2 = io("{re.escape(website_url)}/api/game");'),
+        (re.compile(r'const permanent_socket = io\("/api/social"\);'), f'const permanent_socket = io("{re.escape(website_url)}/api/social");'),
     ]
 
     for root, dirs, files in os.walk(root_dir):
@@ -49,10 +49,10 @@ def main():
         website_url = sys.argv[1].rstrip('/')
     else:
         website_url = input("Veuillez saisir l'URL du site web (localhost ne fonctionnera pas) : ").rstrip('/')
-
+    
     root_dir = 'mobile/www'
     backup_dir = 'mobile/www_backup'
-
+    
     shutil.copytree(root_dir, backup_dir)
     process_files(root_dir, website_url)
     build_android()

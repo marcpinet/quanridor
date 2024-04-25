@@ -75,21 +75,15 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 
 1. Make sure you have Cordova correctly installed and configured (see [Cordova's documentation](https://cordova.apache.org/docs/en/11.x/guide/platforms/android/)).
 
-2. **Navigate** to the `mobile` folder.
+2. Run `build-apk.py`
 
-   ```bash
-   cd mobile
-   ```
-
-3. Run `build.bat`
-
-4. **Run** the app on your mobile device.
+3. **Run** the app on your mobile device.
 
    ```bash
    cordova run android
    ```
 
-5. **Play**!
+4. **Play**!
 
 ## 💡 How to use
 
