@@ -32,7 +32,7 @@ def process_files(root_dir, website_url):
 def build_android():
     os.chdir('mobile')
     subprocess.run(['cordova', 'platform', 'rm', 'android'], shell=True)
-    subprocess.run(['cordova', 'platform', 'add', 'android'], shell=True)
+    subprocess.run(['cordova', 'platform', 'add', 'android@12.0.1'], shell=True)
     subprocess.run(['cordova', 'build', 'android'], shell=True)
     os.chdir('..')
 
