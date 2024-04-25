@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quanridor - Online Game</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  </head>
+  <body id="game">
+    <div id="smoke" class="anticheat">
+      <div id="close">
+      <svg
+      id="back-arrow"
+      ></svg>
+      </div>
+      <h1 class="text" id="waiting-text">Waiting for player...</h1>
+      <svg class="spinner" width="105px" height="105px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+     </svg>
+    </div>
+    <div class="horizontal-container">
+      <div class="vertical-small-container">
+        <div id="left-emote">
+          <div id="left-emoji"></div>
+          <div id="left-dialogue"></div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <div id="left-player" class="profile-box">
+          <div class="vertical-small-container">
+            <br />
+            <svg id="user"></svg>
+            <h1 class="text" id="player1-name">Player 1</h1>
+            <div id="separator"></div>
+            <h1 class="text" id="player1-elo">ELO : N/A</h1>
+            <div class="wall-bar-container">
+              <div class="small-text">Walls</div>
+              <div id="wall-bar-1" class="wall-bar">
+                <div id="p1-wall1" class="square"></div>
+                <div id="p1-wall2" class="square"></div>
+                <div id="p1-wall3" class="square"></div>
+                <div id="p1-wall4" class="square"></div>
+                <div id="p1-wall5" class="square"></div>
+                <div id="p1-wall6" class="square"></div>
+                <div id="p1-wall7" class="square"></div>
+                <div id="p1-wall8" class="square"></div>
+                <div id="p1-wall9" class="square"></div>
+                <div id="p1-wall10" class="square"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timer">
+          <div class="text" id="p1-timer-text">Timer: 10 sec</div>
+        </div>
+      </div>
+      <div class="vertical-small-container">
+        <canvas></canvas>
+        <div class="horizontal-small-container">
+          <div id="mute-button" class="unmute"></div>
+          <button class="small-button" id="emote">Emote</button>
+          <button class="small-button" id="confirm">Put Wall</button>
+          <a href="home.html"
+            ><button class="small-button" id="leave">Quit</button></a
+          >
+        </div>
+      </div>
+      <div class="vertical-small-container">
+        <div id="right-emote">
+          <div id="right-dialogue"></div>
+          <div id="right-emoji"></div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <div id="right-player" class="profile-box">
+          <div class="vertical-small-container">
+            <br />
+            <svg id="user"></svg>
+            <h1 class="text" id="player2-name">Player 2</h1>
+            <div id="separator"></div>
+            <h1 class="text" id="player2-elo">ELO : N/A</h1>
+            <div class="wall-bar-container">
+              <div class="small-text">Walls</div>
+              <div id="wall-bar-2" class="wall-bar">
+                <div id="p2-wall1" class="square"></div>
+                <div id="p2-wall2" class="square"></div>
+                <div id="p2-wall3" class="square"></div>
+                <div id="p2-wall4" class="square"></div>
+                <div id="p2-wall5" class="square"></div>
+                <div id="p2-wall6" class="square"></div>
+                <div id="p2-wall7" class="square"></div>
+                <div id="p2-wall8" class="square"></div>
+                <div id="p2-wall9" class="square"></div>
+                <div id="p2-wall10" class="square"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timer">
+          <div class="text" id="p2-timer-text">Timer: 10 sec</div>
+        </div>
+      </div>
+    </div>
+    <div id="smoke" class="anticheat"></div>
+
+    <div id="result-popup">
+      <div class="vertical-small-container">
+        <h1 id="win-text" class="big-text"></h1>
+        <h2 id="elo-scores" class="big-text">ELO SCORES</h2>
+        <div id="elo-score-win" class="text"></div>
+        <div id="elo-score-lose" class="text"></div>
+        <div id="elo-score-draw" class="text"></div>
+        <a><svg id="replay"></svg></a>
+        <a href="home.html"><svg id="home"></svg></a>
+      </div>
+    </div>
+
+    <div id="emote-popup">
+      <svg id="cross"></svg>
+      <div class="vertical-small-container" id="emote-container">
+        <h1 class="big-text">Emotes</h1>
+        <div id="emojis">
+          <span class="bold-text">Emojis</span>
+          <div class="horizontal-container">
+            <a class="emoji-container" id="emoji1">😉</a>
+            <a class="emoji-container" id="emoji2">🥶</a>
+            <a class="emoji-container" id="emoji3">🧠</a>
+            <a class="emoji-container" id="emoji4">😶‍🌫️</a>
+            <a class="emoji-container" id="emoji5">🤬</a>
+          </div>
+        </div>
+        <div id="dialogues">
+          <span class="bold-text">Messages</span>
+          <div class="horizontal-container">
+            <a class="dialogue-container" id="dialogue1">Nice move</a>
+            <a class="dialogue-container" id="dialogue2">Oops</a>
+            <a class="dialogue-container" id="dialogue3">What a save!</a>
+            <a class="dialogue-container" id="dialogue4">Wow!</a>
+            <a class="dialogue-container" id="dialogue5">Good game</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/socket.io.js"></script>
+    <script src="js/auto-redirect-if-not-logged.js"></script>
+    <script src="js/online-game-mobile.js" type="module"></script>
+    <script src="js/online-game-front-mobile.js" type="module"></script>
+  </body>
+</html>
