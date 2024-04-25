@@ -1785,6 +1785,7 @@ button:disabled{
     height: 20vw;
     min-height: fit-content;
     max-height: 30vh;
+    margin-top: 3vh;
   }
 
   #mobile-hide{
