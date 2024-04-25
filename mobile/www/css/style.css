@@ -1779,7 +1779,7 @@ button:disabled{
     display: flex;
     background: url("../assets/quanridor-title.svg") center/250px no-repeat;
     min-width: fit-content;
-    width: 40vh;
+    width: 30vh;
     justify-content: center;
     align-items: center;
     height: 15vw;
@@ -1869,6 +1869,14 @@ button:disabled{
   #add-friend-container{
     width: 100%;
   }
+
+  #play-menu-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
 }
 
 form {
