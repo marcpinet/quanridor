@@ -301,10 +301,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   socket.on("redirectToGame", (roomId) => {
-    if(/Mobi|Android/i.test(navigator.userAgent)) {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
       window.location.href = `online-game.html?roomId=${roomId}`;
-    }
-    else {
+    } else {
       window.location.href = `online-game-mobile.html?roomId=${roomId}`;
     }
   });
@@ -453,9 +452,9 @@ document.addEventListener("DOMContentLoaded", function () {
             notificationContainer.id = `notification-${notification._id}`;
 
             if (
-              /Mobi|Android/i.test(navigator.userAgent) && (
-                notification.type === "friendRequest" ||
-              notification.type === "battleRequest" )
+              /Mobi|Android/i.test(navigator.userAgent) &&
+              (notification.type === "friendRequest" ||
+                notification.type === "battleRequest")
             ) {
               cordova.plugins.notification.local.schedule(
                 {
@@ -911,11 +910,10 @@ document.addEventListener("DOMContentLoaded", function () {
         body: JSON.stringify({ type: "battleRequest" }),
       });
 
-      if(/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = `online-game.html?roomId=${roomId}`;
-      }
-      else {
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
         window.location.href = `online-game-mobile.html?roomId=${roomId}`;
+      } else {
+        window.location.href = `online-game.html?roomId=${roomId}`;
       }
     } catch (error) {
       console.error("Error accepting battle request:", error);
@@ -1013,13 +1011,12 @@ function addMessageToChat(message, isFromFriend) {
   if (isFromFriend) {
     messageElement.style.flexDirection = "row-reverse";
     messageElement.style.marginRight = "auto";
-    messageContainer.style.backgroundColor = "#1D2358"
+    messageContainer.style.backgroundColor = "#1D2358";
   } else {
     messageElement.style.flexDirection = "row";
     messageElement.style.marginLeft = "auto";
   }
 
-  
   messageContainer.classList.add("message-container");
   messageElement.appendChild(messageContainer);
 
