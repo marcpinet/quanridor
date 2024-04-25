@@ -10,7 +10,7 @@ _Unless I forgot to pay the bill, in which case you can still run the project lo
 
 ## 📝 Description
 
-Adaptation of a fully fonctionnable Quoridor game with only pure HTML CSS & Javascript (except for the backend, but still _very_ limited).
+Quoridor game, available for both web and mobile platforms (with bots and online support) using only pure HTML CSS & Javascript. Made as part as a school project
 
 This version of the game includes a [fog of war](https://en.wikipedia.org/wiki/Fog_of_war) system, which means that you can only see the tiles that are in your line of sight. This adds a whole new layer of strategy to the game, as you can't see the other player's moves until you're close enough to them.
 
@@ -21,7 +21,7 @@ There's also a chat system, emote system, leaderboard, statistics, and much more
 ## 📦 Features (W.I.P)
 
 - Minimalistic and clean UI/UX design 🖥️
-- Login / Register system with secure backend _except CORS (for now) which accepts every incoming requests since the frontend is not hosted anywhere_ 📝
+- Login / Register system with secure backend 📝
 - Token authentication system (JWT) 🍪
 - In-progress game listing 📋
 - Play locally with someone else 🎮
