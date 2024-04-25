@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const permanent_socket = io("https://quanridor.ps8.academy/api/social");
 
   const token = localStorage.getItem("token");
-
+  const baseUrl = "https://quanridor.ps8.academy";
   fetch(`${baseUrl}/api/users`, {
     method: "GET",
     headers: {
