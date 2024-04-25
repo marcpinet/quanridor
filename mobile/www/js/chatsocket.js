@@ -20,8 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
       currentUserId = data._id;
       permanent_socket.emit("joinRoom", currentUserId); // Join a room based on the user ID
       permanent_socket.emit("userConnected", currentUserId); // Notify that the user is currently online
-
-      fetchFriendList();
     })
     .catch((error) => {
       console.error("Error fetching user data:", error);
@@ -87,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         console.log("Friend request accepted successfully");
         // Mettre à jour la liste des amis après l'acceptation de la demande
-        fetchFriendList();
 
         // Cacher les boutons "Accept" et "Decline"
         const notificationContainer = document.getElementById(
