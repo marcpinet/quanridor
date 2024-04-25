@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function retrieveLeaderboard() {
     try {
-      const baseUrl = window.location.origin;
+      const baseUrl = "https://quanridor\.ps8\.academy";
       const token = localStorage.getItem("token");
       fetch(`${baseUrl}/api/users`, {
         method: "GET",

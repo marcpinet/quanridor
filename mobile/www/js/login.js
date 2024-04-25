@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Get the values from the form
     const username = form.querySelector('input[name="username"]').value;
     const password = form.querySelector('input[name="password"]').value;
-    const baseUrl = window.location.origin;
+    const baseUrl = "https://quanridor\.ps8\.academy";
 
     // Construct the JSON object to send
     const data = { username, password };
