@@ -15,8 +15,24 @@
       // Execute this line of code once when the page loads
       if(window.screen.width >= 1000) window.location.href = "home.html";
     </script>
+    <div class="horizontal-container" id="home-body">
+            <div id="add-friend-container">
+        <svg id="cross"></svg>
+        <span class="text">Find a friend</span>
+        <span class="pink-text" id="couldnt-find-user">❌ Couldn't find user.</span>
+        <span class="pink-text" id="already-friends">❌ You are already friends.</span>
+        <span class="pink-text" id="cant-add-yourself">❌ You can't add yourself.</span>
+        <span class="pink-text" id="friend-request-already-sent">❌ Friend request already sent.</span>
+        <span class="pink-text" id="unexpected-error">❌ Unexpected error occurred.</span>
+        <span class="pink-text" id="friend-request-sent">✔️ Friend request sent.</span>
+        <div class="find-friend">
+          <input id="add-friend-input" type="text" placeholder="Type a username..." />
+          <button disabled class="choice-button" id="add-friend-button">Request</button>
+        </div>
+      </div>
       <div class="vertical-container" id="friend-side-bar">
         <!-- friend list -->
+        
         <div class="friend-box" id="friend-list">
           <div class="vertical-small-container">
             <div class="friends-header">
@@ -31,6 +47,8 @@
               <div id="friend-buttons">
                 Friends <svg id="search"></svg> <svg id="add-friend"></svg>
               </div>
+              <svg id="close-friends">
+              </svg>
             </div>
             <div class="scrollbar-friend-content">
               <div class="friends">
@@ -66,14 +84,13 @@
           </div>
         </div>
       </div>
-    <div class="horizontal-container">
       <div id="friend-profile">
         <div id="profile-container">
-          <div class="vertical-small-container">
+          <div class="vertical-small-container" style="padding: 10px;">
             <svg id="user"></svg>
             <h1 class="text" id="selected-friend-profile-name"></h1>
             <div class="friend-footer">
-              <div class="horizontal-small-container">
+              <div class="horizontal-small-container" id="friend-profile-buttons">
                 <svg id="unfriend"></svg> <svg id="chat"></svg>
                 <a id="play-button"><svg id="play"></svg></a>
               </div>
@@ -92,12 +109,12 @@
       <div class="vertical-container">
         <div>
           <div class="small-vertical-container">
-            <div class="horizontal-small-container">
+            <div class="horizontal-small-container" id="home-footer">
               <a href="home.html"><div class="small-title"></div></a>
               <a href="index.html"
               ><svg id="logout" onclick="logout()">Log out</svg></a>
             </div>
-            <div class="horizontal-container">
+            <div class="horizontal-small-container">
               <svg id="friends"></svg>
               <svg id="user-mobile"></svg>
               <div class="bell-container">
@@ -106,23 +123,9 @@
             </div>
           </div>
         </div>
-        <a href="play-menu.html"><button class="big-button">Play</button></a>
-        <a href="achievements.html"><button class="big-button">Achievements</button></a>
-        <a href="leaderboard.html"><button class="big-button">Leaderboard</button></a>
-      </div>
-      <div id="add-friend-container">
-        <svg id="cross"></svg>
-        <span class="text">Find a friend</span>
-        <span class="pink-text" id="couldnt-find-user">❌ Couldn't find user.</span>
-        <span class="pink-text" id="already-friends">❌ You are already friends.</span>
-        <span class="pink-text" id="cant-add-yourself">❌ You can't add yourself.</span>
-        <span class="pink-text" id="friend-request-already-sent">❌ Friend request already sent.</span>
-        <span class="pink-text" id="unexpected-error">❌ Unexpected error occurred.</span>
-        <span class="pink-text" id="friend-request-sent">✔️ Friend request sent.</span>
-        <div class="find-friend">
-          <input id="add-friend-input" type="text" placeholder="Type a username..." />
-          <button disabled class="choice-button" id="add-friend-button">Send request</button>
-        </div>
+        <a href="play-menu.html"><button class="medium-button">Play</button></a>
+        <a href="achievements.html"><button class="medium-button">Achievements</button></a>
+        <a href="leaderboard.html"><button class="medium-button">Leaderboard</button></a>
       </div>
       <div id="popup" class="popup">
         <div class="popup-header">Notifications</div>
@@ -166,6 +169,7 @@
     </div>
     <script src="cordova.js"></script>
     <script src="js/socket.io.js"></script>
+    <script src="js/chatsocket.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
     <script src="js/user-info-retriever.js"></script>
     <script src="js/friend-list.js"></script>
