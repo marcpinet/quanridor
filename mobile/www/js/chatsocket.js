@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const permanent_socket = io("https://quanridor.ps8.academy/api/social");
+  const permanent_socket2 = io("https://quanridor.ps8.academy/api/game");
 
   const token = localStorage.getItem("token");
   const baseUrl = "https://quanridor.ps8.academy";
@@ -152,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
   async function acceptBattleRequest(notificationId) {
-    socket2.emit("test");
+    permanent_socket2.emit("test");
     const token = localStorage.getItem("token");
     try {
       const notificationResponse = await fetch(
@@ -186,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const roomId = `battle_${Math.floor(Math.random() * 1000)}`;
       console.log(friend.socketId);
-      socket2.emit("redirectToGame", {
+      permanent_socket2.emit("redirectToGame", {
         roomId: roomId,
         friendSocketId: friend.socketId,
       });
