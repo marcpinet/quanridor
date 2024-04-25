@@ -7,13 +7,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Nunito&display=swap"
     />
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <link rel="stylesheet" href="css/style.css" type="text/css" />
-    <script>
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        window.location.href = "local-game-mobile.html";
-      }
-    </script>
   </head>
   <body>
     <svg
@@ -28,7 +23,7 @@
     <script src="js/socket.io.js"></script>
     <script src="js/chatsocket.js"></script>
     <script src="js/auto-redirect-if-not-logged.js"></script>
-    <script src="js/game-retriever.js" type="module"></script>
+    <script src="js/game-retriever-mobile.js" type="module"></script>
     <!-- type=module is required for some reasons lol -->
   </body>
 </html>
