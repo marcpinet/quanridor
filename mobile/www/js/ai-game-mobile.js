@@ -76,6 +76,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   gameId = urlParams.get("id");
   difficulty = parseInt(difficulty);
 
+  console.log("Difficulty: ", difficulty);
+
   if (gameId) {
     socket.emit("gameId", {
       gameId: gameId,
