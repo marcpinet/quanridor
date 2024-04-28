@@ -15,7 +15,7 @@ services:
       - db
     networks:
       - app-network
-    restart: always
+    #restart: always
 
   db:
     image: mongo
