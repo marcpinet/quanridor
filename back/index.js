@@ -34,14 +34,14 @@ const server = http.createServer(function (request, response) {
 });
 
 // Add cors to the server
-server.on("request", (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
-});
+//server.on("request", (req, res) => {
+//  res.setHeader("Access-Control-Allow-Origin", "*");
+//  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//  res.setHeader(
+//    "Access-Control-Allow-Headers",
+//    "Content-Type, Authorization, X-Requested-With"
+//  );
+//});
 
 // We need to create a socket server to handle real-time communication.
 const io = new Server(server, {

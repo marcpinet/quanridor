@@ -384,7 +384,9 @@ function createSocketGame(io) {
       } else if (gameState.difficulty === 2) {
         newCoord = MCTS.computeMove(gameState, 2);
       } else {
-        throw new Error("Invalid difficulty");
+        //throw new Error("Invalid difficulty");
+        // Default to Minimax
+        newCoord = Minimax.computeMove(gameState, 2);
       }
       let endTime = performance.now();
       let elapsedTime = endTime - startTime;
