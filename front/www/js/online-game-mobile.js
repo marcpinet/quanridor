@@ -1,4 +1,4 @@
-const socket = io("https://quanridor.ps8.academy/api/game");
+const socket = io("/api/game");
 const urlParams = new URLSearchParams(window.location.search);
 let roomId = urlParams.get("roomId");
 socket.on("connect", () => {
