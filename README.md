@@ -10,6 +10,8 @@ https://github.com/marcpinet/quanridor/assets/52708150/8aa827ca-f739-4675-a9a9-6
 
 #### Mobile version (same, but you can see me playing online)
 
+https://github.com/marcpinet/quanridor/assets/52708150/9ef180f8-7e02-4061-984a-86cdffe0278c
+
 ## 🌐 Hosting
 
 You can access the project by visiting: [http://quanridor.ps8.academy/](http://quanridor.ps8.academy/)
@@ -103,8 +105,6 @@ There is a mock account already created for you to test the game:
 - **Password**: `admin`
 
 ... 👀
-
-https://github.com/marcpinet/quanridor/assets/52708150/9ef180f8-7e02-4061-984a-86cdffe0278c
 
 ## 🐛 Known issues
 
